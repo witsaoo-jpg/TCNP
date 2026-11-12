@@ -1,4 +1,5 @@
 (() => {
+  const appRoot = new URL('.', document.baseURI).pathname;
   const state = {
     meta: { groups: [], units: [], users: [], access: null, taxonomy: { domains: [], classes: [], action_types: [] } },
     overview: null,
@@ -42,7 +43,7 @@
       const sessionResponse = await fetch('/api/auth/session', { credentials: 'include', headers: { Accept: 'application/json' } });
       const session = await sessionResponse.json().catch(() => ({}));
       if (!sessionResponse.ok || !session.authenticated) {
-        location.href = '/v3/login.html';
+        location.href = `${appRoot}login.html`;
         return null;
       }
 
@@ -64,7 +65,7 @@
 
       return session;
     } catch (_) {
-      location.href = '/v3/login.html';
+      location.href = `${appRoot}login.html`;
       return null;
     }
   }

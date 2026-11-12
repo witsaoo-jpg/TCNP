@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', async () => {
+  const appRoot = new URL('.', location.href).pathname;
   const session = ENR.requireSession();
   if (!session) return;
 
@@ -6,7 +7,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // CP5.7 Nursing Analytics quick access
   const analyticsBtn = document.getElementById('analyticsBtn');
   if (analyticsBtn) {
-    analyticsBtn.onclick = () => { location.href = '/v3/admin/analytics.html'; };
+    analyticsBtn.onclick = () => { location.href = `${appRoot}admin/analytics.html`; };
   }
   // /CP5.7
 
@@ -24,7 +25,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   if (canOpenAdmin && adminBtn) {
     adminBtn.classList.remove('hidden');
-    adminBtn.onclick = () => { location.href = '/v3/admin/'; };
+    adminBtn.onclick = () => { location.href = `${appRoot}admin/`; };
   }
 
   const grid = document.getElementById('wardGrid');

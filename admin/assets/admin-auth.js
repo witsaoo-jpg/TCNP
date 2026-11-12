@@ -1,16 +1,18 @@
 (() => {
   const $ = (id) => document.getElementById(id);
+  const appRoot = new URL('.', document.baseURI).pathname;
+  const adminRoot = `${appRoot}admin/`;
 
   function safeNext() {
-    const raw = new URLSearchParams(location.search).get('next') || '/v3/admin/';
+    const raw = new URLSearchParams(location.search).get('next') || adminRoot;
     try {
       const url = new URL(raw, location.origin);
-      if (url.origin !== location.origin) return '/v3/admin/';
-      if (!url.pathname.startsWith('/v3/admin/')) return '/v3/admin/';
-      if (url.pathname === '/v3/admin/login.html') return '/v3/admin/';
+      if (url.origin !== location.origin) return adminRoot;
+      if (!url.pathname.startsWith(adminRoot)) return adminRoot;
+      if (url.pathname === `${adminRoot}login.html`) return adminRoot;
       return url.pathname + url.search + url.hash;
     } catch {
-      return '/v3/admin/';
+      return adminRoot;
     }
   }
 
@@ -73,11 +75,11 @@
       const session = await api('/api/auth/session');
       if (!session.authenticated) {
         const next = encodeURIComponent(location.pathname + location.search);
-        location.replace(`/v3/login.html?next=${next}`);
+        location.replace(`${appRoot}login.html?next=${next}`);
         return;
       }
       if (session.mustChangePassword) {
-        location.replace('/v3/change-password.html');
+        location.replace(`${appRoot}login.html?password_change_required=1`);
         return;
       }
 
@@ -89,7 +91,7 @@
       showMode(status);
     } catch (error) {
       if (error.status === 401) {
-        location.replace('/v3/login.html');
+        location.replace(`${appRoot}login.html`);
         return;
       }
       message(error.message || 'ไม่สามารถตรวจสอบสิทธิ์ Admin ได้');
@@ -147,11 +149,11 @@
     }
   });
 
-  $('backWardBtn').addEventListener('click', () => { location.href = '/v3/ward.html'; });
-  $('deniedBackWard').addEventListener('click', () => { location.href = '/v3/ward.html'; });
+  $('backWardBtn').addEventListener('click', () => { location.href = `${appRoot}ward.html`; });
+  $('deniedBackWard').addEventListener('click', () => { location.href = `${appRoot}ward.html`; });
   $('logoutBtn').addEventListener('click', async () => {
     try { await api('/api/auth/logout', { method: 'POST', body: '{}' }); } catch (_) {}
-    location.replace('/v3/login.html');
+    location.replace(`${appRoot}login.html`);
   });
 
   boot();

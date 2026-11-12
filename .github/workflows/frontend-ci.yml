@@ -1,0 +1,26 @@
+name: Frontend safety checks
+on:
+  push:
+    branches:
+      - main
+      - chore/github-clean-frontend-v3
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  static:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Scan for sensitive files and common secret patterns
+        run: python3 scripts/preflight_public.py
+      - name: Validate all HTML assets and JavaScript syntax
+        run: python3 scripts/check_frontend.py
+      - name: Test login redirect and password-reset handling
+        run: node --test tests/*.test.cjs

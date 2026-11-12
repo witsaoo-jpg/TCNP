@@ -24,3 +24,13 @@ See [README_V3.md](README_V3.md) for frontend features and [SECURITY.md](SECURIT
 ## Development
 
 Please review interface access/usage rights and all clinical content licenses before further public distribution. This repository is a demonstration only.
+
+## Automated validation
+
+```bash
+python3 scripts/preflight_public.py
+python3 scripts/check_frontend.py
+node --test tests/*.test.cjs
+```
+
+See [release readiness review](docs/RELEASE_READINESS.md) for known blockers. This public branch still contains localStorage-based clinical prototype modules, so **never use real patient data**. The TCNP v1.8 and nursing terminology redistributability must be reviewed before merging/publishing more broadly.

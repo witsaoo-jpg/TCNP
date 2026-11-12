@@ -1,5 +1,6 @@
 (function () {
   const Admin = window.ENRAdmin = window.ENRAdmin || {};
+  const appRoot = new URL('.', document.baseURI).pathname;
 
   async function fetchJson(path, options = {}) {
     const response = await fetch(path, {
@@ -33,11 +34,11 @@
       const session = await fetchJson('/api/auth/session');
       if (!session.authenticated) {
         const next = encodeURIComponent(location.pathname + location.search);
-        location.replace(`/v3/login.html?next=${next}`);
+        location.replace(`${appRoot}login.html?next=${next}`);
         return null;
       }
       if (session.mustChangePassword) {
-        location.replace('/v3/change-password.html');
+        location.replace(`${appRoot}login.html?password_change_required=1`);
         return null;
       }
 
@@ -63,7 +64,7 @@
 
       if (!status.verified) {
         const next = encodeURIComponent(location.pathname + location.search + location.hash);
-        location.replace(`/v3/admin/login.html?next=${next}`);
+        location.replace(`${appRoot}admin/login.html?next=${next}`);
         return null;
       }
 
@@ -76,7 +77,7 @@
       };
     } catch (error) {
       if (error.status === 401) {
-        location.replace('/v3/login.html');
+        location.replace(`${appRoot}login.html`);
         return null;
       }
       const message = document.getElementById('adminGuardMessage');
@@ -89,16 +90,16 @@
   };
 
   Admin.bindChrome = () => {
-    document.getElementById('backWardBtn')?.addEventListener('click', () => { location.href = '/v3/ward.html'; });
+    document.getElementById('backWardBtn')?.addEventListener('click', () => { location.href = `${appRoot}ward.html`; });
     document.getElementById('logoutBtn')?.addEventListener('click', async () => {
       try { await fetchJson('/api/auth/logout', { method: 'POST', body: '{}' }); } catch (_) {}
-      location.href = '/v3/login.html';
+      location.href = `${appRoot}login.html`;
     });
   };
 
   Admin.exitAdminMode = async () => {
     try { await fetchJson('/api/admin/auth/logout', { method: 'POST', body: '{}' }); } catch (_) {}
-    location.href = '/v3/ward.html';
+    location.href = `${appRoot}ward.html`;
   };
 
   Admin.escape = value => ENR?.escape ? ENR.escape(value) : String(value ?? '').replace(/[&<>"']/g, (ch) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
@@ -109,7 +110,7 @@
   Admin.apiError = (error, fallback = 'เกิดข้อผิดพลาด') => {
     if (error?.code === 'ADMIN_REAUTH_REQUIRED') {
       const next = encodeURIComponent(location.pathname + location.search + location.hash);
-      setTimeout(() => location.replace(`/v3/admin/login.html?next=${next}`), 0);
+      setTimeout(() => location.replace(`${appRoot}admin/login.html?next=${next}`), 0);
       return 'สิทธิ์ Admin หมดอายุ กรุณายืนยันรหัสผ่าน Admin อีกครั้ง';
     }
     if (error?.status === 403 || error?.code === 'ADMIN_REQUIRED') return 'บัญชีนี้ยังไม่มีสิทธิ์ Nursing Admin';
