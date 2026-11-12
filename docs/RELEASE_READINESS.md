@@ -1,38 +1,33 @@
-# ENR V3 — release readiness review (12 Nov 2026)
+# TCNP / ENR V3 — Release readiness review (12 Nov 2026)
 
-This repository is a **frontend prototype** for demonstration and review. It has **not** been approved for live clinical records or public patient access.
+## Two deployment modes
 
-## Verified static checks
+- `main` and development source branch: **actual V3 frontend**, `USE_MOCK_DATA: false`, requires approved Node/Express/PostgreSQL backend.
+- `gh-pages`: **same V3 screens**, `USE_MOCK_DATA: true`, browser-only API adapter and synthetic records in localStorage, for conference testing only.
 
-- 33 HTML pages and 41 JavaScript files parsed/checked.
-- 161 local HTML script/style/image references resolve.
-- Public-content preflight passed its simple rule-based scan; this is **not** an assurance that no confidential information exists.
-- Login redirect is restricted to same-origin HTML under the current app mount path, with Node tests.
-- A missing `change-password.html` redirect is replaced by a blocked sign-in with an administrator message. **Password-changing remains a missing backend-integrated feature.**
-- Admin links now work for a static preview at `/` and for an ENR deployment at `/v3/`.
+The old standalone `demo/` site was intentionally removed. The publicly accessible application is now the original V3 interface, **not a reduced mockup**.
 
-## Blocking issues before real use or merge approval
+## Verified checks
 
-1. **Clinical information in browser storage — HIGH.** Some clinical and legacy pages still store patient profile, HN/AN, notes, monitoring values, clinical events or discharge information in `localStorage`. This can persist on shared workstations. Remove or migrate sensitive state to authenticated server-backed storage, establish session/logout cleanup, and test against approved privacy requirements. Do not use real patient data in the prototype.
-2. **Backend integration — HIGH.** The authorized Node/Express/PostgreSQL backend is not present in this repository. End-to-end login, RBAC/RLS, clinical signing/cancel/amendment, and audit trails cannot be verified from the frontend alone.
-3. **Password-change flow — HIGH.** The backend endpoint and account recovery workflow have not been provided. Accounts flagged `mustChangePassword` are deliberately blocked and instructed to use an approved administrator workflow. Implement an authenticated password-change flow when its backend contract is known.
-4. **Clinical taxonomy licensing — REVIEW REQUIRED.** The published source includes TCNP v1.8 master terms in `data/tcnp_master_codes_v1.8.*` and nursing diagnosis content in `data.js`. Verify institutional/rights-holder permission to redistribute these data in a **public** repository. If permission cannot be confirmed, remove the terminology datasets from the public branch/history and load them privately from an authorized backend.
-5. **Public repository exposure — REVIEW REQUIRED.** Some UI pages contain hospital labels and clinical workflows. Confirm approval to publish these artefacts and check every source/fixture for identifiers and internal system details.
+- Static checks: 33 HTML pages, 43 JavaScript files and 195 local references.
+- Node regression tests: 15/15 PASS (login safety, TCNP search, synthetic ward/patient records, note lifecycle, localStorage isolation).
+- Public-file/secret preflight PASS for configured patterns, **not** a guarantee of privacy or source-content rights.
+- TCNP v1.8 source dataset contains 960 Focus/F and 2,108 Procedure/P terms.
+- No real clinical authentication, server-side signing, auditable backend or PHI are implemented in the Pages version.
 
-## Automated checks
+## Limitations
 
-`python3 scripts/preflight_public.py`
+1. **Do not enter real patient data.** Browser localStorage is not approved storage for HN, AN, personal identifiers or clinical records. Use synthetic DEMO-* records only.
+2. No real server, PostgreSQL integration, RBAC, RLS, audit trail or clinical sign-off in GitHub Pages. The simulated DRAFT/SIGNED/Addendum transitions are for user training only.
+3. Hospital integration requires reconnecting the authorized backend with full security and clinical workflow testing.
+4. Some Admin Analytics and backend-dependent functions are not available in public Pages.
+5. Confirm copyright and redistribution permission for TCNP terminology and other nursing reference material before wider public distribution.
+6. Browser end-to-end UI navigation could not be executed in this restricted test environment; static/link and model transport tests are not a replacement for a hands-on cross-browser acceptance test.
 
-`python3 scripts/check_frontend.py`
+## Publication and retirement
 
-`node --test tests/*.test.cjs`
+Use **Settings → Pages → Deploy from a branch → `gh-pages` → `/(root)`**.
+Check GitHub Pages reports live status and test on attendees' mobiles before creating a QR code.
+After the event, disable Pages and have attendees clear their local demo data. Deleting a live site does not erase Git history.
 
-GitHub Actions workflow: `.github/workflows/frontend-ci.yml` runs all checks on pushes and pull requests.
-
-## Browser testing
-
-An attempted local Chromium/Playwright browser test was blocked by the current runtime's browser restrictions (`net::ERR_BLOCKED_BY_ADMINISTRATOR`), not by a verified application failure. No full browser/E2E or clinical backend testing is claimed.
-
-## Release decision
-
-**Not approved for production deployment. Keep PR #1 as Draft until the HIGH issues and permissions are resolved.**
+**No use with real patients is approved.**
