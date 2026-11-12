@@ -186,8 +186,8 @@
     document.getElementById('userDisplay').innerHTML = `<i class="fas fa-user-nurse"></i> ${currentUser}`;
 
     function goToAdmin() {
-        const pass = prompt("รหัสผ่าน Admin:");
-        if(pass === '1234') { sessionStorage.setItem('currentUser', 'พยบ.วิษณุรักษ์ (Admin Mode)'); window.location.href = 'admin.html'; }
+        // Clinical authorization belongs to the backend; no browser-side PIN.
+        window.location.href = 'admin.html';
     }
 
     // 2. Profile Management
@@ -448,5 +448,6 @@
     setDefaultDateTime(); 
     renderUI();
 </script>
+<script src="assets/js/mock/demo-notice.js"></script>
 </body>
 </html>

@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   try {
-    grid.innerHTML = '<div class="enr-empty" style="grid-column:1/-1">กำลังโหลดหน่วยงานจาก PostgreSQL...</div>';
+    grid.innerHTML = '<div class="enr-empty" style="grid-column:1/-1">กำลังโหลดหน่วยงาน...</div>';
     wards = await ENR.api.getOrgUnits();
 
     // ถ้า account มี ward เดียวจาก session context แต่ org_units ถูก RLS จำกัด

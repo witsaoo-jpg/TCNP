@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   try {
-    root.innerHTML = '<div class="enr-empty">กำลังโหลดรายชื่อผู้ป่วยจาก PostgreSQL...</div>';
+    root.innerHTML = '<div class="enr-empty">กำลังโหลดรายชื่อผู้ป่วย...</div>';
     const patients = await ENR.api.getPatients('', ward);
     render(patients);
   } catch (error) {

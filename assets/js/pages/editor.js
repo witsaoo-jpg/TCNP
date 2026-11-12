@@ -632,7 +632,7 @@ ${error.message}`);
     const saveButton = document.getElementById('saveNoteBtn');
     saveButton.disabled = true;
     const originalButtonText = saveButton.textContent;
-    saveButton.textContent = 'กำลังบันทึก PostgreSQL...';
+    saveButton.textContent = window.ENR_CONFIG?.USE_MOCK_DATA ? 'กำลังบันทึกข้อมูลทดลอง...' : 'กำลังบันทึก PostgreSQL...';
 
     try {
       if (existing) {
@@ -649,7 +649,7 @@ ${error.message}`);
             sort_order: item.sort_order
           }))
         });
-        ENR.toast('บันทึกการแก้ไข Draft ลง PostgreSQL แล้ว');
+        ENR.toast(window.ENR_CONFIG?.USE_MOCK_DATA ? 'บันทึก Draft ทดลองในเบราว์เซอร์แล้ว' : 'บันทึกการแก้ไข Draft ลง PostgreSQL แล้ว');
       } else {
         const selectedTemplate = selectedTemplateCode
           ? templateList.find(template => template.code === selectedTemplateCode)
@@ -706,7 +706,7 @@ ${error.message}`);
           evaluation_text: commonPayload.evaluation_text
         });
 
-        ENR.toast('สร้าง Nursing Problem ใน PostgreSQL แล้ว');
+        ENR.toast(window.ENR_CONFIG?.USE_MOCK_DATA ? 'สร้าง Nursing Problem ทดลองในเบราว์เซอร์แล้ว' : 'สร้าง Nursing Problem ใน PostgreSQL แล้ว');
       }
 
       location.href = 'nursing_notes.html';

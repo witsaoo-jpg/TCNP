@@ -330,7 +330,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   async function render() {
     const root = document.getElementById('noteList');
-    root.innerHTML = '<div class="notes-empty">กำลังโหลดบันทึกจาก PostgreSQL...</div>';
+    root.innerHTML = '<div class="notes-empty">กำลังโหลดบันทึก...</div>';
 
     let notes;
     try {

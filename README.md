@@ -23,7 +23,7 @@ Instructions for the presenter, GitHub Pages deployment, and post-event removal:
 python3 -m http.server 8081
 ```
 
-Open `http://localhost:8081/`. With `USE_MOCK_DATA: false`, login and API-backed pages require a separately configured test backend. Do **not** assume the local static server simulates the API.
+Open `http://localhost:8081/`. With `USE_MOCK_DATA: true`, login and API-backed pages require a separately configured test backend. Do **not** assume the local static server simulates the API.
 
 See [README_V3.md](README_V3.md) for frontend features and [SECURITY.md](SECURITY.md) for safe-publication requirements.
 
@@ -40,3 +40,11 @@ node --test tests/*.test.cjs
 ```
 
 See [release readiness review](docs/RELEASE_READINESS.md) for known blockers. This public branch still contains localStorage-based clinical prototype modules, so **never use real patient data**. The TCNP v1.8 and nursing terminology redistributability must be reviewed before merging/publishing more broadly.
+
+## Frontend V3 (full interface) — GitHub Pages presentation
+
+The **real V3 frontend screens** are available, not a separate simplified demo. In the `gh-pages` branch, the presentation-only adapter at `assets/js/mock/browser-api.js` preserves TCNP v1.8 lookup, all ward names, simulated patients and DRAFT/SIGNED/Addendum workflows in this browser.
+
+No hospital backend is connected. Entries are stored only in this browser's localStorage and **do not sync between attendees**. Never enter real names, HN/AN, passwords or clinical notes. Use the yellow **ล้างข้อมูลทดลอง** button to reset data after the session. Simulation status is not a clinical sign-off or audit trail. Backend-only analytics and some administrative workflows remain unavailable.
+
+For the hospital source version, set `USE_MOCK_DATA: false` and implement secure backend API, RBAC, auditing and server-side records before any live data use. Static content and any third-party TCNP terminology must be cleared for public distribution by the rights holder.

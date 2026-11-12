@@ -4,6 +4,7 @@ on:
     branches:
       - main
       - chore/github-clean-frontend-v3
+      - gh-pages
   pull_request:
 permissions:
   contents: read

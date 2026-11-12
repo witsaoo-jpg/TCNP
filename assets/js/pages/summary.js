@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   try {
-    activeRoot.innerHTML = '<div class="enr-empty">กำลังสร้าง Problem Episodes จาก PostgreSQL...</div>';
+    activeRoot.innerHTML = '<div class="enr-empty">กำลังสร้างสรุปปัญหา...</div>';
     resolvedRoot.innerHTML = '<div class="enr-empty">กำลังโหลด...</div>';
 
     const data = await ENR.api.getNursingProblemSummary(encounterId);
