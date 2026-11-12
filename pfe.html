@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PFE - Patient and Family Education</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        :root {
+            --primary: #00796b;
+            --primary-light: #b2dfdb;
+            --primary-dark: #004d40;
+            --text-dark: #263238;
+            --text-grey: #546e7a;
+            --border: #cfd8dc;
+            --shadow: 0 4px 20px rgba(0,0,0,0.08);
+            --radius: 8px;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background: #f0f2f5;
+            margin: 0;
+            padding-top: 70px; /* Space for fixed header */
+            padding-bottom: 80px; /* Space for action bar */
+            color: var(--text-dark);
+            font-size: 14px;
+        }
+
+        /* --- Smart Header Bar --- */
+        .patient-header-bar {
+            position: fixed; top: 0; left: 0; width: 100%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white; padding: 10px 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .patient-info-display { font-size: 1.1rem; font-weight: 500; display: flex; gap: 15px; }
+        .patient-badge { background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 20px; font-size: 0.9rem; display: flex; align-items: center; gap: 5px; }
+        
+        .back-btn {
+            background: white; color: var(--primary); border: none; padding: 6px 15px;
+            border-radius: 20px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px;
+            transition: 0.2s; text-decoration: none; font-size: 14px;
+        }
+        .back-btn:hover { background: #e0f2f1; transform: translateY(-1px); }
+
+        /* --- Main Paper Container --- */
+        .paper-container {
+            max-width: 210mm;
+            margin: 20px auto;
+            background: white;
+            padding: 30px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+
+        /* --- Form Header --- */
+        .form-header {
+            display: flex; justify-content: space-between; align-items: flex-start;
+            border-bottom: 3px double var(--primary-light); padding-bottom: 15px; margin-bottom: 20px;
+        }
+        .hospital-logo { display: flex; align-items: center; gap: 15px; }
+        .logo-placeholder { width: 50px; height: 50px; background: var(--primary-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--primary-dark); font-weight: bold; }
+        .form-title h2 { margin: 0; color: var(--primary); font-size: 18px; text-transform: uppercase; }
+        .form-title h3 { margin: 0; color: var(--text-grey); font-size: 14px; font-weight: 400; }
+        
+        .sticker-area {
+            border: 2px dashed var(--primary-light); background: #fafafa;
+            padding: 10px; border-radius: 6px; width: 250px; font-size: 12px;
+            color: var(--text-grey);
+        }
+
+        /* --- General Info Grid --- */
+        .info-grid {
+            display: grid; grid-template-columns: repeat(12, 1fr); gap: 15px;
+            background: #f8fcfc; padding: 15px; border-radius: var(--radius); border: 1px solid #e0f2f1;
+            margin-bottom: 20px;
+        }
+        .col-span-3 { grid-column: span 3; }
+        .col-span-4 { grid-column: span 4; }
+        .col-span-6 { grid-column: span 6; }
+        .col-span-12 { grid-column: span 12; }
+
+        .form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--primary); margin-bottom: 4px; }
+        .input-line {
+            width: 100%; border: none; border-bottom: 1px solid #ccc; background: transparent;
+            padding: 5px 0; font-family: 'Sarabun'; transition: 0.3s;
+        }
+        .input-line:focus { border-bottom-color: var(--primary); outline: none; }
+        
+        .radio-group { display: flex; gap: 15px; align-items: center; margin-top: 5px; }
+        .radio-item { display: flex; align-items: center; gap: 5px; font-size: 13px; cursor: pointer; }
+
+        /* --- D-M-E-T-H-O-D Table --- */
+        .dmethod-table {
+            width: 100%; border-collapse: separate; border-spacing: 0;
+            border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;
+        }
+        .dmethod-table th {
+            background: var(--primary); color: white; padding: 10px; text-align: left; font-weight: 500; font-size: 13px;
+        }
+        .dmethod-table td {
+            border-bottom: 1px solid #eee; padding: 10px; vertical-align: top; background: white;
+        }
+        .dmethod-table tr:last-child td { border-bottom: none; }
+        
+        /* Column Widths */
+        .col-topic { width: 35%; }
+        .col-eval { width: 10%; text-align: center; }
+        .col-recv { width: 15%; }
+        .col-method { width: 15%; }
+        .col-inst { width: 25%; }
+
+        .topic-header { color: var(--primary-dark); font-weight: bold; font-size: 14px; margin-bottom: 5px; display: block; }
+        .sub-topic { margin-left: 15px; color: var(--text-grey); font-size: 13px; }
+
+        /* --- Action Bar --- */
+        .action-bar {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: white; padding: 10px 20px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            display: flex; justify-content: flex-end; gap: 10px;
+            z-index: 1000;
+        }
+        .btn {
+            padding: 10px 20px; border: none; border-radius: 30px; cursor: pointer;
+            font-family: 'Sarabun'; font-weight: 600; font-size: 14px;
+            display: flex; align-items: center; gap: 8px; transition: 0.2s;
+        }
+        .btn:hover { transform: translateY(-2px); shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .btn-save { background: #2e7d32; color: white; }
+        .btn-delete { background: #ef5350; color: white; }
+        .btn-pdf { background: #ff9800; color: white; }
+
+        /* --- PDF Only Styles --- */
+        @media print {
+            body { padding: 0; background: white; }
+            .patient-header-bar, .action-bar { display: none !important; }
+            .paper-container { box-shadow: none; margin: 0; padding: 0; width: 100%; border-radius: 0; }
+            .info-grid { background: white; border: none; padding: 0; }
+            .input-line { border-bottom: 1px dotted #000; }
+            .dmethod-table { border: 1px solid #000; border-radius: 0; }
+            .dmethod-table th { background: #ddd; color: black; border: 1px solid #000; }
+            .dmethod-table td { border: 1px solid #000; }
+            /* Ensure checkboxes render nicely */
+            input[type="checkbox"], input[type="radio"] { appearance: auto; }
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .paper-container { padding: 15px; margin: 10px; }
+            .info-grid { display: flex; flex-direction: column; }
+            .dmethod-table { display: block; overflow-x: auto; }
+            .patient-header-bar { flex-direction: column; align-items: flex-start; gap: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="patient-header-bar">
+        <button class="back-btn" onclick="window.location.href='patient_list.html'">
+            <i class="fas fa-chevron-left"></i> ย้อนกลับ
+        </button>
+        <div class="patient-info-display">
+            <div class="patient-badge"><i class="fas fa-user-circle"></i> <span id="navName">Waiting...</span></div>
+            <div class="patient-badge"><i class="fas fa-id-card"></i> HN: <span id="navHN">-</span></div>
+            <div class="patient-badge"><i class="fas fa-bed"></i> AN: <span id="navAN">-</span></div>
+        </div>
+    </nav>
+
+    <div class="paper-container" id="printableArea">
+        
+        <div class="form-header">
+            <div class="hospital-logo">
+                <div class="logo-placeholder"><i class="fas fa-hospital-symbol fa-2x"></i></div>
+                <div class="form-title">
+                    <h2>โรงพยาบาลชลบุรี</h2>
+                    <h3>Chonburi Hospital</h3>
+                    <div style="font-weight: 700; color: var(--primary-dark); margin-top: 5px;">แบบบันทึกการสอนผู้ป่วยและครอบครัว (Patient and Family Education)</div>
+                </div>
+            </div>
+            <div class="sticker-area">
+                <div style="text-align: center; margin-bottom: 5px; font-size: 10px; color: #aaa;">[พื้นที่ติดสติ๊กเกอร์]</div>
+                <div id="stickerInfo" style="font-weight: bold; line-height: 1.4;">
+                    </div>
+            </div>
+        </div>
+
+        <div class="info-grid">
+            <div class="col-span-3 form-group">
+                <label>วันที่ Admit</label>
+                <input type="date" id="admit_date" class="input-line" onchange="calcLOS()">
+            </div>
+            <div class="col-span-3 form-group">
+                <label>เวลา</label>
+                <input type="time" id="admit_time" class="input-line">
+            </div>
+            <div class="col-span-3 form-group">
+                <label>วันที่ D/C</label>
+                <input type="date" id="dc_date" class="input-line" onchange="calcLOS()">
+            </div>
+            <div class="col-span-3 form-group">
+                <label>เวลา</label>
+                <input type="time" id="dc_time" class="input-line">
+            </div>
+            
+            <div class="col-span-4 form-group">
+                <label>ระยะเวลา (วัน) *Auto</label>
+                <input type="text" id="los_days" class="input-line" readonly style="color: var(--primary); font-weight: bold; background: #e0f2f1; text-align: center; border-radius: 4px;">
+            </div>
+            <div class="col-span-8 form-group">
+                <label>ความสามารถในการดูแลตนเอง</label>
+                <div class="radio-group">
+                    <label class="radio-item"><input type="radio" name="self_care" value="Can"> ได้เอง</label>
+                    <label class="radio-item"><input type="radio" name="self_care" value="Partial"> ได้บางส่วน</label>
+                    <label class="radio-item"><input type="radio" name="self_care" value="Cannot"> ไม่ได้เลย</label>
+                </div>
+            </div>
+
+            <div class="col-span-6 form-group">
+                <label>อุปกรณ์ที่ติดตัวกลับ</label>
+                <input type="text" id="equip_detail" class="input-line" placeholder="เช่น สายสวนปัสสาวะ, NG Tube">
+            </div>
+            <div class="col-span-6 form-group">
+                <label>ผู้ดูแลหลัก (Caregiver)</label>
+                <input type="text" id="caregiver" class="input-line" placeholder="ชื่อ-สกุล / ความสัมพันธ์">
+            </div>
+            
+            <div class="col-span-12 form-group">
+                <label>แผนการจำหน่าย</label>
+                <div class="radio-group">
+                    <label class="radio-item"><input type="radio" name="hhc" value="No"> ไม่ส่งต่อ</label>
+                    <label class="radio-item"><input type="radio" name="hhc" value="Yes"> ส่งต่อเยี่ยมบ้าน (HHC)</label>
+                    <span style="margin-left: 20px;">ไปยัง:</span>
+                    <input type="text" id="destination" class="input-line" style="width: 200px;" placeholder="ที่อยู่/สถานพยาบาล">
+                </div>
+            </div>
+        </div>
+
+        <table class="dmethod-table">
+            <thead>
+                <tr>
+                    <th class="col-topic">หัวข้อคำแนะนำ (D-M-E-T-H-O-D)</th>
+                    <th class="col-eval">ประเมิน</th>
+                    <th class="col-recv">ผู้รับ</th>
+                    <th class="col-method">วิธีการ</th>
+                    <th class="col-inst">ผู้สอน / วันที่</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <span class="topic-header"><i class="fas fa-virus"></i> D - Disease (โรค/ภาวะเจ็บป่วย)</span>
+                        <input type="text" id="d_text" class="input-line" placeholder="ระบุโรค/อาการ...">
+                        <div class="sub-topic">- ภาวะแทรกซ้อน</div>
+                        <div class="sub-topic">- อาการผิดปกติที่ต้องมาพบแพทย์</div>
+                    </td>
+                    <td><input type="text" id="d_eval" class="input-line" style="text-align: center;"></td>
+                    <td>
+                        <label class="radio-item"><input type="checkbox" id="d_recv_pt"> ผู้ป่วย</label>
+                        <label class="radio-item"><input type="checkbox" id="d_recv_rel"> ญาติ</label>
+                    </td>
+                    <td>
+                        <label class="radio-item"><input type="checkbox" id="d_meth_talk"> พูดคุย</label>
+                        <label class="radio-item"><input type="checkbox" id="d_meth_doc"> แผ่นพับ</label>
+                    </td>
+                    <td><input type="text" id="d_sign" class="input-line" placeholder="ลงชื่อ/วว-ดด-ปป"></td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <span class="topic-header"><i class="fas fa-pills"></i> M - Medication (ยา)</span>
+                        <input type="text" id="m_text" class="input-line" placeholder="สรรพคุณ / วิธีใช้ / ผลข้างเคียง">
+                    </td>
+                    <td><input type="text" id="m_eval" class="input-line" style="text-align: center;"></td>
+                    <td>
+                        <label class="radio-item"><input type="checkbox" id="m_recv_pt"> ผู้ป่วย</label>
+                        <label class="radio-item"><input type="checkbox" id="m_recv_rel"> ญาติ</label>
+                    </td>
+                    <td>
+                        <label class="radio-item"><input type="checkbox" id="m_meth_talk"> พูดคุย</label>
+                        <label class="radio-item"><input type="checkbox" id="m_meth_doc"> แผ่นพับ</label>
+                    </td>
+                    <td><input type="text" id="m_sign" class="input-line" placeholder="ลงชื่อ/วว-ดด-ปป"></td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <span class="topic-header"><i class="fas fa-home"></i> E - Environment (สภาพแวดล้อม)</span>
+                        <input type="text" id="e_text" class="input-line" placeholder="การจัดบ้าน / เศรษฐกิจ">
+                    </td>
+                    <td><input type="text" id="e_eval" class="input-line" style="text-align: center;"></td>
+                    <td>
+                        <label class="radio-item"><input type="checkbox" id="e_recv_pt"> ผู้ป่วย</label>
+                        <label class="radio-item"><input type="checkbox" id="e_recv_rel"> ญาติ</label>
+                    </td>
+                    <td>
+                        <label class="radio-item"><input type="checkbox" id="e_meth_talk"> พูดคุย</label>
+                        <label class="radio-item"><input type="checkbox" id="e_meth_doc"> แผ่นพับ</label>
+                    </td>
+                    <td><input type="text" id="e_sign" class="input-line" placeholder="ลงชื่อ/วว-ดด-ปป"></td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <span class="topic-header"><i class="fas fa-stethoscope"></i> T - Treatment (การรักษา/อุปกรณ์)</span>
+                        <input type="text" id="t_text" class="input-line" placeholder="การดูแลอุปกรณ์ / แผล">
+                    </td>
+                    <td><input type="text" id="t_eval" class="input-line" style="text-align: center;"></td>
+                    <td>
+                        <label class="radio-item"><input type="checkbox" id="t_recv_pt"> ผู้ป่วย</label>
+                        <label class="radio-item"><input type="checkbox" id="t_recv_rel"> ญาติ</label>
+                    </td>
+                    <td>
+                        <label class="radio-item"><input type="checkbox" id="t_meth_talk"> พูดคุย</label>
+                        <label class="radio-item"><input type="checkbox" id="t_meth_doc"> สาธิต</label>
+                    </td>
+                    <td><input type="text" id="t_sign" class="input-line" placeholder="ลงชื่อ/วว-ดด-ปป"></td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <span class="topic-header"><i class="fas fa-heartbeat"></i> H - Health (สุขภาพ/ข้อจำกัด)</span>
+                        <input type="text" id="h_text" class="input-line" placeholder="การออกกำลังกาย / ป้องกันภาวะแทรกซ้อน">
+                    </td>
+                    <td><input type="text" id="h_eval" class="input-line" style="text-align: center;"></td>
+                    <td>
+                        <label class="radio-item"><input type="checkbox" id="h_recv_pt"> ผู้ป่วย</label>
+                        <label class="radio-item"><input type="checkbox" id="h_recv_rel"> ญาติ</label>
+                    </td>
+                    <td>
+                        <label class="radio-item"><input type="checkbox" id="h_meth_talk"> พูดคุย</label>
+                        <label class="radio-item"><input type="checkbox" id="h_meth_doc"> แผ่นพับ</label>
+                    </td>
+                    <td><input type="text" id="h_sign" class="input-line" placeholder="ลงชื่อ/วว-ดด-ปป"></td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <span class="topic-header"><i class="fas fa-calendar-check"></i> O - Outpatient (นัดตรวจ/ฉุกเฉิน)</span>
+                        <input type="text" id="o_text" class="input-line" placeholder="วันนัด / อาการฉุกเฉิน / เบอร์โทร">
+                    </td>
+                    <td><input type="text" id="o_eval" class="input-line" style="text-align: center;"></td>
+                    <td>
+                        <label class="radio-item"><input type="checkbox" id="o_recv_pt"> ผู้ป่วย</label>
+                        <label class="radio-item"><input type="checkbox" id="o_recv_rel"> ญาติ</label>
+                    </td>
+                    <td>
+                        <label class="radio-item"><input type="checkbox" id="o_meth_talk"> พูดคุย</label>
+                        <label class="radio-item"><input type="checkbox" id="o_meth_doc"> ใบนัด</label>
+                    </td>
+                    <td><input type="text" id="o_sign" class="input-line" placeholder="ลงชื่อ/วว-ดด-ปป"></td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <span class="topic-header"><i class="fas fa-utensils"></i> D - Diet (โภชนาการ)</span>
+                        <input type="text" id="diet_text" class="input-line" placeholder="อาหารเฉพาะโรค / อาหารที่งด">
+                    </td>
+                    <td><input type="text" id="diet_eval" class="input-line" style="text-align: center;"></td>
+                    <td>
+                        <label class="radio-item"><input type="checkbox" id="diet_recv_pt"> ผู้ป่วย</label>
+                        <label class="radio-item"><input type="checkbox" id="diet_recv_rel"> ญาติ</label>
+                    </td>
+                    <td>
+                        <label class="radio-item"><input type="checkbox" id="diet_meth_talk"> พูดคุย</label>
+                        <label class="radio-item"><input type="checkbox" id="diet_meth_doc"> แผ่นพับ</label>
+                    </td>
+                    <td><input type="text" id="diet_sign" class="input-line" placeholder="ลงชื่อ/วว-ดด-ปป"></td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div style="text-align: right; margin-top: 10px; font-size: 11px; color: #999; font-weight: bold;">FM-PFE-CBH-001 (Rev.2025)</div>
+    </div>
+
+    <div class="action-bar">
+        <button class="btn btn-delete" onclick="deleteData()"><i class="fas fa-trash-alt"></i> ลบข้อมูล</button>
+        <button class="btn btn-save" onclick="saveData()"><i class="fas fa-save"></i> บันทึก</button>
+        <button class="btn btn-pdf" onclick="exportPDF()"><i class="fas fa-file-pdf"></i> PDF</button>
+    </div>
+
+    <script>
+        let currentAN = "";
+
+        // --- 1. Initialization ---
+        window.onload = function() {
+            // ดึงข้อมูลผู้ป่วยจาก LocalStorage (ที่ส่งมาจากหน้า Patient List)
+            const patientProfile = JSON.parse(localStorage.getItem('patientProfile'));
+            
+            if (patientProfile) {
+                currentAN = patientProfile.an;
+                
+                // Update Smart Header
+                document.getElementById('navName').innerText = patientProfile.name;
+                document.getElementById('navHN').innerText = patientProfile.hn;
+                document.getElementById('navAN').innerText = patientProfile.an;
+
+                // Update Sticker Area (ใช้ Template String)
+                document.getElementById('stickerInfo').innerHTML = `
+                    <div style="font-size:14px; color:var(--primary-dark);">${patientProfile.name}</div>
+                    <div>HN: ${patientProfile.hn} | AN: ${patientProfile.an}</div>
+                    <div>Ward: ${patientProfile.ward || '-'}</div>
+                `;
+
+                // Set Default Date to Today if empty
+                const today = new Date().toISOString().split('T')[0];
+                if(!document.getElementById('admit_date').value) {
+                    // document.getElementById('admit_date').value = today; // Optional: เปิดถ้าต้องการ auto date
+                }
+
+                // Load Saved Data
+                loadData(currentAN);
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'ไม่พบข้อมูลผู้ป่วย',
+                    text: 'กรุณาเลือกผู้ป่วยจากหน้ารายชื่อ',
+                    confirmButtonText: 'กลับไปหน้ารายชื่อ'
+                }).then(() => {
+                    window.location.href = 'patient_list.html';
+                });
+            }
+        };
+
+        // --- 2. Smart Logic: Calculate LOS ---
+        function calcLOS() {
+            const admit = new Date(document.getElementById('admit_date').value);
+            const dc = new Date(document.getElementById('dc_date').value);
+            
+            if (admit && dc && dc >= admit) {
+                const diffTime = Math.abs(dc - admit);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                document.getElementById('los_days').value = diffDays;
+            } else {
+                document.getElementById('los_days').value = "";
+            }
+        }
+
+        // --- 3. CRUD Operations ---
+        function getAllInputs() {
+            return document.querySelectorAll('input, textarea, select');
+        }
+
+        function saveData() {
+            if (!currentAN) return;
+
+            let data = {};
+            const inputs = getAllInputs();
+
+            inputs.forEach(el => {
+                if (el.type === 'radio' || el.type === 'checkbox') {
+                    if (el.type === 'radio' && el.checked) data[el.name] = el.value;
+                    if (el.type === 'checkbox') data[el.id] = el.checked;
+                } else {
+                    data[el.id] = el.value;
+                }
+            });
+
+            localStorage.setItem('PFE_Form_' + currentAN, JSON.stringify(data));
+            
+            Swal.fire({
+                icon: 'success',
+                title: 'บันทึกสำเร็จ',
+                showConfirmButton: false,
+                timer: 1500
+            });
+        }
+
+        function loadData(an) {
+            const raw = localStorage.getItem('PFE_Form_' + an);
+            if (!raw) return;
+
+            const data = JSON.parse(raw);
+            const inputs = getAllInputs();
+
+            inputs.forEach(el => {
+                if (el.type === 'radio') {
+                    if (data[el.name] === el.value) el.checked = true;
+                } else if (el.type === 'checkbox') {
+                    if (data[el.id]) el.checked = true;
+                } else {
+                    if (data[el.id] !== undefined) el.value = data[el.id];
+                }
+            });
+            
+            // Recalculate LOS after loading dates
+            calcLOS();
+        }
+
+        function deleteData() {
+            if (!currentAN) return;
+            
+            Swal.fire({
+                title: 'ยืนยันการลบ?',
+                text: "ข้อมูลแบบบันทึกนี้จะหายไป",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef5350',
+                confirmButtonText: 'ลบข้อมูล'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    localStorage.removeItem('PFE_Form_' + currentAN);
+                    location.reload();
+                }
+            });
+        }
+
+        // --- 4. PDF Export ---
+        function exportPDF() {
+            const element = document.getElementById('printableArea');
+            
+            // Prepare inputs for Printing (Value injection)
+            document.querySelectorAll('input').forEach(input => {
+                if(input.type === 'checkbox' || input.type === 'radio'){
+                    if(input.checked) input.setAttribute('checked', 'checked');
+                    else input.removeAttribute('checked');
+                } else {
+                    input.setAttribute('value', input.value);
+                }
+            });
+
+            const opt = {
+                margin: 0,
+                filename: `PFE_${currentAN}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(element).save();
+        }
+    </script>
+
+</body>
+</html>

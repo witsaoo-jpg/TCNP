@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Nursing Record Packet | ENR V3</title>
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/print.css">
+  <link rel="stylesheet" href="assets/css/pdf-audit.css">
+</head>
+<body>
+  <div class="pdf-toolbar no-print">
+    <div class="pdf-toolbar__label">Audit-ready • SIGNED Nursing Record Packet</div>
+    <div class="pdf-toolbar__actions">
+      <button class="enr-btn" id="backNotes">← กลับ</button>
+      <button class="enr-btn enr-btn--primary" id="printNow">🖨 พิมพ์ / Export PDF</button>
+    </div>
+  </div>
+
+  <main class="pdf-wrap">
+    <table class="pdf-table" aria-label="Nursing Record Packet">
+      <thead>
+        <tr class="pdf-repeat-head-row">
+          <th colspan="5" class="pdf-repeat-head-cell">
+            <div class="pdf-head">
+              <div class="pdf-hospital">โรงพยาบาลชลบุรี • Chonburi Hospital</div>
+              <h1>ใบบันทึกทางการพยาบาล — Nursing Record Packet</h1>
+              <div class="pdf-official-pill">เฉพาะ Nursing Note ที่ลงนามแล้ว (SIGNED)</div>
+              <div class="pdf-patient-grid">
+                <div><b>ชื่อ-สกุล:</b> <span id="pName"></span></div>
+                <div><b>HN:</b> <span id="pHN"></span></div>
+                <div><b>AN:</b> <span id="pAN"></span></div>
+                <div><b>Ward:</b> <span id="pWard"></span> (<span id="pWardCode"></span>)</div>
+                <div><b>Bed:</b> <span id="pBed"></span></div>
+                <div><b>บริการ:</b> <span id="pType"></span></div>
+                <div><b>Admit:</b> <span id="pAdmit"></span></div>
+                <div><b>D/C:</b> <span id="pDC"></span></div>
+                <div class="pdf-patient-grid__wide"><b>DX:</b> <span id="pDX"></span></div>
+              </div>
+              <div class="pdf-document-meta">
+                <span><b>Document Ref:</b> <span id="documentRef"></span></span>
+                <span><b>Generated:</b> <span id="generatedAt"></span></span>
+                <span><b>SIGNED Notes:</b> <span id="signedCount">0</span></span>
+                <span><b>Post-sign records:</b> <span id="postSignCount">0</span></span>
+              </div>
+              <div class="pdf-audit-note">
+                ข้อมูลผู้ป่วยและเอกสารใน Packet นี้ดึงจาก Backend/PostgreSQL ณ เวลาสร้างเอกสาร • Addendum/Amendment แสดงใต้ Nursing Note ต้นฉบับที่เกี่ยวข้อง • รายการหลังลงนามที่ถูกยกเลิกยังคงแสดงเพื่อ Audit trail
+              </div>
+            </div>
+          </th>
+        </tr>
+        <tr class="pdf-column-head">
+          <th style="width:15%">วัน/เวลา</th>
+          <th style="width:18%">Focus</th>
+          <th>Progress Note F-A(S,O)-G-I-E</th>
+          <th style="width:16%">ผลประเมิน / สถานะ</th>
+          <th style="width:15%">ผู้ลงนาม</th>
+        </tr>
+      </thead>
+      <tbody id="pdfBody"></tbody>
+    </table>
+  </main>
+
+  <footer class="pdf-audit-footer">
+    <span id="footerIdentity"></span>
+    <span>Document Ref: <b id="footerRef"></b></span>
+    <span class="pdf-page-counter">Page <span class="pdf-page-current"></span></span>
+  </footer>
+
+  <script src="assets/js/core/config.js"></script>
+  <script src="assets/js/core/enr-core.js"></script>
+  <script src="assets/js/core/api.js"></script>
+  <script src="assets/js/pages/pdf-preview.js"></script>
+</body>
+</html>

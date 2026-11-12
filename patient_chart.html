@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Electronic Chart</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        :root {
+            --primary: #00796b;
+            --primary-light: #b2dfdb;
+            --primary-dark: #004d40;
+            --accent: #ff9800;
+            --bg: #f0f2f5;
+            --text: #263238;
+        }
+
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background: var(--bg);
+            margin: 0;
+            padding-top: 70px; /* Space for fixed header */
+            color: var(--text);
+        }
+
+        /* --- Header --- */
+        .chart-header {
+            position: fixed; top: 0; left: 0; width: 100%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white; padding: 10px 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .patient-summ { display: flex; gap: 15px; align-items: center; }
+        .pt-badge { background: rgba(255,255,255,0.2); padding: 5px 12px; border-radius: 20px; font-size: 0.95rem; }
+        .back-btn {
+            background: rgba(255,255,255,0.9); color: var(--primary); border: none; padding: 6px 15px;
+            border-radius: 20px; font-weight: bold; cursor: pointer; text-decoration: none; font-size: 14px;
+            display: flex; align-items: center; gap: 5px;
+        }
+
+        /* --- Container --- */
+        .container {
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        /* --- Folder Grid --- */
+        .folder-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        /* --- Folder Card Style --- */
+        .folder-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            overflow: hidden;
+            transition: transform 0.2s;
+            border: 1px solid #e0e0e0;
+        }
+        .folder-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+
+        .folder-header {
+            padding: 15px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: var(--text);
+        }
+        .folder-icon {
+            width: 40px; height: 40px;
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        /* --- Form List inside Folder --- */
+        .form-list { padding: 10px; }
+        .form-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: 0.2s;
+            text-decoration: none;
+            color: var(--text);
+        }
+        .form-item:last-child { border-bottom: none; }
+        .form-item:hover { background-color: #f5f5f5; }
+
+        .form-name { font-weight: 500; display: flex; align-items: center; gap: 10px; }
+        .form-status { font-size: 0.8rem; padding: 2px 8px; border-radius: 10px; }
+        
+        .status-done { background: #e8f5e9; color: #2e7d32; }
+        .status-pending { background: #eceff1; color: #78909c; }
+
+        /* Color Themes for Folders */
+        .theme-admit .folder-icon { background: #e3f2fd; color: #1565c0; }
+        .theme-care .folder-icon { background: #e0f2f1; color: #00695c; }
+        .theme-dc .folder-icon { background: #fbe9e7; color: #d84315; }
+
+    </style>
+</head>
+<body>
+
+    <nav class="chart-header">
+        <button class="back-btn" onclick="window.location.href='patient_list.html'">
+            <i class="fas fa-users"></i> หน้ารายชื่อ
+        </button>
+        <div class="patient-summ">
+            <div class="pt-badge"><i class="fas fa-user"></i> <span id="hdrName">Loading...</span></div>
+            <div class="pt-badge"><i class="fas fa-hashtag"></i> AN: <span id="hdrAN">-</span></div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h2 style="color: var(--primary-dark); margin-bottom: 20px;">
+            <i class="fas fa-folder-open"></i> แฟ้มประวัติผู้ป่วย (Patient Chart)
+        </h2>
+
+        <div class="folder-grid">
+            
+            <div class="folder-card theme-admit">
+                <div class="folder-header">
+                    <div class="folder-icon"><i class="fas fa-ambulance"></i></div>
+                    <div>การรับใหม่ (Admission)</div>
+                </div>
+                <div class="form-list">
+                    <a href="#" onclick="goToForm('pt_access.html')" class="form-item">
+                        <div class="form-name"><i class="fas fa-file-medical"></i> แบบประเมินแรกรับ (Part II)</div>
+                        <div class="form-status" id="status_admission">Checking...</div>
+                    </a>
+                    <div class="form-item" style="opacity: 0.5;">
+                        <div class="form-name"><i class="fas fa-file-alt"></i> ใบยินยอมรักษา (Consent)</div>
+                        <div class="form-status status-pending">Coming Soon</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="folder-card theme-care">
+                <div class="folder-header">
+                    <div class="folder-icon"><i class="fas fa-user-nurse"></i></div>
+                    <div>การดูแล & สุขศึกษา</div>
+                </div>
+                <div class="form-list">
+                    <a href="#" onclick="goToForm('pfe.html')" class="form-item">
+                        <div class="form-name"><i class="fas fa-chalkboard-teacher"></i> แบบบันทึกสอน (PFE)</div>
+                        <div class="form-status" id="status_pfe">Checking...</div>
+                    </a>
+                    <div class="form-item" style="opacity: 0.5;">
+                        <div class="form-name"><i class="fas fa-heartbeat"></i> บันทึกสัญญาณชีพ (V/S)</div>
+                        <div class="form-status status-pending">Coming Soon</div>
+                    </div>
+                    <div class="form-item" style="opacity: 0.5;">
+                        <div class="form-name"><i class="fas fa-notes-medical"></i> Nurse Note</div>
+                        <div class="form-status status-pending">Coming Soon</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="folder-card theme-dc">
+                <div class="folder-header">
+                    <div class="folder-icon"><i class="fas fa-sign-out-alt"></i></div>
+                    <div>การจำหน่าย (Discharge)</div>
+                </div>
+                <div class="form-list">
+                    <a href="#" onclick="goToForm('dcsummary.html')" class="form-item">
+                        <div class="form-name"><i class="fas fa-file-prescription"></i> Discharge Summary</div>
+                        <div class="form-status" id="status_dc">Checking...</div>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        let currentAN = "";
+
+        window.onload = function() {
+            // 1. ดึงข้อมูลผู้ป่วยที่เลือกมาจาก LocalStorage
+            const patientProfile = JSON.parse(localStorage.getItem('patientProfile'));
+            
+            if (patientProfile) {
+                currentAN = patientProfile.an;
+                
+                // แสดงข้อมูลบน Header
+                document.getElementById('hdrName').innerText = patientProfile.name;
+                document.getElementById('hdrAN').innerText = patientProfile.an;
+
+                // ตรวจสอบสถานะเอกสาร
+                checkStatus('RN_Form_' + currentAN, 'status_admission');
+                checkStatus('PFE_Form_' + currentAN, 'status_pfe');
+                
+                // สำหรับ Discharge Summary เช็คใน array รวม
+                checkDischargeStatus(currentAN);
+
+            } else {
+                Swal.fire('Error', 'ไม่พบข้อมูลผู้ป่วย', 'error').then(() => {
+                    window.location.href = 'patient_list.html';
+                });
+            }
+        };
+
+        // ฟังก์ชันไปที่หน้าฟอร์ม โดยไม่ต้องส่ง Parameter เพราะใช้ patientProfile ใน localStorage ตัวเดิม
+        function goToForm(pageUrl) {
+            window.location.href = pageUrl;
+        }
+
+        // เช็คว่ามีข้อมูล Key นี้ใน LocalStorage หรือไม่
+        function checkStatus(storageKey, elementId) {
+            const data = localStorage.getItem(storageKey);
+            const el = document.getElementById(elementId);
+            
+            if (data) {
+                el.innerHTML = '<i class="fas fa-check-circle"></i> บันทึกแล้ว';
+                el.className = 'form-status status-done';
+            } else {
+                el.innerHTML = 'ยังไม่บันทึก';
+                el.className = 'form-status status-pending';
+            }
+        }
+
+        // เช็ค Discharge Summary (เนื่องจากเก็บเป็น Array รวม ไม่ใช่ Key แยกตาม AN)
+        function checkDischargeStatus(an) {
+            const records = JSON.parse(localStorage.getItem('dischargeRecords')) || [];
+            const found = records.find(r => r.an === an);
+            const el = document.getElementById('status_dc');
+
+            if (found) {
+                el.innerHTML = '<i class="fas fa-check-circle"></i> บันทึกแล้ว';
+                el.className = 'form-status status-done';
+            } else {
+                el.innerHTML = 'ยังไม่บันทึก';
+                el.className = 'form-status status-pending';
+            }
+        }
+    </script>
+</body>
+</html>

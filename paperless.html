@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Patient Paperless Hub | ENR V3</title>
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/paperless.css">
+</head>
+<body class="paperless-page">
+  <!-- CP7.0-PATIENT-PARAMETERS-GRAPHIC-SHEET-PROTOTYPE -->
+
+  <header class="paperless-head">
+    <div class="paperless-head__inner">
+      <div>
+        <div class="paperless-head__eyebrow">PATIENT PAPERLESS HUB</div>
+        <h1 id="headName">...</h1>
+        <p>
+          HN: <span id="headHN">-</span>
+          <span class="paperless-sep">|</span>
+          AN: <span id="headAN">-</span>
+          <span class="paperless-sep">|</span>
+          Ward: <span id="headWard">-</span>
+        </p>
+      </div>
+      <div class="paperless-head__actions">
+        <div class="paperless-shared-badge">
+          <span aria-hidden="true">◎</span>
+          Hospital-wide shared modules
+          <small>ทุก Ward ใช้ทรัพยากรร่วมกัน</small>
+        </div>
+
+        <button class="paperless-head__back" type="button" id="backToPatientList">
+          <span aria-hidden="true">←</span>
+          กลับไปเลือกผู้ป่วย
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="paperless-wrap">
+    <section class="paperless-intro">
+      <div>
+        <span class="paperless-kicker">ELECTRONIC NURSING RECORD</span>
+        <h2>โมดูลดูแลผู้ป่วย</h2>
+        <p>เลือกเครื่องมือและเอกสารทางการพยาบาลสำหรับผู้ป่วยรายนี้</p>
+      </div>
+      <div class="paperless-legend">
+        <span><i class="legend-dot legend-dot--ready"></i>พร้อมใช้งาน</span>
+        <span><i class="legend-dot legend-dot--major"></i>Major module</span>
+        <span><i class="legend-dot"></i>วางแผนพัฒนา</span>
+      </div>
+    </section>
+
+    <section class="paperless-section" aria-labelledby="coreTitle">
+      <div class="paperless-section__head">
+        <div>
+          <span class="paperless-section__kicker">CORE NURSING</span>
+          <h3 id="coreTitle">งานหลักทางการพยาบาล</h3>
+        </div>
+        <span class="paperless-section__count">5 modules</span>
+      </div>
+
+      <div class="paperless-grid">
+        <button class="paperless-card paperless-card--link" type="button" data-href="pt_access.html">
+          <span class="paperless-card__status">โมดูลหลัก</span>
+          <div class="paperless-icon" aria-hidden="true">▤</div>
+          <h4>แบบประเมินแรกรับ</h4>
+          <p>Initial Nursing Assessment / ADL</p>
+        </button>
+
+        <button class="paperless-card paperless-card--major paperless-card--combined paperless-card--ready" type="button"
+                data-href="patient_parameters.html">
+          <span class="paperless-card__status paperless-card__status--major">MAJOR • PROTOTYPE</span>
+
+          <div class="paperless-combined">
+            <div class="paperless-combined__parameters">
+              <div class="paperless-icon" aria-hidden="true">⌁</div>
+              <h4>Patient Parameters &amp; Graphic Sheet</h4>
+              <p>T / P / R / BP / SpO₂ / Pain / Sedation / GCS</p>
+
+              <div class="paperless-parameter-chips" aria-label="ตัวอย่าง Patient Parameters">
+                <span>T</span><span>P</span><span>R</span><span>BP</span>
+                <span>SpO₂</span><span>Pain</span><span>GCS</span>
+              </div>
+            </div>
+
+            <div class="paperless-combined__chart" aria-hidden="true">
+              <div class="paperless-mini-chart__title">สัญญาณชีพและใบบันทึกกราฟ</div>
+              <svg class="paperless-mini-chart" viewBox="0 0 250 90" role="img" aria-label="ตัวอย่างกราฟ e-ปรอท">
+                <line x1="8" y1="75" x2="242" y2="75"></line>
+                <line x1="8" y1="12" x2="8" y2="75"></line>
+                <polyline points="8,56 42,48 76,53 110,35 144,40 178,24 212,30 242,20"></polyline>
+                <circle cx="42" cy="48" r="3"></circle>
+                <circle cx="110" cy="35" r="3"></circle>
+                <circle cx="178" cy="24" r="3"></circle>
+                <circle cx="242" cy="20" r="3"></circle>
+              </svg>
+              <div class="paperless-mini-chart__caption">บันทึกค่า 1 ครั้ง → ใบบันทึกกราฟอัปเดตอัตโนมัติ</div>
+            </div>
+          </div>
+
+          <div class="paperless-card__major-note">
+            Single source of truth • บันทึก Parameters ครั้งเดียว แล้วส่งต่อไป Graphic Sheet / I&amp;O / Monitoring / Analytics
+          </div>
+        </button>
+
+        <button class="paperless-card paperless-card--link paperless-card--ready" type="button"
+                data-href="nursing_notes.html">
+          <span class="paperless-card__status paperless-card__status--ready">COMPLETE</span>
+          <div class="paperless-icon" aria-hidden="true">✎</div>
+          <h4>บันทึกทางการพยาบาล</h4>
+          <p>Nursing Note / Focus Charting (TCNP)</p>
+        </button>
+
+        <button class="paperless-card paperless-card--link" type="button" data-href="pfe.html">
+          <span class="paperless-card__status">โมดูลหลัก</span>
+          <div class="paperless-icon" aria-hidden="true">🎓</div>
+          <h4>PFE</h4>
+          <p>Patient &amp; Family Education</p>
+        </button>
+
+        <button class="paperless-card paperless-card--link" type="button" data-href="dcsummary.html">
+          <span class="paperless-card__status">โมดูลหลัก</span>
+          <div class="paperless-icon" aria-hidden="true">↪</div>
+          <h4>Discharge Summary</h4>
+          <p>สรุปการจำหน่ายและความต่อเนื่องในการดูแล</p>
+        </button>
+      </div>
+    </section>
+
+    <section class="paperless-section" aria-labelledby="assessmentTitle">
+      <div class="paperless-section__head">
+        <div>
+          <span class="paperless-section__kicker">ASSESSMENT &amp; SAFETY</span>
+          <h3 id="assessmentTitle">การประเมินและความปลอดภัย</h3>
+        </div>
+        <span class="paperless-section__count">4 modules</span>
+      </div>
+
+      <div class="paperless-grid paperless-grid--compact">
+        <button class="paperless-card paperless-card--planned" type="button" data-module="Fall Risk">
+          <span class="paperless-card__status">วางแผนพัฒนา</span>
+          <div class="paperless-icon" aria-hidden="true">⇣</div>
+          <h4>Fall Risk</h4>
+          <p>ประเมินความเสี่ยงต่อการพลัดตกหกล้ม</p>
+        </button>
+
+        <button class="paperless-card paperless-card--planned" type="button" data-module="Pressure Injury Risk">
+          <span class="paperless-card__status">วางแผนพัฒนา</span>
+          <div class="paperless-icon" aria-hidden="true">◫</div>
+          <h4>Pressure Injury Risk</h4>
+          <p>ประเมินความเสี่ยงต่อการเกิดแผลกดทับ</p>
+        </button>
+
+        <button class="paperless-card paperless-card--planned" type="button" data-module="Nutrition Screening">
+          <span class="paperless-card__status">วางแผนพัฒนา</span>
+          <div class="paperless-icon" aria-hidden="true">◒</div>
+          <h4>Nutrition Screening</h4>
+          <p>คัดกรองภาวะโภชนาการ</p>
+        </button>
+
+        <button class="paperless-card paperless-card--planned" type="button" data-module="Pain Assessment">
+          <span class="paperless-card__status">วางแผนพัฒนา</span>
+          <div class="paperless-icon" aria-hidden="true">◎</div>
+          <h4>Pain Assessment</h4>
+          <p>ประเมินความปวดและติดตามผล</p>
+        </button>
+      </div>
+    </section>
+
+    <section class="paperless-section" aria-labelledby="monitoringTitle">
+      <div class="paperless-section__head">
+        <div>
+          <span class="paperless-section__kicker">TREATMENT &amp; MONITORING</span>
+          <h3 id="monitoringTitle">การรักษาและการเฝ้าระวัง</h3>
+        </div>
+        <span class="paperless-section__count">3 modules</span>
+      </div>
+
+      <div class="paperless-grid paperless-grid--compact">
+        <button class="paperless-card paperless-card--planned" type="button" data-module="IV / Line / Drain / Tube">
+          <span class="paperless-card__status">วางแผนพัฒนา</span>
+          <div class="paperless-icon" aria-hidden="true">┼</div>
+          <h4>IV / Line / Drain / Tube</h4>
+          <p>ติดตามอุปกรณ์ สายระบาย และหัตถการที่เกี่ยวข้อง</p>
+        </button>
+
+        <button class="paperless-card paperless-card--planned" type="button" data-module="Medication / Infusion Monitoring">
+          <span class="paperless-card__status">วางแผนพัฒนา</span>
+          <div class="paperless-icon" aria-hidden="true">◉</div>
+          <h4>Medication / Infusion</h4>
+          <p>Medication &amp; Infusion Monitoring</p>
+        </button>
+
+        <button class="paperless-card paperless-card--planned" type="button" data-module="Fluid Balance / I&O">
+          <span class="paperless-card__status">วางแผนพัฒนา</span>
+          <div class="paperless-icon" aria-hidden="true">⇅</div>
+          <h4>Fluid Balance / I&amp;O</h4>
+          <p>สารน้ำเข้า-ออกและสมดุลน้ำ</p>
+        </button>
+      </div>
+    </section>
+
+    <section class="paperless-section" aria-labelledby="continuityTitle">
+      <div class="paperless-section__head">
+        <div>
+          <span class="paperless-section__kicker">EDUCATION &amp; CARE CONTINUITY</span>
+          <h3 id="continuityTitle">การให้ความรู้และความต่อเนื่องในการดูแล</h3>
+        </div>
+        <span class="paperless-section__count">4 modules</span>
+      </div>
+
+      <div class="paperless-grid paperless-grid--compact">
+        <button class="paperless-card paperless-card--planned" type="button" data-module="PFE ตามโรค/หัตถการ">
+          <span class="paperless-card__status">วางแผนพัฒนา</span>
+          <div class="paperless-icon" aria-hidden="true">⌘</div>
+          <h4>PFE ตามโรค/หัตถการ</h4>
+          <p>Chemotherapy • DM • HF • Stroke • Colostomy ฯลฯ</p>
+        </button>
+
+        <button class="paperless-card paperless-card--planned" type="button" data-module="Nursing Care Plan / Care Summary">
+          <span class="paperless-card__status">วางแผนพัฒนา</span>
+          <div class="paperless-icon" aria-hidden="true">☰</div>
+          <h4>Nursing Care Plan</h4>
+          <p>Care Plan / Care Summary</p>
+        </button>
+
+        <button class="paperless-card paperless-card--planned" type="button" data-module="Transfer / Handover">
+          <span class="paperless-card__status">วางแผนพัฒนา</span>
+          <div class="paperless-icon" aria-hidden="true">⇄</div>
+          <h4>Transfer / Handover</h4>
+          <p>ส่งต่อข้อมูลการพยาบาลระหว่างหน่วยงาน</p>
+        </button>
+
+        <button class="paperless-card paperless-card--planned" type="button" data-module="Clinical Forms">
+          <span class="paperless-card__status">วางแผนพัฒนา</span>
+          <div class="paperless-icon" aria-hidden="true">▦</div>
+          <h4>Clinical Forms</h4>
+          <p>แบบฟอร์มเฉพาะทางที่ใช้ร่วมกันทั้งโรงพยาบาล</p>
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <div class="paperless-toast" id="paperlessToast" role="status" aria-live="polite" hidden></div>
+
+  <script src="assets/js/core/enr-core.js"></script>
+  <script src="assets/js/pages/paperless.js"></script>
+</body>
+</html>

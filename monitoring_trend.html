@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Monitoring Trend | ENR V3</title>
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/patient-parameters.css">
+  <link rel="stylesheet" href="assets/css/monitoring-trend.css">
+</head>
+<body class="pp-page mt-page">
+  <!-- CP7.4-MONITORING-TREND-CANCELLED-ARCHIVE -->
+  <header class="pp-topbar">
+    <div class="pp-topbar__brand">
+      <span class="pp-logo">ENR</span>
+      <div><strong>Monitoring Trend</strong><small>All active observations by actual time</small></div>
+    </div>
+    <div class="pp-topbar__actions">
+      <button type="button" class="pp-btn pp-btn--ghost" onclick="location.href='paperless.html'">← Paperless Hub</button>
+      <button type="button" class="pp-btn pp-btn--ghost" onclick="location.href='patient_list.html'">ผู้ป่วย</button>
+    </div>
+  </header>
+
+  <section class="pp-patientbar">
+    <div>
+      <strong id="patientName">-</strong>
+      <span>HN: <b id="patientHN">-</b></span>
+      <span>AN: <b id="patientAN">-</b></span>
+      <span>Ward: <b id="patientWard">-</b></span>
+      <span>DX: <b id="patientDX">-</b></span>
+    </div>
+  </section>
+
+  <nav class="pp-tabs">
+    <a class="pp-tab" href="patient_parameters.html">Parameters</a>
+    <a class="pp-tab" href="clinical_events.html">Clinical Events</a>
+    <a class="pp-tab pp-tab--active" href="monitoring_trend.html">Monitoring Trend</a>
+    <a class="pp-tab" href="graphic_sheet.html">Graphic Sheet</a>
+  </nav>
+
+  <main class="pp-wrap mt-wrap">
+    <section class="pp-hero mt-hero">
+      <div>
+        <span class="pp-kicker">SURVEILLANCE VIEW</span>
+        <h1>Monitoring Trend — ทุกค่าตามเวลาจริง</h1>
+        <p>ใช้สำหรับผู้ป่วยที่ต้องเฝ้าระวัง • แสดงทุก ACTIVE observation ไม่บีบเหลือเฉพาะ 02/06/10/14/18/22</p>
+      </div>
+      <div class="mt-filter">
+        <button class="pp-btn pp-btn--ghost mt-range-btn" data-hours="24">24 ชม.</button>
+        <button class="pp-btn pp-btn--ghost mt-range-btn" data-hours="48">48 ชม.</button>
+        <button class="pp-btn pp-btn--ghost mt-range-btn mt-range-btn--active" data-hours="0">ทั้งหมด</button>
+      </div>
+    </section>
+
+    <section class="pp-card mt-card">
+      <div class="mt-card-head">
+        <div><strong>T / P Continuous Trend</strong><small>ทุกจุด = เวลาที่วัดจริง</small></div>
+        <div class="mt-legend"><span class="mt-blue">T</span><span class="mt-red">P</span></div>
+      </div>
+      <div id="trendChart" class="mt-chart"></div>
+      <div id="trendEmpty" class="pp-empty" hidden>ยังไม่มี ACTIVE observation สำหรับช่วงเวลานี้</div>
+    </section>
+
+    <section class="pp-card mt-card">
+      <div class="mt-card-head"><div><strong>All Active Observations</strong><small>Cancelled records ถูกตัดออกจาก clinical trend</small></div></div>
+      <div class="pp-table-wrap">
+        <table class="pp-table mt-table">
+          <thead><tr><th>Observed</th><th>T</th><th>P</th><th>R</th><th>BP</th><th>SpO₂</th><th>SOS</th><th>Pain</th><th>GCS</th><th>I/O</th></tr></thead>
+          <tbody id="trendRows"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="assets/js/core/enr-core.js"></script>
+  <script src="assets/js/modules/parameter-store.js"></script>
+  <script src="assets/js/modules/io-source-master.js"></script>
+  <script src="assets/js/modules/io-engine.js"></script>
+  <script src="assets/js/pages/monitoring-trend.js"></script>
+</body>
+</html>

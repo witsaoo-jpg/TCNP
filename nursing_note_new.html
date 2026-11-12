@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>สร้าง Nursing Note | ENR V3</title>
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/editor.css">
+</head>
+<body class="editor-page">
+  <nav class="enr-topbar">
+    <div class="enr-topbar__title">✎ สร้างบันทึกทางการพยาบาล</div>
+    <div class="enr-topbar__actions">
+      <span class="enr-topbar__user">👤 <span id="editorUser">...</span></span>
+      <button class="enr-btn enr-btn--soft" onclick="location.href='nursing_notes.html'">← กลับรายการ</button>
+    </div>
+  </nav>
+
+  <section class="enr-patient-banner" id="patientBanner"></section>
+
+  <main class="editor-wrap">
+    <section class="time-card">
+      <div class="time-card__top">
+        <div class="time-main">
+          <div class="time-kicker">DOCUMENTATION TIME</div>
+          <h2>วัน–เวลาทางการพยาบาล</h2>
+          <div class="enr-field">
+            <label>วันที่และเวลาที่ต้องการบันทึกทางการพยาบาล</label>
+            <input class="enr-input" type="datetime-local" id="clinicalDatetime">
+          </div>
+          <div class="clinical-time-help" id="clinicalTimeHelp"></div>
+
+          <div class="patient-type-box">
+            <div class="enr-field patient-type-field">
+              <label>ประเภทผู้ป่วย ณ เวลาบันทึก <span class="required-star">*</span></label>
+              <select class="enr-select" id="patientTypeLevel">
+                <option value="">— เลือก Type —</option>
+                <option value="1">Type 1</option>
+                <option value="2">Type 2</option>
+                <option value="3">Type 3</option>
+                <option value="4">Type 4</option>
+                <option value="5">Type 5</option>
+              </select>
+              <div class="patient-type-help" id="patientTypeHelp">เลือกประเภทผู้ป่วยสำหรับช่วงเวลาที่บันทึกนี้</div>
+            </div>
+            <div class="patient-type-context">
+              <span class="enr-badge enr-badge--teal" id="patientTypeShiftBadge">เวร...</span>
+              <small>ระบบเก็บค่าไว้กับ Nursing Note แต่ละรายการ จึงเปลี่ยนได้ตามเวร/อาการ</small>
+            </div>
+          </div>
+        </div>
+        <div class="shift-pill" id="shiftBadge">เวร...</div>
+      </div>
+
+      <div class="system-time">
+        <div>
+          <b>เวลาสร้างบันทึกจริงโดยระบบ</b>
+          <div class="muted" id="systemCreated">-</div>
+        </div>
+        <span class="enr-badge enr-badge--teal">🔒 แก้ไขไม่ได้</span>
+      </div>
+    </section>
+
+    <section class="template-card">
+      <div class="template-row">
+        <div class="enr-field template-search-field">
+          <label>ค้นหา Template</label>
+          <input class="enr-input" id="templateSearch" placeholder="เช่น คลื่นไส้, ปวด, hypoxia...">
+        </div>
+        <div class="enr-field template-select-field">
+          <label>เลือกรายการ Template</label>
+          <select class="enr-select" id="templateSelect">
+            <option value="">กำลังโหลด Template...</option>
+          </select>
+        </div>
+        <button class="enr-btn enr-btn--primary" id="useTemplateBtn">▶ ใช้ Template</button>
+        <button class="enr-btn" id="writeOwnBtn">✎ เขียนเอง</button>
+      </div>
+      <div class="template-status-row">
+        <span class="muted" id="templateHint">Template จะเติมข้อมูลตั้งต้น แต่ยังแก้ไข/เพิ่ม/นำออกรายการได้ก่อนบันทึก</span>
+        <span class="enr-badge enr-badge--teal" id="templateState">ยังไม่ได้เลือก Template · สามารถเขียนเองได้ทันที</span>
+      </div>
+    </section>
+
+    <div class="editor-title">
+      <h2>F-A(S,O)-G-I-E</h2>
+      <p>MANUAL เป็นค่าตั้งต้นทุกหัวข้อ และเพิ่ม TCNP ได้อย่างยืดหยุ่น</p>
+    </div>
+
+    <section class="note-section sec-f">
+      <div class="note-section__head">F — Focus <small>ปัญหาทางการพยาบาล</small></div>
+      <div class="note-section__body">
+        <div data-items="F"></div>
+        <div class="section-actions"><span>＋ เพิ่มรายการ</span><button class="enr-btn" data-add-manual="F">✎ เขียนเอง</button><button class="enr-btn" data-add-tcnp="F">🔎 TCNP</button></div>
+      </div>
+    </section>
+
+    <section class="note-section sec-a_s">
+      <div class="note-section__head">A-S — Subjective <small>ข้อมูลจากผู้ป่วย/ญาติ</small></div>
+      <div class="note-section__body">
+        <div data-items="A_S"></div>
+        <div class="section-actions"><span>＋ เพิ่มรายการ</span><button class="enr-btn" data-add-manual="A_S">✎ เขียนเอง</button><button class="enr-btn" data-add-tcnp="A_S">🔎 TCNP</button></div>
+      </div>
+    </section>
+
+    <section class="note-section sec-a_o">
+      <div class="note-section__head">A-O — Objective <small>ข้อมูลที่ตรวจพบ/ประเมินได้</small></div>
+      <div class="note-section__body">
+        <div data-items="A_O"></div>
+        <div class="section-actions"><span>＋ เพิ่มรายการ</span><button class="enr-btn" data-add-manual="A_O">✎ เขียนเอง</button><button class="enr-btn" data-add-tcnp="A_O">🔎 TCNP</button></div>
+      </div>
+    </section>
+
+    <section class="note-section sec-g">
+      <div class="note-section__head">G — Goal <small>เป้าหมายการพยาบาล</small></div>
+      <div class="note-section__body">
+        <div data-items="G"></div>
+        <div class="section-actions"><span>＋ เพิ่มรายการ</span><button class="enr-btn" data-add-manual="G">✎ เขียนเอง</button><button class="enr-btn" data-add-tcnp="G">🔎 TCNP</button></div>
+      </div>
+    </section>
+
+    <section class="note-section sec-i">
+      <div class="note-section__head">I — Intervention <small>กิจกรรมการพยาบาล</small></div>
+      <div class="note-section__body">
+        <div data-items="I"></div>
+        <div class="section-actions"><span>＋ เพิ่มรายการ</span><button class="enr-btn" data-add-manual="I">✎ เขียนเอง</button><button class="enr-btn" data-add-tcnp="I">🔎 TCNP</button></div>
+      </div>
+    </section>
+
+    <section class="note-section sec-e">
+      <div class="note-section__head">E — Evaluation <small>การประเมินผล</small></div>
+      <div class="note-section__body">
+        <div data-items="E"></div>
+        <div class="section-actions"><span>＋ เพิ่มรายการ</span><button class="enr-btn" data-add-manual="E">✎ เขียนเอง</button><button class="enr-btn" data-add-tcnp="E">🔎 TCNP</button></div>
+      </div>
+    </section>
+
+    <section class="evaluation-card">
+      <h2>ผลการประเมิน</h2>
+      <div class="muted evaluation-help">เลือกได้ 1 ค่า หรือเว้นไว้ได้หากเป็นการเริ่มต้นปัญหาใหม่</div>
+      <div class="eval-choice">
+        <button class="choice-btn trend-improved-choice" data-trend="IMPROVED">↑ ดีขึ้น</button>
+        <button class="choice-btn trend-stable-choice" data-trend="STABLE">→ คงตัว</button>
+        <button class="choice-btn trend-worsened-choice" data-trend="WORSE">↓ แย่ลง</button>
+      </div>
+
+      <h3>สถานะปัญหา</h3>
+      <div class="status-choice">
+        <button class="choice-btn" data-status="IN_PROGRESS">In-progress · กำลังดำเนินการ</button>
+        <button class="choice-btn" data-status="RESOLVED">Resolved · สิ้นสุดปัญหา</button>
+      </div>
+
+      <div class="enr-field evaluation-note-field">
+        <label>รายละเอียดผลการประเมินเพิ่มเติม</label>
+        <div class="muted evaluation-help">ไม่บังคับ — ถ้าเว้นว่าง ระบบจะใช้ข้อความใน E – Evaluation เป็นผลการประเมินโดยอัตโนมัติ</div>
+        <textarea class="enr-textarea" id="evalNote" placeholder="เช่น อาการคลื่นไส้ลดลง ผู้ป่วยรับประทานอาหารได้มากขึ้น (ถ้ามี)"></textarea>
+      </div>
+    </section>
+  </main>
+
+  <div class="savebar">
+    <div class="savebar__status" id="savebarStatus">ยังไม่ได้บันทึกลงฐานข้อมูล</div>
+    <div class="savebar__actions">
+      <button class="enr-btn" id="cancelBtn">ยกเลิก</button>
+      <button class="enr-btn enr-btn--primary" id="saveNoteBtn">สร้าง Nursing Problem</button>
+    </div>
+  </div>
+
+  <div class="enr-modal-backdrop" id="tcnpModal">
+    <div class="enr-modal tcnp-modal">
+      <div class="enr-modal__header">
+        <div>
+          <div class="enr-modal__title">🔎 ค้นหา TCNP</div>
+          <div class="muted" id="tcnpSectionHint"></div>
+        </div>
+        <button class="enr-modal__close" data-close-tcnp>×</button>
+      </div>
+      <div class="tcnp-searchbox">
+        <input class="enr-input" id="tcnpQuery" placeholder="ค้นด้วยรหัส คำไทย หรือคำอังกฤษ...">
+      </div>
+      <div class="tcnp-results" id="tcnpResults"></div>
+      <div class="enr-modal__footer"><button class="enr-btn" data-close-tcnp>ปิด</button></div>
+    </div>
+  </div>
+
+  <script src="assets/js/core/config.js"></script>
+  <script src="assets/js/core/enr-core.js"></script>
+  <script src="data/tcnp_master_codes_v1.8.js"></script>
+  <script src="assets/js/mock/templates.js"></script>
+  <script src="assets/js/core/api.js"></script>
+  <script src="assets/js/pages/editor.js"></script>
+</body>
+</html>
