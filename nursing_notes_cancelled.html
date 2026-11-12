@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>บันทึกที่ยกเลิก | ENR V3</title>
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/nursing-notes.css">
+</head>
+<body class="notes-page cancelled-page">
+  <nav class="enr-topbar">
+    <div class="enr-topbar__title">🚫 บันทึกที่ยกเลิก</div>
+    <div class="enr-topbar__actions">
+      <span class="enr-topbar__user">👤 <span id="noteUser">...</span></span>
+      <button class="enr-btn enr-btn--soft" id="backNotesBtn">← กลับประวัติหลัก</button>
+    </div>
+  </nav>
+
+  <section class="enr-patient-banner" id="patientBanner"></section>
+
+  <main class="notes-wrap">
+    <div class="notes-toolbar">
+      <div>
+        <h2>รายการบันทึกที่ยกเลิก</h2>
+        <div class="muted">เก็บไว้เพื่อ Audit trail • ไม่แสดงในประวัติการบันทึกหลัก • ไม่ถูกลบจาก PostgreSQL</div>
+      </div>
+      <div class="notes-toolbar__actions">
+        <button class="enr-btn" id="backNotesBtn2">← ประวัติหลัก</button>
+      </div>
+    </div>
+    <div class="archive-intro">รายการในหน้านี้เป็นเอกสารที่ถูกยกเลิกแล้วและเป็นแบบอ่านอย่างเดียว PDF ของรายการยกเลิกจะแยกจาก PDF บันทึกที่ยังมีผลใช้งาน</div>
+    <section class="note-list" id="cancelledList"></section>
+  </main>
+
+  <script src="assets/js/core/config.js"></script>
+  <script src="assets/js/mock/browser-api.js"></script>
+  <script src="assets/js/core/enr-core.js"></script>
+  <script src="assets/js/core/api.js"></script>
+  <script src="assets/js/pages/nursing-notes-cancelled.js"></script>
+</body>
+</html>

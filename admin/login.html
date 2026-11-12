@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <base href="../">
+  <title>Admin Verification | ENR V3</title>
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="admin/assets/admin.css">
+  <link rel="stylesheet" href="admin/assets/admin-auth.css">
+</head>
+<body class="admin-page admin-auth-page">
+  <header class="admin-topbar">
+    <div class="admin-brand">
+      <div class="admin-brand__mark">ENR</div>
+      <div><strong>Nursing Administration</strong><span>Electronic Nursing Record • Chonburi Hospital</span></div>
+    </div>
+    <div class="admin-topbar__actions">
+      <button class="admin-btn admin-btn--ghost" id="backWardBtn" type="button">← กลับหน้า Ward</button>
+      <button class="admin-btn admin-btn--ghost" id="logoutBtn" type="button">ออกจากระบบ</button>
+    </div>
+  </header>
+
+  <main class="admin-auth-shell">
+    <section class="admin-auth-card" aria-labelledby="authTitle">
+      <div class="admin-auth-shield" aria-hidden="true">🔐</div>
+      <div class="admin-kicker">ADMIN RE-AUTHENTICATION</div>
+      <h1 id="authTitle">ยืนยันสิทธิ์ Nursing Admin</h1>
+      <p class="admin-auth-lead">ระบบ Clinical ยังเข้าสู่ระบบอยู่ตามปกติ แต่การจัดการ Template / Master data ต้องยืนยันรหัสผ่าน Admin แยกอีกครั้ง</p>
+
+      <div class="admin-auth-user">
+        <span>ผู้ใช้งาน</span>
+        <strong id="currentAdminUser">กำลังตรวจสอบ...</strong>
+        <small id="currentAdminRoles"></small>
+      </div>
+
+      <div id="authMessage" class="admin-alert" hidden></div>
+
+      <form id="verifyForm" class="admin-auth-form" hidden>
+        <label class="admin-field">
+          <span>รหัสผ่าน Admin</span>
+          <input id="adminPassword" type="password" autocomplete="current-password" required autofocus>
+        </label>
+        <button class="admin-btn admin-btn--primary admin-btn--lg admin-auth-submit" type="submit">🔓 เข้าสู่ Nursing Administration</button>
+        <p class="admin-auth-hint">สิทธิ์ Admin จะหมดอายุอัตโนมัติเมื่อไม่มีการยืนยันใหม่ตามเวลาที่ระบบกำหนด</p>
+      </form>
+
+      <form id="setupForm" class="admin-auth-form" hidden>
+        <div class="admin-auth-firsttime">ตั้งรหัสผ่าน Admin ครั้งแรก</div>
+        <label class="admin-field">
+          <span>รหัสผ่าน ENR ปัจจุบัน</span>
+          <input id="currentEnrPassword" type="password" autocomplete="current-password" required>
+        </label>
+        <label class="admin-field">
+          <span>รหัสผ่าน Admin ใหม่</span>
+          <input id="newAdminPassword" type="password" autocomplete="new-password" minlength="12" required>
+        </label>
+        <label class="admin-field">
+          <span>ยืนยันรหัสผ่าน Admin</span>
+          <input id="confirmAdminPassword" type="password" autocomplete="new-password" minlength="12" required>
+        </label>
+        <button class="admin-btn admin-btn--primary admin-btn--lg admin-auth-submit" type="submit">🔐 ตั้งรหัส Admin และเข้าสู่ระบบ</button>
+        <p class="admin-auth-hint">อย่างน้อย 12 ตัวอักษร และต้องไม่เหมือนรหัสผ่าน ENR</p>
+      </form>
+
+      <div id="notEligible" class="admin-auth-denied" hidden>
+        <strong>บัญชีนี้ไม่มีสิทธิ์ Nursing Administration</strong>
+        <p>ยังใช้งาน Clinical และ Nursing Analytics ตามสิทธิ์เดิมได้ตามปกติ</p>
+        <button class="admin-btn admin-btn--primary" id="deniedBackWard" type="button">กลับหน้า Ward</button>
+      </div>
+
+      <div class="admin-auth-security">
+        <strong>Security</strong>
+        <span>รหัสผ่านถูกเก็บเป็น bcrypt hash • Verification อยู่ใน server-side session • ไม่เก็บ Admin token/password ใน localStorage</span>
+      </div>
+    </section>
+  </main>
+
+  <script src="assets/js/core/config.js"></script>
+<script src="assets/js/mock/browser-api.js"></script>
+<script src="admin/assets/admin-auth.js"></script>
+</body>
+</html>

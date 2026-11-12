@@ -1,0 +1,280 @@
+/* CP7.5 — Clinical Events */
+.ce-hero{align-items:stretch}
+.ce-rule-card{
+  min-width:280px;padding:14px 16px;border:1px solid #cfe4e2;border-radius:14px;
+  background:#f3faf9;display:flex;flex-direction:column;justify-content:center;gap:5px;
+  color:#365b62;font-size:.72rem
+}
+.ce-rule-card strong{color:#0b746c;font-size:.82rem}
+.ce-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:13px}
+.ce-grid--top{grid-template-columns:2fr 1fr}
+.ce-span-2{grid-column:span 2}
+.ce-pod-option{
+  display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border:1px solid #ead8a4;
+  background:#fff9e9;border-radius:12px;margin:4px 0 14px
+}
+.ce-pod-option input{margin-top:3px}
+.ce-pod-option span{display:flex;flex-direction:column;gap:2px}
+.ce-pod-option strong{font-size:.76rem;color:#745b15}
+.ce-pod-option small{font-size:.66rem;color:#806f3a}
+.ce-slot-preview{
+  max-width:360px;border:1px solid #d9e5e7;background:#f7fafb;border-radius:12px;
+  padding:8px 10px;font-size:.68rem;line-height:1.35;color:#566f78
+}
+.ce-slot-preview strong{display:block;color:#0b746c}
+.ce-preview-box{border-left:4px solid #0f8a7f;background:#f5fbfa;padding:10px 12px;margin:8px 0 14px}
+.ce-preview-box span{display:block;font-size:.65rem;color:#71858c}
+.ce-preview-box strong{display:block;margin-top:3px;font-size:.83rem;color:#263f48;font-weight:750}
+.ce-actions{justify-content:flex-end}
+.ce-cancelled-btn{
+  appearance:none;border:1px solid #efcaca;background:#fff7f7;color:#af3131;border-radius:999px;
+  padding:7px 12px;font:inherit;font-size:.7rem;font-weight:850;cursor:pointer
+}
+.ce-table-scroll{overflow:auto}
+.ce-table{width:100%;border-collapse:collapse;font-size:.72rem}
+.ce-table th{
+  text-align:left;padding:9px 10px;background:#f1f6f7;color:#5d747c;border-bottom:1px solid #dbe6e8;
+  font-weight:750;white-space:nowrap
+}
+.ce-table td{padding:10px;border-bottom:1px solid #e7edef;vertical-align:top;color:#304850}
+.ce-event-main{font-weight:750;color:#183f47}
+.ce-event-note{display:block;margin-top:3px;color:#718188;font-size:.64rem}
+.ce-slot-chip{
+  display:inline-flex;border-radius:999px;padding:4px 8px;background:#e6f5f1;color:#08756b;
+  font-size:.64rem;font-weight:800;white-space:nowrap
+}
+.ce-pod-chip{
+  display:inline-flex;border-radius:999px;padding:4px 8px;background:#fff3d8;color:#8a6112;
+  font-size:.64rem;font-weight:850
+}
+.ce-cancel-btn{
+  appearance:none;border:1px solid #f0bcbc;background:#fff7f7;color:#c73030;border-radius:9px;
+  padding:6px 9px;font:inherit;font-size:.65rem;font-weight:800;cursor:pointer
+}
+.ce-empty{text-align:center;padding:20px;color:#86979c}
+.ce-readonly{font-size:.66rem;color:#7b8b90}
+.ce-cancelled-card{border-color:#efdada}
+.ce-cancelled-card .ce-table td{color:#6e777a}
+@media(max-width:900px){
+  .ce-grid,.ce-grid--top{grid-template-columns:1fr 1fr}
+  .ce-span-2{grid-column:span 2}
+}
+@media(max-width:620px){
+  .ce-grid,.ce-grid--top{grid-template-columns:1fr}
+  .ce-span-2{grid-column:span 1}
+  .ce-rule-card{min-width:0}
+}
+
+
+/* =====================================================
+   CP7.5.1 — Nurse-selected plot slot
+===================================================== */
+.ce-grid--top{
+  grid-template-columns:2fr 1fr 1fr;
+}
+
+.ce-plot-slot-field small{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  flex-wrap:wrap;
+}
+
+.ce-use-nearest{
+  appearance:none;
+  border:0;
+  padding:0;
+  background:transparent;
+  color:#08786e;
+  font:inherit;
+  font-size:.66rem;
+  font-weight:800;
+  cursor:pointer;
+  text-decoration:underline;
+  text-underline-offset:2px;
+}
+
+#nearestSlotHint{
+  color:#788a90;
+  font-size:.64rem;
+}
+
+@media(max-width:900px){
+  .ce-grid--top{grid-template-columns:1fr 1fr}
+}
+@media(max-width:620px){
+  .ce-grid--top{grid-template-columns:1fr}
+}
+
+
+/* =====================================================
+   CP7.5.2 — Per-event graphic font size
+===================================================== */
+.ce-grid--top{
+  grid-template-columns:2fr 1fr 1fr 1.15fr;
+}
+
+.ce-font-size-field small{
+  color:#74878e;
+  font-size:.64rem;
+}
+
+#eventTextPreview{
+  transition:font-size .15s ease;
+}
+
+@media(max-width:1050px){
+  .ce-grid--top{grid-template-columns:1fr 1fr}
+}
+
+@media(max-width:620px){
+  .ce-grid--top{grid-template-columns:1fr}
+}
+
+
+/* =====================================================
+   CP7.6 — Smart Graphic label
+===================================================== */
+.ce-grid--graphic-text{
+  grid-template-columns:1fr 1fr;
+  margin-top:-2px;
+}
+
+.ce-grid--graphic-text .pp-field > span small{
+  font-weight:600;
+  color:#809198;
+}
+
+.ce-grid--graphic-text input{
+  border-color:#c9e3df;
+  background:#fbfefe;
+}
+
+.ce-event-graphic-label{
+  display:block;
+  margin-top:4px;
+  color:#0a756b;
+  font-size:.64rem;
+  font-weight:700;
+}
+
+@media(max-width:620px){
+  .ce-grid--graphic-text{grid-template-columns:1fr}
+}
+
+
+/* =====================================================
+   CP7.7 — Event color selector
+===================================================== */
+.ce-grid--top{
+  grid-template-columns:2fr 1fr 1fr 1.15fr 1fr;
+}
+
+.ce-event-color-field small{
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+
+.ce-color-dot,
+.ce-event-color-mini{
+  display:inline-block;
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  border:1px solid rgba(0,0,0,.18);
+  vertical-align:middle;
+}
+
+.ce-event-color-mini{
+  width:8px;
+  height:8px;
+  margin-right:4px;
+}
+
+@media(max-width:1180px){
+  .ce-grid--top{grid-template-columns:1fr 1fr 1fr}
+}
+@media(max-width:760px){
+  .ce-grid--top{grid-template-columns:1fr 1fr}
+}
+@media(max-width:620px){
+  .ce-grid--top{grid-template-columns:1fr}
+}
+
+
+/* =====================================================
+   CP7.10.3 — Flexible Event Type Combobox
+   Event Type accepts both standard suggestions and free text.
+===================================================== */
+
+.ce-event-type-field input[list]{
+  width:100%;
+  min-width:0;
+  background:
+    linear-gradient(90deg, rgba(11,138,126,.055), rgba(255,255,255,0) 55%),
+    #fff;
+}
+
+.ce-event-type-field input[list]::placeholder{
+  color:#8a9a9f;
+}
+
+.ce-event-type-field input[list].ce-event-type--custom{
+  border-color:#87c9c2 !important;
+  box-shadow:0 0 0 3px rgba(15,138,127,.08);
+  background:#f7fcfb;
+}
+
+#eventTypeHint{
+  display:block;
+  margin-top:5px;
+  color:#71878b;
+  line-height:1.35;
+}
+
+.ce-event-type--custom + datalist + input + #eventTypeHint{
+  color:#08786e;
+}
+
+.ce-event-type-chip{
+  display:inline-flex;
+  width:max-content;
+  margin-top:4px;
+  border:1px solid #d9e5e6;
+  border-radius:999px;
+  padding:2px 7px;
+  background:#f5f8f8;
+  color:#657a80;
+  font-size:.58rem;
+  font-weight:750;
+}
+
+.ce-event-type-chip--custom{
+  border-color:#b6ddd8;
+  background:#eff9f7;
+  color:#08786e;
+}
+
+@media(max-width:620px){
+  .ce-event-type-field input[list]{
+    font-size:1rem;
+  }
+}
+
+
+/* =====================================================
+   CP7.10.4 — Safe Long Clinical Event
+===================================================== */
+
+.ce-safe-graphic-hint{
+  display:block;
+  margin-top:4px;
+  color:#647c80;
+  line-height:1.35;
+}
+
+.ce-preview--auto-safe{
+  color:#8a5a00 !important;
+}
+

@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Patient Parameters | ENR V3</title>
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/patient-parameters.css">
+</head>
+<body class="pp-page">
+  <!-- CP7.12-PARAMETER-LIFECYCLE-GRAPHIC-CORE-LOCK -->
+
+  <header class="pp-topbar">
+    <div class="pp-topbar__brand">
+      <span class="pp-logo">ENR</span>
+      <div>
+        <strong>Patient Parameters &amp; Graphic Sheet</strong>
+        <small>สัญญาณชีพและใบบันทึกกราฟ</small>
+      </div>
+    </div>
+
+    <div class="pp-topbar__actions">
+      <button type="button" class="pp-btn pp-btn--ghost" onclick="location.href='paperless.html'">← Paperless Hub</button>
+      <button type="button" class="pp-btn pp-btn--ghost" onclick="location.href='patient_list.html'">ผู้ป่วย</button>
+    </div>
+  </header>
+
+  <section class="pp-patientbar">
+    <div>
+      <strong id="patientName">-</strong>
+      <span>HN: <b id="patientHN">-</b></span>
+      <span>AN: <b id="patientAN">-</b></span>
+      <span>Ward: <b id="patientWard">-</b></span>
+      <span>DX: <b id="patientDX">-</b></span>
+    </div>
+  </section>
+
+  <nav class="pp-tabs" aria-label="Patient Parameters module navigation">
+    <a class="pp-tab pp-tab--active" href="patient_parameters.html">Parameters</a>
+    <a class="pp-tab" href="monitoring_trend.html">Monitoring Trend</a>
+    <a class="pp-tab" href="graphic_sheet.html">Graphic Sheet</a>
+  </nav>
+
+  <main class="pp-wrap">
+    <section class="pp-hero">
+      <div>
+        <span class="pp-kicker">MAJOR MODULE • M1 FRONTEND PROTOTYPE</span>
+        <h1>บันทึก Patient Parameters</h1>
+        <p>กรอกตามเวลาที่วัดจริงได้ทุกเวลา • ตารางเก็บทุกรายการ • Graphic Sheet จะ Plot เฉพาะ 02 / 06 / 10 / 14 / 18 / 22 น. ภายในช่วง ±20 นาที</p>
+      </div>
+      <div class="pp-prototype-note">
+        <strong>Prototype storage</strong>
+        <span>รอบนี้เก็บใน Browser เพื่อทดสอบ Workflow/Graphic logic ก่อนเชื่อม PostgreSQL ใน M2</span>
+      </div>
+    </section>
+
+    <section class="pp-card pp-card--form">
+      <div class="pp-card__head">
+        <div>
+          <span class="pp-section-label">OBSERVATION TIME</span>
+          <h2>วันที่และเวลาที่วัดจริง</h2>
+        </div>
+        <div id="slotPreview" class="pp-slot pp-slot--outside">ยังไม่ประเมิน Graph Slot</div>
+      </div>
+
+      <form id="parameterForm" autocomplete="off">
+        <div class="pp-time-row">
+          <div class="pp-field pp-field--wide pp-observed-field">
+            <div class="pp-field-head">
+              <span>Clinical / Observed date-time *</span>
+              <button type="button" class="pp-now-btn" id="useCurrentTimeBtn">⏱ ใช้เวลาปัจจุบัน</button>
+            </div>
+            <input id="observedAt" name="observedAt" type="datetime-local" required>
+            <small>ค่าเริ่มต้น = เวลาปัจจุบัน • สามารถเลือกย้อนหลังได้ • ไม่อนุญาตเวลาที่อยู่ในอนาคต</small>
+          </div>
+          <div class="pp-rule-box">
+            <strong>Graph Slot Rule</strong>
+            <span>01:40–02:20 → 02:00</span>
+            <span>05:40–06:20 → 06:00</span>
+            <span>09:40–10:20 → 10:00</span>
+            <span>13:40–14:20 → 14:00</span>
+            <span>17:40–18:20 → 18:00</span>
+            <span>21:40–22:20 → 22:00</span>
+          </div>
+        </div>
+
+        <div class="pp-form-section">
+          <div class="pp-form-section__title">
+            <span>VITAL SIGNS</span>
+            <small>ค่าหลักสำหรับ T/P Graphic + ตารางสัญญาณชีพ</small>
+          </div>
+          <div class="pp-fields pp-fields--6">
+            <label class="pp-field">
+              <span>T (°C)</span>
+              <input name="temp" type="number" step="0.1" inputmode="decimal" placeholder="37.0">
+            </label>
+            <label class="pp-field">
+              <span>P (bpm)</span>
+              <input name="pulse" type="number" step="1" inputmode="numeric" placeholder="80">
+            </label>
+            <label class="pp-field">
+              <span>R (ครั้ง/นาที)</span>
+              <input name="resp" type="number" step="1" inputmode="numeric" placeholder="20">
+            </label>
+            <label class="pp-field">
+              <span>S.B.P. (mmHg)</span>
+              <input name="sbp" type="number" step="1" inputmode="numeric" placeholder="120">
+            </label>
+            <label class="pp-field">
+              <span>D.B.P. (mmHg)</span>
+              <input name="dbp" type="number" step="1" inputmode="numeric" placeholder="80">
+            </label>
+            <label class="pp-field">
+              <span>SpO₂ (%)</span>
+              <input name="spo2" type="number" step="1" inputmode="numeric" placeholder="98">
+            </label>
+          </div>
+        </div>
+
+        <div class="pp-form-section">
+          <div class="pp-form-section__title">
+            <span>CLINICAL SCORES</span>
+            <small>เก็บค่าตามแบบฟอร์มจริง • ยังไม่ Auto-calculate SOS/Sedative/Braden จนกว่าจะล็อกเกณฑ์โรงพยาบาล</small>
+          </div>
+          <div class="pp-fields pp-fields--6">
+            <label class="pp-field">
+              <span>SOS Score</span>
+              <input name="sos" type="number" step="1" inputmode="numeric">
+            </label>
+            <label class="pp-field">
+              <span>Pain (0–10)</span>
+              <input name="pain" type="number" min="0" max="10" step="1" inputmode="numeric">
+            </label>
+            <label class="pp-field">
+              <span>Sedative Score</span>
+              <input name="sedative" type="number" step="1" inputmode="numeric">
+            </label>
+            <label class="pp-field" data-master-parameter="BRADEN">
+              <span>Braden</span>
+              <input name="braden" type="number" step="1" inputmode="numeric">
+            </label>
+            <label class="pp-field">
+              <span>PPS (%)</span>
+              <input name="pps" type="number" min="0" max="100" step="10" inputmode="numeric">
+            </label>
+            <label class="pp-field">
+              <span>O₂ / Device note</span>
+              <input name="oxygenNote" type="text" placeholder="RA / NC 3 L/min / Mask...">
+            </label>
+          </div>
+
+          <div class="pp-gcs" data-master-parameter="GCS">
+            <div class="pp-gcs__label">
+              <strong>GCS</strong>
+              <small>E + V + M</small>
+            </div>
+            <label class="pp-field">
+              <span>Eye (1–4)</span>
+              <input name="gcsE" type="number" min="1" max="4" step="1">
+            </label>
+            <label class="pp-field">
+              <span>Verbal (1–5)</span>
+              <input name="gcsV" type="number" min="1" max="5" step="1">
+            </label>
+            <label class="pp-field">
+              <span>Motor (1–6)</span>
+              <input name="gcsM" type="number" min="1" max="6" step="1">
+            </label>
+            <label class="pp-field pp-field--gcs-total">
+              <span>Total <small>Auto</small></span>
+              <input id="gcsTotal" name="gcsTotal" type="number" readonly aria-live="polite">
+              <small id="gcsTotalHint" class="pp-gcs-total-hint">กรอก E + V + M ให้ครบ ระบบจะรวมคะแนนอัตโนมัติ</small>
+            </label>
+            <label class="pp-field pp-field--wide">
+              <span>GCS note</span>
+              <input name="gcsNote" type="text" placeholder="เช่น E4VtM6">
+            </label>
+          </div>
+        </div>
+
+        <div class="pp-form-section">
+          <div class="pp-form-section__title">
+            <span>WEIGHT / HEIGHT / DIET</span>
+            <small>แสดงเป็น Daily row ใน Graphic Sheet</small>
+          </div>
+          <div class="pp-fields pp-fields--4">
+            <label class="pp-field">
+              <span>Weight (kg)</span>
+              <input name="weight" type="number" step="0.1" inputmode="decimal">
+            </label>
+            <label class="pp-field">
+              <span>Height (cm)</span>
+              <input name="height" type="number" step="0.1" inputmode="decimal">
+            </label>
+            <label class="pp-field pp-field--double">
+              <span>Diet</span>
+              <input name="diet" type="text" placeholder="NPO / Regular / Soft / DM diet...">
+            </label>
+          </div>
+        </div>
+
+
+        <div class="pp-form-section pp-additional-parameters" id="additionalParameterSection" hidden>
+          <div class="pp-form-section__title">
+            <span>ADDITIONAL PARAMETERS</span>
+            <small>
+              Nursing Admin กำหนดจาก Parameter Master • ค่ากลุ่มนี้ไม่ Plot ใน Graphic Sheet
+            </small>
+          </div>
+          <div class="pp-additional-banner">
+            <strong>Dynamic Parameters</strong>
+            <span id="additionalParameterCount">0 รายการ</span>
+            <a href="admin_parameter_master.html">จัดการใน Nursing Admin →</a>
+          </div>
+          <div class="pp-fields pp-fields--4" id="additionalParameterFields"></div>
+        </div>
+
+        <div class="pp-form-section">
+          <div class="pp-form-section__title">
+            <span>FLUID INTAKE</span>
+            <small>Oral / IV เป็นช่องใช้งานเร็ว • รายการอื่นเพิ่มได้ตามจริงโดยไม่ต้องแก้โค้ด</small>
+          </div>
+          <div class="pp-fields pp-fields--4">
+            <label class="pp-field">
+              <span>Oral Fluid (mL)</span>
+              <input name="oralFluid" type="number" min="0" step="1">
+            </label>
+            <label class="pp-field">
+              <span>Parenteral / IV (mL)</span>
+              <input name="parenteralFluid" type="number" min="0" step="1">
+            </label>
+            <label class="pp-field pp-field--double">
+              <span>Intake note</span>
+              <input name="intakeNote" type="text" placeholder="ชนิดสารน้ำ / feeding / อื่น ๆ">
+            </label>
+          </div>
+
+          <div class="pp-flex-io">
+            <div class="pp-flex-io__head">
+              <div>
+                <strong>Additional Intake</strong>
+                <small>เช่น Enteral feeding, Blood product, TPN หรือกำหนดชื่อเอง</small>
+              </div>
+              <button type="button" class="pp-io-add-btn" id="addIntakeItem">+ เพิ่ม Intake</button>
+            </div>
+            <div id="intakeItems" class="pp-flex-io__items"></div>
+          </div>
+        </div>
+
+        <div class="pp-form-section">
+          <div class="pp-form-section__title">
+            <span>FLUID OUTPUT</span>
+            <small>Urine / Emesis เป็นช่องใช้งานเร็ว • Drain และ Output อื่นเพิ่มได้ไม่จำกัด</small>
+          </div>
+          <div class="pp-fields pp-fields--4">
+            <label class="pp-field">
+              <span>Urine (mL)</span>
+              <input name="urineMl" type="number" min="0" step="1">
+            </label>
+            <label class="pp-field">
+              <span>Emesis (mL)</span>
+              <input name="emesisMl" type="number" min="0" step="1">
+            </label>
+            <label class="pp-field pp-field--double">
+              <span>Output note</span>
+              <input name="outputNote" type="text" placeholder="รายละเอียดทั่วไปของ output เหตุการณ์นี้">
+            </label>
+          </div>
+
+          <div class="pp-flex-io pp-flex-io--output">
+            <div class="pp-flex-io__head">
+              <div>
+                <strong>Drain / Other Output</strong>
+                <small>รองรับ ICD, PTBD, JP, Hemovac, NG, Colostomy, Nephrostomy และชื่ออื่นที่กำหนดเอง</small>
+              </div>
+              <button type="button" class="pp-io-add-btn" id="addOutputItem">+ เพิ่ม Output / Drain</button>
+            </div>
+            <div id="outputItems" class="pp-flex-io__items"></div>
+          </div>
+
+          <div class="pp-io-calc" aria-live="polite">
+            <div class="pp-io-calc__title">
+              <strong>I/O Auto Calculation</strong>
+              <small>รวม Fixed + Flexible items ขณะกรอก • Graphic Sheet จะรวมยอดของทั้งวันอีกครั้ง</small>
+            </div>
+
+            <div class="pp-io-calc__cards">
+              <div class="pp-io-calc__card">
+                <span>Total Intake</span>
+                <strong id="ioIntakeTotal">0</strong>
+                <small>mL</small>
+              </div>
+              <div class="pp-io-calc__card">
+                <span>Total Output</span>
+                <strong id="ioOutputTotal">0</strong>
+                <small>mL</small>
+              </div>
+              <div class="pp-io-calc__card pp-io-calc__card--balance">
+                <span>I/O Balance</span>
+                <strong id="ioBalance">0</strong>
+                <small>mL (Intake − Output)</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="pp-form-section">
+          <div class="pp-form-section__title">
+            <span>ELIMINATION / OTHER CLINICAL DATA</span>
+            <small>รายละเอียดส่วนล่างของฟอร์มปรอท</small>
+          </div>
+          <div class="pp-fields pp-fields--4">
+            <label class="pp-field">
+              <span>Stool</span>
+              <input name="stool" type="text" placeholder="0 / 1 ครั้ง / loose / formed...">
+            </label>
+            <label class="pp-field">
+              <span>Urine characteristic</span>
+              <input name="urineNote" type="text" placeholder="clear / yellow / Foley...">
+            </label>
+            <label class="pp-field pp-field--double">
+              <span>Medication / Clinical note</span>
+              <textarea name="medicationNote" rows="3" placeholder="รายการยา/เหตุการณ์สำคัญที่ต้องแสดงใน Graphic Sheet"></textarea>
+            </label>
+          </div>
+        </div>
+
+        <div class="pp-form-actions">
+          <button type="button" class="pp-btn pp-btn--ghost" id="clearFormBtn">ล้างฟอร์ม</button>
+          <button type="submit" class="pp-btn pp-btn--primary">บันทึก Parameters</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="pp-card">
+      <div class="pp-card__head pp-card__head--table">
+        <div>
+          <span class="pp-section-label">ALL OBSERVATIONS</span>
+          <h2>ตาราง Patient Parameters</h2>
+          <p id="tableModeDescription">แสดงเฉพาะรายการ ACTIVE เพื่อไม่ให้ตารางรก • รายการที่ยกเลิกยังเก็บไว้ใน Audit/Archive</p>
+          <div class="pp-lifecycle-note">
+            <strong>Clinical lifecycle:</strong> หลังบันทึกแล้วไม่ Hard delete • หากลงผิดให้ “ยกเลิก” พร้อมเหตุผล • รายการยกเลิกจะถูกซ่อนจากตารางหลัก
+          </div>
+        </div>
+        <div class="pp-table-actions">
+          <button type="button" class="pp-btn pp-btn--ghost" id="demoBtn">ใส่ข้อมูลทดสอบ</button>
+          <button type="button" class="pp-btn pp-btn--ghost pp-cancelled-archive-btn" id="cancelledArchiveBtn">🚫 ยกเลิกแล้ว 0</button>
+          <a class="pp-btn pp-btn--ghost" href="monitoring_trend.html">Monitoring Trend</a>
+          <a class="pp-btn pp-btn--primary" href="graphic_sheet.html">เปิด Graphic Sheet →</a>
+        </div>
+      </div>
+
+      <div class="pp-table-wrap">
+        <table class="pp-table">
+          <thead>
+            <tr>
+              <th>Observed</th>
+              <th>Graph</th>
+              <th>T</th>
+              <th>P</th>
+              <th>R</th>
+              <th>BP</th>
+              <th>SpO₂</th>
+              <th>SOS</th>
+              <th>Pain</th>
+              <th>Sedative</th>
+              <th>GCS</th>
+              <th>Braden</th>
+              <th>Additional</th>
+              <th>I / O</th>
+              <th>Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="recordsBody"></tbody>
+        </table>
+      </div>
+
+
+      <div id="archiveNote" class="pp-archive-note" hidden>
+        <strong>Cancelled Parameters Archive</strong>
+        <span>รายการด้านล่างไม่มีผลต่อ Graphic Sheet, Monitoring Trend หรือการคำนวณ I/O แต่ยังคงไว้เพื่อ Audit trail</span>
+      </div>
+      <div id="emptyState" class="pp-empty" hidden>
+        ยังไม่มี Patient Parameters สำหรับผู้ป่วยรายนี้
+      </div>
+    </section>
+  </main>
+
+  <script src="assets/js/core/enr-core.js"></script>
+  <script src="assets/js/modules/parameter-store.js"></script>
+  <script src="assets/js/modules/parameter-master-store.js"></script>
+  <script src="assets/js/modules/io-source-master.js"></script>
+  <script src="assets/js/modules/io-engine.js"></script>
+  <script src="assets/js/pages/patient-parameters.js"></script>
+<script src="assets/js/mock/demo-notice.js"></script>
+</body>
+</html>

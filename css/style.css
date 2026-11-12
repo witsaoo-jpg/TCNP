@@ -1,0 +1,73 @@
+:root {
+    --primary: #00897b;
+    --light: #e0f2f1;
+    --gray: #cfd8dc;
+}
+
+body { font-family: 'Sarabun', sans-serif; background: #f4f6f8; margin: 0; color: #333; }
+
+/* Layout */
+.navbar { background: white; padding: 1rem 2rem; display: flex; justify-content: space-between; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+.container { max-width: 1200px; margin: 20px auto; display: grid; grid-template-columns: 1fr 1.5fr; gap: 20px; padding: 0 20px; }
+.card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 20px;}
+
+/* Inputs */
+input, textarea { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid var(--gray); border-radius: 4px; box-sizing: border-box; font-family: 'Sarabun'; }
+textarea { height: 80px; resize: vertical; }
+
+/* Buttons */
+.btn-primary { background: var(--primary); color: white; width: 100%; border: none; padding: 10px; cursor: pointer; border-radius: 4px; font-weight: bold;}
+.btn-print { background: #546e7a; color: white; border: none; padding: 8px 15px; cursor: pointer; border-radius: 4px; }
+
+/* Search Suggestion */
+.search-wrapper { position: relative; }
+.suggestions-list { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid var(--gray); z-index: 10; display: none; max-height: 200px; overflow-y: auto;}
+.suggestion-item { padding: 10px; cursor: pointer; border-bottom: 1px solid #eee; }
+.suggestion-item:hover { background: var(--light); }
+
+/* Markdown Content Style */
+.guideline-card { background-color: #fffde7; border-left: 5px solid #fbc02d; }
+.markdown-body h3 { margin-top: 0; color: #f57f17; }
+.markdown-body ul { padding-left: 20px; }
+
+/* Print Settings */
+#printable-area { display: none; }
+@media print {
+    body * { visibility: hidden; }
+    #printable-area, #printable-area * { visibility: visible; }
+    #printable-area { display: block; position: absolute; top: 0; left: 0; width: 100%; }
+    @page { size: A4; margin: 2cm; }
+    .print-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .print-table th, .print-table td { border: 1px solid black; padding: 8px; vertical-align: top; }
+}
+/* --- เพิ่มสไตล์สำหรับรายการข้อๆ ในตาราง Print --- */
+.content-list {
+    margin: 0;
+    padding-left: 1.2em; /* ย่อหน้าเข้าไปนิดเดียวพอประหยัดที่ */
+    list-style-type: disc; /* จุดกลมทึบ */
+}
+
+.content-list li {
+    margin-bottom: 2px; /* ระยะห่างระหว่างบรรทัด */
+    line-height: 1.4;   /* ความสูงบรรทัดให้อ่านง่าย */
+}
+
+/* ปรับตาราง Print ให้ชิดบนเสมอ */
+.print-table td {
+    vertical-align: top;
+}
+/* --- CSS สำหรับจัดรายการข้อๆ (List) --- */
+.dar-content ul, .dar-content ol {
+    margin: 0;
+    padding-left: 20px; /* ย่อหน้าเข้าไปให้สวยงาม */
+}
+
+.dar-content li {
+    margin-bottom: 2px; /* ระยะห่างระหว่างบรรทัด */
+    line-height: 1.5;   /* ความสูงบรรทัดให้อ่านง่าย */
+}
+
+/* ปรับให้ในตาราง Print ชิดบน */
+.print-table td {
+    vertical-align: top;
+}

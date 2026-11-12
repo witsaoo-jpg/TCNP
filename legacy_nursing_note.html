@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Focus Charting (Record)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* CSS เพิ่มเติมสำหรับปุ่มหมวดหมู่ */
+        .category-filter { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+        .cat-btn { 
+            background: white; border: 1px solid #ddd; padding: 5px 10px; border-radius: 20px; 
+            font-size: 0.8rem; cursor: pointer; transition: 0.2s; color: #555;
+        }
+        .cat-btn:hover { background: #e0f2f1; color: var(--primary); border-color: var(--primary); }
+        .cat-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+        
+        /* CSS สำหรับช่อง S และ O */
+        .so-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .so-box label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+    </style>
+    
+    <script src="data.js"></script>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div style="font-weight:bold; font-size:1.1rem;">
+            <i class="fas fa-notes-medical"></i> Nursing Note
+        </div>
+        
+        <div style="display:flex; align-items:center; gap:10px;">
+            <span id="userDisplay" style="font-size:0.9rem; margin-right:10px;"></span>
+
+            <button onclick="window.location.href='patient_list.html'" 
+                    style="background:#ff9800; border:none; color:white; padding:6px 15px; border-radius:20px; cursor:pointer; font-size:0.9rem; font-weight:bold;">
+                <i class="fas fa-arrow-left"></i> กลับหน้ารายชื่อ (Ward)
+            </button>
+
+            <button onclick="goToAdmin()" 
+                    style="background:rgba(255,255,255,0.2); border:none; color:white; padding:6px 15px; border-radius:20px; cursor:pointer; font-size:0.9rem;">
+                <i class="fas fa-cog"></i> Admin
+            </button>
+        </div>
+    </nav>
+    
+    <div class="patient-banner no-print">
+        <div class="patient-info">
+            <h2><span id="display_name">...</span> <button class="btn-edit-profile" onclick="openProfileModal()"><i class="fas fa-edit"></i> แก้ไขข้อมูล</button></h2>
+            <div class="patient-meta">
+                <div><i class="fas fa-id-card"></i> HN: <span id="display_hn">-</span></div>
+                <div><i class="fas fa-procedures"></i> AN: <span id="display_an">-</span></div>
+                <div><i class="fas fa-clinic-medical"></i> Ward: <span id="display_ward">-</span></div>
+                <div><i class="fas fa-layer-group"></i> Type: <span id="display_type_badge"></span></div>
+                <div><i class="far fa-calendar-check"></i> Admit: <span id="display_admit">-</span></div>
+                <div><i class="fas fa-diagnoses"></i> DX: <span id="display_dx">-</span></div>
+                <div><i class="fas fa-sign-out-alt"></i> D/C: <span id="display_dc" style="color:#e53935; font-weight:bold;">-</span></div>
+            </div>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <button class="btn btn-nav" onclick="window.location.href='summary.html'"><i class="fas fa-file-medical-alt"></i> สรุปปัญหา</button>
+            <button class="btn" style="background:#fff; border:1px solid #ccc;" onclick="window.print()"><i class="fas fa-print"></i> Print</button>
+        </div>
+    </div>
+<button class="btn" onclick="window.location.href='demethod.html'">
+   <i class="fas fa-file-export"></i> Discharge Planning
+</button>
+    <div id="profileModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeProfileModal()">&times;</span>
+            <h3 style="margin-top:0; color:var(--primary);"><i class="fas fa-user-edit"></i> แก้ไขข้อมูลผู้ป่วย</h3>
+            <div class="form-grid">
+                <div class="form-full"><label>ชื่อ-นามสกุล (อายุ):</label><input type="text" id="prof_name"></div>
+                <div><label>HN:</label><input type="text" id="prof_hn"></div>
+                <div><label>AN:</label><input type="text" id="prof_an"></div>
+                <div><label>Ward:</label><input type="text" id="prof_ward"></div>
+                <div><label>Admit Date/Time:</label><input type="text" id="prof_admit"></div>
+                <div><label>D/C Date/Time (วันจำหน่าย):</label><input type="datetime-local" id="prof_dc"></div>
+                <div class="form-full"><label>Principal Diagnosis (DX):</label><input type="text" id="prof_dx"></div>
+            </div>
+            <div style="margin-top:20px; text-align:right;">
+                <button class="btn btn-primary" onclick="saveProfile()" style="width:auto; padding:10px 25px;">บันทึก (Save)</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container no-print">
+        <div class="left-panel">
+            <div class="card" style="border-left: 5px solid var(--primary);">
+                <div class="card-header"><h3><i class="fas fa-search"></i> 1. ค้นหา Focus / เลือกกลุ่มโรค</h3></div>
+                <div class="search-wrapper">
+                    <input type="text" id="focusSearch" placeholder="พิมพ์อาการ เช่น ไข้, ปวด หรือเลือกกลุ่มโรคด้านล่าง..." autocomplete="off">
+                    <div id="suggestions" class="suggestions-list"></div>
+                </div>
+                
+                <div id="categoryContainer" class="category-filter">
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-pen-fancy"></i> 2. บันทึกอาการ (F-DAR)</h3>
+                    <div id="editModeIndicator" style="display:none;"><span style="background:var(--accent); color:white; padding:2px 8px; border-radius:4px; font-size:0.8rem;">Editing Mode</span></div>
+                </div>
+                <form id="noteForm">
+                    <input type="hidden" id="noteId">
+                    <div style="display:grid; grid-template-columns: 1fr 1.5fr; gap:10px;">
+                        <div><label style="font-weight:bold; font-size:0.9rem;">วัน-เวลา</label><input type="datetime-local" id="noteDate" required></div>
+                        <div>
+                            <label style="font-weight:bold; font-size:0.9rem;">Focus</label>
+                            <input type="text" id="focusInput" placeholder="หรือระบุชื่อปัญหาที่นี่..." style="background:#fff; color:var(--text-dark); border:1px solid #ccc;">
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom:15px; background:#e8eaf6; padding:10px; border-radius:8px; border:1px dashed #9fa8da;">
+                        <label style="font-weight:bold; font-size:0.9rem; color:#3f51b5;"><i class="fas fa-user-tag"></i> ประเมินประเภทผู้ป่วย (Current Shift Type):</label>
+                        <select id="noteType" style="margin-bottom:0; border:1px solid #7986cb;">
+                            <option value="1">Type 1 (ช่วยเหลือตัวเองได้)</option>
+                            <option value="2">Type 2 (ช่วยเหลือได้บ้าง)</option>
+                            <option value="3">Type 3 (พึ่งพาปานกลาง)</option>
+                            <option value="4">Type 4 (วิกฤต/พึ่งพามาก)</option>
+                            <option value="5">Type 5 (ระยะท้าย/Palliative)</option>
+                        </select>
+                    </div>
+
+                    <div class="so-grid">
+                        <div class="so-box">
+                            <label style="color:#2e7d32;">S (Subjective - ผู้ป่วยบอก):</label>
+                            <textarea id="inputS" rows="4" placeholder="เช่น บ่นปวดแผล, บอกว่าเหนื่อย..."></textarea>
+                        </div>
+                        <div class="so-box">
+                            <label style="color:#1565c0;">O (Objective - สังเกตเห็น):</label>
+                            <textarea id="inputO" rows="4" placeholder="เช่น สีหน้าเจ็บปวด, แผลบวมแดง, V/S..."></textarea>
+                        </div>
+                    </div>
+
+                    <textarea id="actionInput" placeholder="Action (กิจกรรมการพยาบาล)"></textarea>
+                    <textarea id="responseInput" placeholder="Response (ประเมินผล)"></textarea>
+                    
+                    <div style="display: flex; gap: 10px;">
+                        <button type="button" class="btn btn-primary" onclick="saveNote()" id="saveBtn"><i class="fas fa-save"></i> บันทึกข้อมูล</button>
+                        <button type="button" class="btn" onclick="clearForm()" id="cancelBtn" style="display:none; background:#90a4ae; color:white;">ยกเลิก</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="right-panel">
+            <div class="card" style="background:transparent; box-shadow:none; border:none; padding:0;">
+                <h3 style="margin-top:0; font-size:1.1rem; border-bottom:1px solid #ddd; padding-bottom:10px; margin-bottom:15px;"><i class="fas fa-history"></i> ประวัติการบันทึก</h3>
+                <div class="right-panel-scroll"><div class="timeline-container" id="timelineList"></div></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="printable-area">
+        <div class="print-header-info" style="text-align:center;">
+            <h2>ใบบันทึกทางการพยาบาล (Focus Charting)</h2>
+            <p><b>ชื่อ-สกุล:</b> <span class="p-name"></span> | <b>HN:</b> <span class="p-hn"></span> | <b>AN:</b> <span class="p-an"></span></p>
+            <p style="font-size:12pt;"><b>Ward:</b> <span class="p-ward"></span> | <b>Type ล่าสุด:</b> <span class="p-type"></span> | <b>Admit:</b> <span class="p-admit"></span> | <b>D/C:</b> <span class="p-dc"></span></p>
+            <p style="font-size:12pt;"><b>DX:</b> <span class="p-dx"></span></p>
+        </div>
+        <table class="print-table">
+            <thead><tr><th width="18%">วัน/เวลา</th><th width="25%">Focus (Type)</th><th>Progress Note (D-A-R)</th><th width="15%">ผู้บันทึก</th></tr></thead>
+            <tbody id="printTableBody"></tbody>
+        </table>
+    </div>
+
+<script>
+    // 1. Security & Config
+    if (!sessionStorage.getItem('isLoggedIn')) { window.location.href = 'login.html'; }
+    const currentUser = sessionStorage.getItem('currentUser') || "Unknown User";
+    document.getElementById('userDisplay').innerHTML = `<i class="fas fa-user-nurse"></i> ${currentUser}`;
+
+    function goToAdmin() {
+        // Clinical authorization belongs to the backend; no browser-side PIN.
+        window.location.href = 'admin.html';
+    }
+
+    // 2. Profile Management
+    const profileString = localStorage.getItem('patientProfile');
+    if (!profileString) { alert("กรุณาเลือกผู้ป่วยจากหน้า Ward"); window.location.href = 'ward.html'; }
+    let patientProfile = JSON.parse(profileString);
+
+    function renderProfile() {
+        document.getElementById('display_name').innerText = patientProfile.name; document.getElementById('display_hn').innerText = patientProfile.hn;
+        document.getElementById('display_an').innerText = patientProfile.an; document.getElementById('display_ward').innerText = patientProfile.ward;
+        document.getElementById('display_admit').innerText = patientProfile.admit; document.getElementById('display_dx').innerText = patientProfile.dx;
+        let dcText = "-"; if(patientProfile.dc) { const d = new Date(patientProfile.dc); if(!isNaN(d)) dcText = d.toLocaleString('th-TH', { dateStyle: 'medium', timeStyle: 'short' }); }
+        document.getElementById('display_dc').innerText = dcText;
+        const typeEl = document.getElementById('display_type_badge'); typeEl.className = `type-badge type-${patientProfile.type || '1'}`; typeEl.innerText = `Type ${patientProfile.type || '1'}`;
+        const noteTypeSelect = document.getElementById('noteType'); if(noteTypeSelect && !document.getElementById('noteId').value) noteTypeSelect.value = patientProfile.type || "1";
+        
+        // Update Print Area
+        document.querySelector('.p-name').innerText = patientProfile.name; document.querySelector('.p-hn').innerText = patientProfile.hn;
+        document.querySelector('.p-an').innerText = patientProfile.an; document.querySelector('.p-ward').innerText = patientProfile.ward;
+        document.querySelector('.p-type').innerText = `Type ${patientProfile.type || '1'}`; document.querySelector('.p-admit').innerText = patientProfile.admit; 
+        document.querySelector('.p-dx').innerText = patientProfile.dx; document.querySelector('.p-dc').innerText = dcText;
+    }
+
+    function openProfileModal() { document.getElementById('prof_name').value = patientProfile.name; document.getElementById('prof_hn').value = patientProfile.hn; document.getElementById('prof_an').value = patientProfile.an; document.getElementById('prof_ward').value = patientProfile.ward; document.getElementById('prof_admit').value = patientProfile.admit; document.getElementById('prof_dx').value = patientProfile.dx; document.getElementById('prof_dc').value = patientProfile.dc; document.getElementById('profileModal').style.display = 'flex'; }
+    function closeProfileModal() { document.getElementById('profileModal').style.display = 'none'; }
+    function saveProfile() { patientProfile.name = document.getElementById('prof_name').value; patientProfile.hn = document.getElementById('prof_hn').value; patientProfile.an = document.getElementById('prof_an').value; patientProfile.ward = document.getElementById('prof_ward').value; patientProfile.admit = document.getElementById('prof_admit').value; patientProfile.dx = document.getElementById('prof_dx').value; patientProfile.dc = document.getElementById('prof_dc').value; localStorage.setItem('patientProfile', JSON.stringify(patientProfile)); renderProfile(); closeProfileModal(); }
+
+    // 3. Search & Category System
+    let masterDiagnosis = JSON.parse(localStorage.getItem('masterDiagnosis'));
+
+    if (!masterDiagnosis || masterDiagnosis.length < 5) { 
+        if(typeof initialMasterData !== 'undefined') {
+            masterDiagnosis = initialMasterData; 
+            localStorage.setItem('masterDiagnosis', JSON.stringify(masterDiagnosis));
+            console.log("Loaded data from data.js");
+        } else {
+            console.error("ไม่พบไฟล์ data.js");
+            masterDiagnosis = [];
+        }
+    }
+
+    const searchInput = document.getElementById('focusSearch'); 
+    const suggestionsBox = document.getElementById('suggestions');
+    let currentCategory = 'ALL';
+
+    function renderCategoryButtons() {
+        const container = document.getElementById('categoryContainer');
+        const categories = [...new Set(masterDiagnosis.map(item => item.category || "Uncategorized"))].sort();
+        let html = `<button class="cat-btn active" onclick="setCategory('ALL', this)">ทั้งหมด</button>`;
+        categories.forEach(cat => { html += `<button class="cat-btn" onclick="setCategory('${cat}', this)">${cat}</button>`; });
+        html += `<button class="cat-btn" style="background:#ffebee; color:red; border:1px solid red;" onclick="resetData()">↻ รีเซ็ตข้อมูล</button>`;
+        container.innerHTML = html;
+    }
+
+    window.setCategory = function(category, btnElement) {
+        currentCategory = category;
+        document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+        if(btnElement) btnElement.classList.add('active');
+        performSearch();
+    };
+
+    function performSearch() {
+        const val = searchInput.value.toLowerCase().trim();
+        let filtered = masterDiagnosis;
+        if (currentCategory !== 'ALL') { filtered = masterDiagnosis.filter(item => (item.category || "Uncategorized") === currentCategory); }
+        if (val.length > 0) {
+            filtered = filtered.filter(item => (item.nanda || "").toLowerCase().includes(val) || (Array.isArray(item.keywords) && item.keywords.some(k => (k || "").toLowerCase().includes(val))));
+        }
+        if (val.length > 0 || currentCategory !== 'ALL') { showSuggestions(filtered); } else { suggestionsBox.style.display = 'none'; }
+    }
+
+    function showSuggestions(data) {
+        suggestionsBox.innerHTML = '';
+        if (data.length > 0) {
+            suggestionsBox.style.display = 'block';
+            data.forEach(item => {
+                const div = document.createElement('div'); 
+                div.className = 'suggestion-item'; 
+                div.innerHTML = `<strong>${item.nanda}</strong> <span style="font-size:0.7rem; color:#999; float:right;">${item.category||''}</span>`;
+                div.onclick = () => selectFocus(item);
+                suggestionsBox.appendChild(div);
+            });
+        } else {
+            suggestionsBox.style.display = 'block'; 
+            suggestionsBox.innerHTML = '<div class="no-result">ไม่พบข้อมูลในเงื่อนไขนี้</div>';
+        }
+    }
+
+    // ★★★ ฟังก์ชันเลือก Focus (ปรับปรุงใหม่ให้แยก S/O) ★★★
+    function selectFocus(item) {
+        document.getElementById('focusInput').value = item.nanda;
+        
+        // แยก Template D ลงช่อง S และ O
+        let tempD = item.template?.d || "";
+        let tempS = "";
+        let tempO = "";
+
+        // พยายามแยกด้วยคำว่า "O:" หรือ "S:"
+        if (tempD.includes("O:")) {
+            let parts = tempD.split("O:");
+            tempS = parts[0].replace("S:", "").trim();
+            tempO = parts[1].trim();
+        } else if (tempD.includes("S:")) {
+            tempS = tempD.replace("S:", "").trim();
+        } else {
+            tempO = tempD; // ถ้าไม่มีป้ายบอก ให้ลง O ทั้งหมด
+        }
+
+        document.getElementById('inputS').value = tempS;
+        document.getElementById('inputO').value = tempO;
+        
+        document.getElementById('actionInput').value = item.template?.a || ""; 
+        document.getElementById('responseInput').value = item.template?.r || "";
+        suggestionsBox.style.display = 'none'; 
+        searchInput.value = ''; 
+        currentCategory = 'ALL';
+        document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+        document.querySelector('.cat-btn').classList.add('active');
+    }
+    
+    searchInput.addEventListener('input', performSearch);
+    document.addEventListener('click', (e) => { 
+        if (!e.target.closest('.search-wrapper') && !e.target.closest('#categoryContainer')) { suggestionsBox.style.display = 'none'; }
+    });
+
+    window.resetData = function() {
+        if(confirm("ต้องการโหลดข้อมูลโรคใหม่ทั้งหมดจากไฟล์ data.js ใช่หรือไม่? (ข้อมูลคนไข้จะไม่หาย)")) {
+            if(typeof initialMasterData !== 'undefined') {
+                localStorage.setItem('masterDiagnosis', JSON.stringify(initialMasterData));
+                alert("รีเซ็ตข้อมูลเรียบร้อย!"); location.reload();
+            } else { alert("ไม่พบข้อมูลใน data.js กรุณาตรวจสอบไฟล์"); }
+        }
+    }
+
+    // 4. Note Logic
+    function formatToList(text) { if (!text) return "-"; let formatted = text.replace(/(\s+)(\d+\.)/g, '\n$2'); const lines = formatted.split('\n').filter(line => line.trim() !== ''); if (lines.length === 0) return "-"; const isOrdered = /^\s*\d+\./.test(lines[0]); let html = isOrdered ? '<ol style="margin:0; padding-left:20px;">' : '<ul style="margin:0; padding-left:20px;">'; lines.forEach(line => { html += `<li style="margin-bottom:2px;">${line.trim().replace(/^(\d+\.|[-•*])\s*/, '')}</li>`; }); return `<div class="dar-content">${html + (isOrdered ? '</ol>' : '</ul>')}</div>`; }
+    
+    const currentHN = localStorage.getItem('currentHN') || 'default'; 
+    const storageKey = `notes_${currentHN}`; 
+    let patientNotes = JSON.parse(localStorage.getItem(storageKey)) || [];
+
+    function renderUI() {
+        const timeline = document.getElementById('timelineList'); const printBody = document.getElementById('printTableBody'); timeline.innerHTML = ''; printBody.innerHTML = '';
+        if(patientNotes.length === 0) { timeline.innerHTML = '<div style="text-align:center; padding:30px; color:#999;">ยังไม่มีบันทึกสำหรับผู้ป่วยคนนี้</div>'; return; }
+        patientNotes.forEach(n => {
+            const d_html = formatToList(n.d); const a_html = formatToList(n.a); const r_html = formatToList(n.r); 
+            const typeBadge = n.patientType ? `<span class="type-badge type-${n.patientType}" style="font-size:0.7rem; margin-left:5px;">Type ${n.patientType}</span>` : '';
+            timeline.innerHTML += `<div class="timeline-item"><div class="note-card"><div style="display:flex; justify-content:space-between; margin-bottom:5px;"><div><span class="focus-badge">${n.focus}</span> ${typeBadge} <small style="color:#666;">${n.displayTime}</small></div><div><button class="btn" style="padding:2px 6px; font-size:10px; background:#e0f2f1; color:#00695c;" onclick="editNote(${n.id})"><i class="fas fa-pen"></i></button> <button class="btn" style="padding:2px 6px; font-size:10px; background:#ffebee; color:#c62828;" onclick="deleteNote(${n.id})"><i class="fas fa-trash"></i></button></div></div><div class="dar-grid"><div class="dar-label">D:</div><div>${d_html}</div><div class="dar-label">A:</div><div>${a_html}</div><div class="dar-label">R:</div><div>${r_html}</div></div></div></div>`;
+            printBody.innerHTML += `<tr><td>${n.displayTime}</td><td><strong>${n.focus}</strong> <br><small>(${n.patientType ? 'Type '+n.patientType : '-'})</small></td><td><div style="margin-bottom:5px;"><b>D:</b> ${d_html}</div><div style="margin-bottom:5px;"><b>A:</b> ${a_html}</div><div><b>R:</b> ${r_html}</div></td><td>${n.nurse}</td></tr>`;
+        });
+    }
+
+    // ★★★ ฟังก์ชันบันทึก (ปรับปรุงใหม่ให้รวม S/O) ★★★
+    function saveNote() {
+        const id = document.getElementById('noteId').value; 
+        const selectedType = document.getElementById('noteType').value;
+        
+        // รวม S และ O เข้าด้วยกัน
+        const valS = document.getElementById('inputS').value.trim();
+        const valO = document.getElementById('inputO').value.trim();
+        let combinedData = "";
+        
+        if (valS) combinedData += "S: " + valS + "\n";
+        if (valO) combinedData += "O: " + valO;
+        if (!valS && !valO) combinedData = "-";
+
+        const noteData = { 
+            id: id ? parseInt(id) : Date.now(), 
+            datetime: document.getElementById('noteDate').value, 
+            displayTime: new Date(document.getElementById('noteDate').value).toLocaleString('th-TH'), 
+            focus: document.getElementById('focusInput').value, 
+            d: combinedData, // ใช้ค่าที่รวมแล้ว
+            a: document.getElementById('actionInput').value, 
+            r: document.getElementById('responseInput').value, 
+            patientType: selectedType, 
+            nurse: currentUser 
+        };
+        
+        if(!noteData.focus || !noteData.datetime) return alert("ระบุข้อมูลให้ครบ");
+        
+        if(id) { 
+            patientNotes[patientNotes.findIndex(n => n.id == id)] = noteData; 
+            clearForm(); 
+        } else { 
+            patientNotes.unshift(noteData); 
+            patientNotes.sort((a,b)=>new Date(b.datetime)-new Date(a.datetime)); 
+        }
+        
+        localStorage.setItem(storageKey, JSON.stringify(patientNotes)); 
+        patientProfile.type = selectedType; 
+        localStorage.setItem('patientProfile', JSON.stringify(patientProfile)); 
+        renderProfile(); 
+        renderUI(); 
+        if(!id) setDefaultDateTime();
+        
+        // ล้างช่อง S O
+        document.getElementById('inputS').value = '';
+        document.getElementById('inputO').value = '';
+    }
+
+    // ★★★ ฟังก์ชันแก้ไข (ปรับปรุงใหม่ให้แยก S/O กลับมา) ★★★
+    function editNote(id) { 
+        const n = patientNotes.find(n => n.id === id); 
+        if(!n) return; 
+        
+        document.getElementById('noteId').value = n.id; 
+        document.getElementById('noteDate').value = n.datetime; 
+        document.getElementById('focusInput').value = n.focus; 
+        
+        // แยกข้อมูล D กลับมาใส่ช่อง S และ O
+        let textD = n.d || "";
+        let textS = "";
+        let textO = "";
+        if (textD.includes("O:")) {
+            let parts = textD.split("O:");
+            textS = parts[0].replace("S:", "").trim();
+            textO = parts[1].trim();
+        } else if (textD.includes("S:")) {
+            textS = textD.replace("S:", "").trim();
+        } else {
+            textO = textD;
+        }
+
+        document.getElementById('inputS').value = textS;
+        document.getElementById('inputO').value = textO;
+
+        document.getElementById('actionInput').value = n.a; 
+        document.getElementById('responseInput').value = n.r; 
+        if(n.patientType) document.getElementById('noteType').value = n.patientType; 
+        
+        document.getElementById('saveBtn').innerHTML = 'บันทึกแก้ไข'; 
+        document.getElementById('editModeIndicator').style.display='block'; 
+        document.getElementById('cancelBtn').style.display='inline-flex'; 
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function deleteNote(id) { if(confirm('ลบ?')) { patientNotes = patientNotes.filter(n => n.id !== id); localStorage.setItem(storageKey, JSON.stringify(patientNotes)); renderUI(); } }
+    
+    function clearForm() { 
+        document.getElementById('noteForm').reset(); 
+        document.getElementById('noteId').value=''; 
+        // ล้าง S O
+        document.getElementById('inputS').value = '';
+        document.getElementById('inputO').value = '';
+        
+        document.getElementById('noteType').value = patientProfile.type || "1"; 
+        setDefaultDateTime(); 
+        document.getElementById('saveBtn').innerHTML='บันทึกข้อมูล'; 
+        document.getElementById('cancelBtn').style.display='none'; 
+        document.getElementById('editModeIndicator').style.display='none'; 
+    }
+    
+    function setDefaultDateTime() { const now = new Date(); now.setMinutes(now.getMinutes() - now.getTimezoneOffset()); document.getElementById('noteDate').value = now.toISOString().slice(0,16); }
+
+    // Init
+    renderProfile(); 
+    renderCategoryButtons(); 
+    setDefaultDateTime(); 
+    renderUI();
+</script>
+<script src="assets/js/mock/demo-notice.js"></script>
+</body>
+</html>

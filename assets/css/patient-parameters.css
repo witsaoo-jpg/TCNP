@@ -1,0 +1,837 @@
+:root{
+  --pp-teal:#0c877d;
+  --pp-teal-dark:#08675f;
+  --pp-teal-soft:#e5f5f2;
+  --pp-ink:#24333a;
+  --pp-muted:#6c7c84;
+  --pp-line:#dce6e8;
+  --pp-bg:#f3f7f7;
+  --pp-warn:#a46408;
+  --pp-warn-bg:#fff5dc;
+  --pp-danger:#ba2f2f;
+}
+
+*{box-sizing:border-box}
+
+body.pp-page{
+  margin:0;
+  min-height:100vh;
+  background:var(--pp-bg);
+  color:var(--pp-ink);
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans Thai",sans-serif;
+}
+
+.pp-topbar{
+  min-height:68px;
+  padding:11px 26px;
+  background:linear-gradient(100deg,#0d8c81,#086a63);
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+  box-shadow:0 2px 9px rgba(16,64,66,.16);
+}
+
+.pp-topbar__brand{
+  display:flex;
+  align-items:center;
+  gap:11px;
+}
+
+.pp-topbar__brand strong{display:block;font-size:1.02rem}
+.pp-topbar__brand small{display:block;opacity:.82;margin-top:2px}
+
+.pp-logo{
+  width:42px;
+  height:42px;
+  display:grid;
+  place-items:center;
+  border-radius:12px;
+  background:rgba(255,255,255,.17);
+  font-weight:900;
+}
+
+.pp-topbar__actions{display:flex;gap:8px}
+
+.pp-patientbar{
+  background:#fff;
+  border-bottom:1px solid var(--pp-line);
+  padding:12px 26px;
+}
+
+.pp-patientbar>div{
+  width:min(1500px,100%);
+  margin:0 auto;
+  display:flex;
+  align-items:center;
+  gap:18px;
+  flex-wrap:wrap;
+  color:#526872;
+}
+
+.pp-patientbar strong{
+  color:#0a6f68;
+  font-size:1.12rem;
+}
+
+.pp-tabs{
+  width:min(1500px,calc(100% - 34px));
+  margin:18px auto 0;
+  display:flex;
+  gap:8px;
+}
+
+.pp-tab{
+  text-decoration:none;
+  color:#52676f;
+  border:1px solid #d6e2e4;
+  background:#fff;
+  border-radius:12px 12px 0 0;
+  padding:10px 19px;
+  font-weight:850;
+}
+
+.pp-tab--active{
+  background:#0d887e;
+  color:#fff;
+  border-color:#0d887e;
+}
+
+.pp-wrap{
+  width:min(1500px,calc(100% - 34px));
+  margin:0 auto 50px;
+}
+
+.pp-hero{
+  background:#fff;
+  border:1px solid var(--pp-line);
+  border-radius:0 20px 20px 20px;
+  padding:22px 24px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:22px;
+  box-shadow:0 8px 28px rgba(34,67,71,.05);
+}
+
+.pp-kicker,.pp-section-label{
+  color:#0b8b80;
+  font-size:.7rem;
+  letter-spacing:.14em;
+  font-weight:950;
+}
+
+.pp-hero h1,.pp-card h2{
+  margin:5px 0 5px;
+}
+
+.pp-hero p,.pp-card__head p{
+  color:var(--pp-muted);
+  margin:0;
+}
+
+.pp-prototype-note{
+  max-width:390px;
+  background:#fff5dc;
+  border:1px solid #eed9a5;
+  padding:11px 13px;
+  border-radius:13px;
+  color:#70541e;
+  font-size:.78rem;
+}
+.pp-prototype-note strong{display:block;margin-bottom:3px}
+
+.pp-card{
+  background:#fff;
+  border:1px solid var(--pp-line);
+  border-radius:19px;
+  margin-top:20px;
+  box-shadow:0 8px 26px rgba(34,67,71,.05);
+  overflow:hidden;
+}
+
+.pp-card--form{padding-bottom:18px}
+
+.pp-card__head{
+  padding:20px 22px 16px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:20px;
+  border-bottom:1px solid #edf2f3;
+}
+.pp-card__head--table{align-items:flex-end}
+
+.pp-slot{
+  border-radius:999px;
+  padding:8px 12px;
+  font-weight:900;
+  font-size:.76rem;
+  white-space:nowrap;
+}
+.pp-slot--plot{background:#dff6ef;color:#0c756b}
+.pp-slot--outside{background:#eef3f4;color:#687c84}
+
+#parameterForm{padding:0 22px}
+
+.pp-time-row{
+  padding:18px 0;
+  display:grid;
+  grid-template-columns:minmax(0,1.35fr) minmax(300px,.65fr);
+  gap:18px;
+}
+
+.pp-rule-box{
+  border:1px dashed #bcd8d4;
+  background:#f5fbfa;
+  border-radius:14px;
+  padding:12px;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:5px 10px;
+  color:#5a7776;
+  font-size:.7rem;
+}
+.pp-rule-box strong{grid-column:1/-1;color:#0d756c}
+
+.pp-form-section{
+  border-top:1px solid #edf2f3;
+  padding:18px 0 2px;
+}
+
+.pp-form-section__title{
+  display:flex;
+  align-items:baseline;
+  gap:12px;
+  margin-bottom:12px;
+}
+.pp-form-section__title span{
+  color:#0a756d;
+  font-weight:950;
+  letter-spacing:.05em;
+}
+.pp-form-section__title small{color:#7b8c92}
+
+.pp-fields{
+  display:grid;
+  gap:12px;
+}
+.pp-fields--6{grid-template-columns:repeat(6,minmax(0,1fr))}
+.pp-fields--4{grid-template-columns:repeat(4,minmax(0,1fr))}
+
+.pp-field{display:block}
+.pp-field--double{grid-column:span 2}
+.pp-field--wide{min-width:0}
+
+.pp-field>span{
+  display:block;
+  font-size:.76rem;
+  font-weight:850;
+  color:#445a63;
+  margin-bottom:5px;
+}
+
+.pp-field small{
+  display:block;
+  color:#87979c;
+  margin-top:4px;
+  font-size:.68rem;
+}
+
+.pp-field input,
+.pp-field textarea{
+  width:100%;
+  border:1px solid #ccdadd;
+  border-radius:11px;
+  padding:10px 11px;
+  min-height:43px;
+  font:inherit;
+  color:var(--pp-ink);
+  background:#fff;
+}
+
+.pp-field input:focus,
+.pp-field textarea:focus{
+  border-color:#62b9b0;
+  box-shadow:0 0 0 3px rgba(48,163,153,.12);
+  outline:none;
+}
+
+.pp-field input[readonly]{background:#f3f6f7}
+
+.pp-gcs{
+  margin-top:13px;
+  padding:12px;
+  border:1px solid #dce8ea;
+  border-radius:13px;
+  background:#fafcfc;
+  display:grid;
+  grid-template-columns:120px repeat(4,minmax(90px,1fr)) minmax(220px,2fr);
+  gap:10px;
+  align-items:end;
+}
+.pp-gcs__label{align-self:center}
+.pp-gcs__label strong{display:block;color:#0d756c}
+.pp-gcs__label small{color:#7c8b90}
+
+.pp-form-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:9px;
+  padding-top:20px;
+}
+
+.pp-btn{
+  border:1px solid #d1dfe1;
+  border-radius:11px;
+  min-height:42px;
+  padding:0 15px;
+  font:inherit;
+  font-weight:850;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  text-decoration:none;
+}
+
+.pp-btn--ghost{background:#fff;color:#31474f}
+.pp-topbar .pp-btn--ghost{
+  background:rgba(255,255,255,.13);
+  color:#fff;
+  border-color:rgba(255,255,255,.25);
+}
+.pp-btn--primary{background:#0c897e;color:#fff;border-color:#0c897e}
+
+.pp-table-actions{display:flex;gap:8px;flex-wrap:wrap}
+
+.pp-table-wrap{overflow:auto}
+.pp-table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:1200px;
+}
+.pp-table th{
+  text-align:left;
+  background:#f1f5f6;
+  color:#5b6f77;
+  font-size:.72rem;
+  padding:9px 10px;
+  border-bottom:1px solid #dbe5e7;
+}
+.pp-table td{
+  padding:10px;
+  border-bottom:1px solid #edf2f3;
+  vertical-align:top;
+  font-size:.78rem;
+}
+
+.pp-graph-chip,
+.pp-status-chip{
+  display:inline-block;
+  border-radius:999px;
+  padding:4px 7px;
+  font-size:.64rem;
+  font-weight:900;
+  white-space:nowrap;
+}
+.pp-graph-chip--plot{background:#ddf5ef;color:#0b756a}
+.pp-graph-chip--outside{background:#edf2f3;color:#6b7b82}
+.pp-graph-chip--backup{background:#fff3d9;color:#8a6112}
+.pp-status-chip--active{background:#e4f6ef;color:#0b756a}
+.pp-status-chip--cancelled{background:#fde7e7;color:#a22d2d}
+
+.pp-cancel-btn{
+  border:1px solid #efc3c3;
+  background:#fff5f5;
+  color:#b12f2f;
+  border-radius:8px;
+  padding:5px 8px;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.pp-empty{
+  padding:28px;
+  text-align:center;
+  color:#7d8e94;
+}
+
+@media(max-width:1150px){
+  .pp-fields--6{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .pp-fields--4{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .pp-gcs{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .pp-gcs__label{grid-column:1/-1}
+}
+
+@media(max-width:760px){
+  .pp-topbar,.pp-card__head,.pp-hero{align-items:flex-start;flex-direction:column}
+  .pp-topbar__actions{width:100%}
+  .pp-time-row{grid-template-columns:1fr}
+  .pp-fields--6,.pp-fields--4,.pp-gcs{grid-template-columns:1fr}
+  .pp-field--double{grid-column:span 1}
+  .pp-rule-box{grid-template-columns:repeat(2,1fr)}
+}
+
+
+/* =====================================================
+   CP7.0.1 — GCS Total Auto Calculate
+===================================================== */
+.pp-field--gcs-total input{
+  font-weight:950;
+  color:#0b756c;
+  background:#eef9f6;
+  text-align:center;
+}
+
+.pp-field--gcs-total>span small{
+  display:inline-block;
+  margin-left:4px;
+  color:#0b756c;
+  background:#e0f5ef;
+  border-radius:999px;
+  padding:1px 6px;
+  font-size:.58rem;
+}
+
+.pp-gcs-total-hint{
+  display:block;
+  margin-top:4px;
+  color:#7c8e94;
+  font-size:.62rem;
+  line-height:1.25;
+}
+
+.pp-gcs-total-hint--ready{
+  color:#0b756c;
+  font-weight:850;
+}
+
+
+/* =====================================================
+   CP7.0.2 — Current clinical time + backdate UX
+===================================================== */
+.pp-field-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:5px;
+}
+
+.pp-field-head>span{
+  display:block;
+  font-size:.76rem;
+  font-weight:850;
+  color:#445a63;
+}
+
+.pp-now-btn{
+  appearance:none;
+  border:1px solid #b9dcd7;
+  background:#edf9f6;
+  color:#0b756c;
+  border-radius:999px;
+  padding:5px 10px;
+  font:inherit;
+  font-size:.68rem;
+  font-weight:900;
+  cursor:pointer;
+  white-space:nowrap;
+}
+
+.pp-now-btn:hover,
+.pp-now-btn:focus-visible{
+  background:#dff5ef;
+  border-color:#7cc4ba;
+  outline:none;
+}
+
+.pp-observed-field input{
+  font-weight:800;
+}
+
+
+/* =====================================================
+   CP7.2 — I/O Auto Calculation
+===================================================== */
+.pp-io-calc{
+  margin-top:14px;
+  border:1px solid #efd2d2;
+  background:#fffafa;
+  border-radius:14px;
+  padding:12px;
+}
+
+.pp-io-calc__title{
+  display:flex;
+  align-items:baseline;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:10px;
+}
+
+.pp-io-calc__title strong{
+  color:#314c55;
+  font-size:.8rem;
+}
+
+.pp-io-calc__title small{
+  color:#7e8e94;
+  font-size:.68rem;
+}
+
+.pp-io-calc__cards{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px;
+}
+
+.pp-io-calc__card{
+  min-height:78px;
+  border:1px solid #f0dddd;
+  border-radius:12px;
+  background:#fff;
+  padding:10px 12px;
+}
+
+.pp-io-calc__card span{
+  display:block;
+  color:#687b83;
+  font-size:.7rem;
+  font-weight:750;
+}
+
+.pp-io-calc__card strong{
+  display:inline-block;
+  margin-top:4px;
+  color:#c92e2e;
+  font-size:1.45rem;
+  line-height:1;
+  font-weight:900;
+}
+
+.pp-io-calc__card small{
+  margin-left:4px;
+  color:#8a999e;
+  font-size:.62rem;
+}
+
+.pp-io-calc__card--balance{
+  background:#fff7f7;
+}
+
+.pp-table-io{
+  white-space:nowrap;
+}
+
+.pp-table-io span{
+  display:block;
+  line-height:1.35;
+}
+
+.pp-table-io b{
+  color:#c92e2e;
+  font-weight:900;
+}
+
+@media(max-width:760px){
+  .pp-io-calc__cards{grid-template-columns:1fr}
+}
+
+
+/* =====================================================
+   CP7.3 — Flexible I/O & Drain Engine
+===================================================== */
+.pp-flex-io{
+  margin-top:14px;
+  border:1px solid #cfe2e3;
+  border-radius:14px;
+  background:#f8fcfc;
+  padding:12px;
+}
+
+.pp-flex-io--output{
+  background:#fbfcfc;
+}
+
+.pp-flex-io__head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:14px;
+  margin-bottom:10px;
+}
+
+.pp-flex-io__head strong{
+  display:block;
+  color:#176e69;
+  font-size:.82rem;
+}
+
+.pp-flex-io__head small{
+  display:block;
+  margin-top:2px;
+  color:#73898d;
+  font-size:.66rem;
+}
+
+.pp-io-add-btn{
+  border:1px solid #9fcfca;
+  background:#edf9f7;
+  color:#0b756c;
+  border-radius:10px;
+  padding:8px 12px;
+  font:inherit;
+  font-size:.72rem;
+  font-weight:850;
+  cursor:pointer;
+  white-space:nowrap;
+}
+
+.pp-flex-io__items:empty::before{
+  content:"ยังไม่มีรายการเพิ่มเติม";
+  display:block;
+  padding:9px 10px;
+  border:1px dashed #cadadc;
+  border-radius:10px;
+  color:#8a9a9e;
+  font-size:.68rem;
+  text-align:center;
+}
+
+.pp-io-item{
+  display:grid;
+  grid-template-columns:1.35fr 1.2fr 1fr .72fr .86fr 1.35fr auto;
+  gap:8px;
+  align-items:end;
+  padding:10px;
+  border:1px solid #d7e4e5;
+  border-radius:12px;
+  background:#fff;
+  margin-top:8px;
+}
+
+.pp-io-item label span{
+  display:block;
+  margin-bottom:4px;
+  color:#5b7179;
+  font-size:.62rem;
+  font-weight:750;
+}
+
+.pp-io-item input,
+.pp-io-item select{
+  width:100%;
+  min-height:38px;
+  border:1px solid #cbdadd;
+  border-radius:9px;
+  padding:6px 8px;
+  background:#fff;
+  color:#263a42;
+  font:inherit;
+  font-size:.72rem;
+}
+
+.pp-io-item__custom[hidden]{display:none !important;}
+
+.pp-io-remove-btn{
+  min-height:38px;
+  border:1px solid #f1c7c7;
+  border-radius:9px;
+  background:#fff5f5;
+  color:#c83232;
+  padding:6px 10px;
+  font:inherit;
+  font-size:.68rem;
+  font-weight:850;
+  cursor:pointer;
+}
+
+.pp-table-io__detail{
+  display:block;
+  margin-top:3px;
+  max-width:240px;
+  white-space:normal;
+  color:#647b83;
+  font-size:.6rem;
+  line-height:1.25;
+}
+
+@media(max-width:1100px){
+  .pp-io-item{grid-template-columns:repeat(3,minmax(0,1fr));}
+  .pp-io-remove-btn{align-self:end;}
+}
+
+@media(max-width:680px){
+  .pp-flex-io__head{align-items:flex-start;flex-direction:column;}
+  .pp-io-item{grid-template-columns:1fr;}
+}
+
+
+/* =====================================================
+   CP7.3.1 — Canonical Slot Transparency
+===================================================== */
+
+.pp-slot--eligible{
+  background:#e7f7f2;
+  color:#0b756a;
+  border-color:#bfe6dc;
+}
+
+.pp-slot strong{
+  display:block;
+  font-weight:900;
+}
+
+.pp-slot small{
+  display:block;
+  margin-top:2px;
+  font-size:.64rem;
+  font-weight:650;
+  line-height:1.3;
+  opacity:.9;
+}
+
+.pp-graph-chip{
+  white-space:normal;
+  max-width:260px;
+  line-height:1.2;
+  border-radius:10px;
+  padding:6px 8px;
+}
+
+.pp-graph-chip strong{
+  display:block;
+  font-size:.66rem;
+  font-weight:900;
+}
+
+.pp-graph-chip__detail{
+  display:block;
+  margin-top:3px;
+  font-size:.60rem;
+  font-weight:650;
+  line-height:1.3;
+  opacity:.88;
+}
+
+.pp-graph-chip--backup{
+  background:#fff3d9;
+  color:#8a6112;
+  border:1px solid #f2d89c;
+}
+
+.pp-graph-chip--plot{
+  border:1px solid #bfe6dc;
+}
+
+.pp-graph-chip--outside{
+  border:1px solid #dce6e8;
+}
+
+
+/* =====================================================
+   CP7.4 — Clean table lifecycle + Cancelled Archive
+===================================================== */
+.pp-lifecycle-note{
+  margin-top:7px;
+  max-width:850px;
+  color:#71858c;
+  font-size:.67rem;
+  line-height:1.4;
+}
+.pp-lifecycle-note strong{color:#49636c;font-weight:850;}
+.pp-cancelled-archive-btn{position:relative;}
+.pp-cancelled-archive-btn--active{
+  border-color:#e1aaaa;
+  color:#a42828;
+  background:#fff5f5;
+}
+.pp-archive-note{
+  margin:0 16px 14px;
+  padding:10px 12px;
+  border:1px solid #efc5c5;
+  border-radius:12px;
+  background:#fff7f7;
+  color:#7d3434;
+  font-size:.72rem;
+}
+.pp-archive-note strong{display:block;font-weight:900;margin-bottom:2px;}
+.pp-row--cancelled{background:#fbfbfb;opacity:.82;}
+.pp-row--cancelled td{color:#75858a;}
+.pp-cancel-audit{
+  margin-top:6px;
+  padding:5px 6px;
+  border-radius:7px;
+  background:#fff1f1;
+  color:#9c3333;
+  font-size:.61rem;
+  line-height:1.3;
+}
+.pp-cancel-audit strong,.pp-cancel-audit span{display:block;}
+
+
+/* =====================================================
+   CP7.11 — Nursing Admin Parameter Master
+===================================================== */
+
+.pp-additional-parameters{
+  border:1px solid #c9e5e1 !important;
+  background:linear-gradient(180deg,#fbfefe,#f5fbfa);
+}
+
+.pp-additional-banner{
+  margin:0 0 12px;
+  padding:9px 11px;
+  border:1px solid #d6e7e5;
+  border-radius:10px;
+  background:#fff;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+  font-size:.72rem;
+}
+.pp-additional-banner strong{color:#08796f}
+.pp-additional-banner span{color:#72868a}
+.pp-additional-banner a{margin-left:auto;color:#08796f;font-weight:800;text-decoration:none}
+
+.pp-dynamic-parameter{
+  padding:9px 10px;
+  border:1px solid #dde9e8;
+  border-radius:10px;
+  background:#fff;
+}
+.pp-dynamic-parameter small{
+  color:#7b8e91;
+  font-size:.61rem;
+}
+
+.pp-additional-cell{
+  min-width:115px;
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+  align-items:flex-start;
+}
+.pp-additional-chip{
+  max-width:170px;
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  padding:2px 6px;
+  border:1px solid #cfe3e0;
+  border-radius:999px;
+  background:#f1faf8;
+  color:#31575b;
+  font-size:.62rem;
+  white-space:nowrap;
+}
+.pp-additional-chip b{color:#08786f}
+
+
+/* CP7.12 — RETIRED non-Graphic Core parameters are hidden for new entries.
+   Historical table data remains visible. */
+[data-master-parameter][hidden]{display:none !important}
