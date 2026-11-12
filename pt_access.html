@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Admission Assessment Form (Part II)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        :root {
+            --primary: #219ebc; /* สีฟ้าสดใส */
+            --secondary: #023047; /* สีน้ำเงินเข้ม */
+            --accent: #fb8500; /* สีส้มสำหรับปุ่มสำคัญ */
+            --bg: #f1faee;
+            --border: #a8dadc;
+        }
+
+        body { font-family: 'Sarabun', sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #333; font-size: 14px; }
+        
+        .container { 
+            max-width: 210mm; 
+            margin: 0 auto; 
+            background: #fff; 
+            padding: 30px; 
+            border-radius: 8px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08); 
+            border-top: 10px solid var(--primary);
+        }
+
+        /* --- Header Styling --- */
+        .main-header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px dashed #ccc;
+        }
+        .main-header h1 { margin: 0; font-size: 20px; color: var(--secondary); text-transform: uppercase; }
+        .main-header p { margin: 5px 0 0; font-size: 14px; color: #666; font-style: italic; }
+
+        /* --- Layout --- */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 10px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 10px; }
+        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 10px; }
+        
+        .row { display: flex; gap: 10px; margin-bottom: 8px; align-items: center; flex-wrap: wrap; }
+        .flex-grow { flex-grow: 1; }
+
+        /* --- Form Inputs --- */
+        label { font-weight: 600; color: var(--secondary); margin-right: 5px; }
+        input[type="text"], input[type="number"], input[type="date"], input[type="datetime-local"], select, textarea {
+            padding: 5px 8px; border: 1px solid #ccc; border-radius: 4px; font-family: 'Sarabun';
+        }
+        input[type="text"]:focus { border-color: var(--primary); outline: none; }
+        /* ช่อง BMI ให้อ่านอย่างเดียว */
+        #bmi_val { background-color: #e9ecef; cursor: not-allowed; font-weight: bold; color: var(--primary); }
+        
+        textarea { width: 100%; box-sizing: border-box; resize: vertical; }
+
+        /* --- Custom Checklist Items --- */
+        .check-group { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+        .check-item { 
+            display: flex; align-items: center; gap: 4px; 
+            background: #f8f9fa; padding: 4px 8px; border-radius: 15px; border: 1px solid #e9ecef; cursor: pointer;
+        }
+        .check-item:hover { background: #e0fbfc; border-color: var(--primary); }
+        .check-item input { margin: 0; cursor: pointer; }
+        .check-item span { font-weight: 400; font-size: 13px; }
+
+        /* --- Section Headers --- */
+        .sect-title { 
+            background: var(--secondary); color: #fff; 
+            padding: 6px 12px; border-radius: 4px; margin: 20px 0 10px 0; font-size: 15px; 
+            display: flex; align-items: center; gap: 8px;
+        }
+        fieldset { border: 1px solid var(--border); border-radius: 6px; padding: 10px 15px; margin-bottom: 15px; background: #fff; }
+        legend { font-weight: bold; color: var(--primary); padding: 0 8px; }
+
+        /* --- Tabs --- */
+        .tabs { display: flex; margin-bottom: 20px; border-bottom: 2px solid #ddd; }
+        .tab-btn { 
+            padding: 10px 25px; background: none; border: none; font-size: 16px; 
+            cursor: pointer; color: #777; font-weight: bold; font-family: 'Sarabun';
+            border-bottom: 4px solid transparent; transition: 0.3s;
+        }
+        .tab-btn:hover { color: var(--primary); background: #f0f9ff; }
+        .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+        
+        .tab-content { display: none; animation: fadeIn 0.4s; }
+        .tab-content.active { display: block; }
+
+        /* --- Buttons --- */
+        .action-bar { 
+            position: sticky; bottom: 0; background: #fff; padding: 15px; 
+            border-top: 1px solid #ddd; text-align: right; box-shadow: 0 -5px 15px rgba(0,0,0,0.05); z-index: 99; 
+        }
+        .btn { padding: 8px 20px; border: none; border-radius: 20px; cursor: pointer; color: #fff; font-size: 14px; margin-left: 8px; font-weight: 600; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .btn:active { transform: scale(0.98); }
+        .btn-save { background: #2a9d8f; }
+        .btn-del { background: #e63946; }
+        .btn-pdf { background: #023e8a; }
+        .btn-search { background: var(--accent); padding: 5px 15px; color: white; border-radius: 4px; }
+        .back-btn { background: #6c757d; }
+
+        /* Print Settings */
+        @media print {
+            .action-bar, .tabs, .btn-search, .no-print { display: none !important; }
+            .tab-content { display: block !important; margin-bottom: 30px; page-break-after: always; }
+            .container { box-shadow: none; border: none; padding: 0; max-width: 100%; width: 100%; }
+            body { background: white; padding: 0; }
+            .check-item { border: none; background: none; padding: 0; } 
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+<div class="container" id="form-container">
+    
+    <div class="main-header">
+        <h1>PATIENT ADMISSION ASSESSMENT FORM (PART II)</h1>
+        <p>(To be completed by RN within 8 hr.)</p>
+    </div>
+
+    <div style="background: #e9ecef; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+        <div class="grid-4">
+            <div><label>ชื่อ:</label> <input type="text" id="pt_name" style="width: 100%;"></div>
+            <div><label>สกุล:</label> <input type="text" id="pt_surname" style="width: 100%;"></div>
+            <div><label>HN:</label> <input type="text" id="pt_hn" style="width: 100%;"></div>
+            <div style="display:flex; align-items:end; gap:5px;">
+                <div style="flex-grow:1;">
+                    <label style="color:var(--accent);">AN (ค้นหา/บันทึก):</label>
+                    <input type="text" id="pt_an" placeholder="ระบุเลข AN" style="width: 100%;">
+                </div>
+                <button class="btn-search" onclick="searchData()">🔍</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="tabs" data-html2canvas-ignore="true">
+        <button class="tab-btn active" onclick="openTab('page1')">1. แรกรับ/Vitals</button>
+        <button class="tab-btn" onclick="openTab('page2')">2. ร่างกาย/Pain</button>
+        <button class="tab-btn" onclick="openTab('page3')">3. Braden/ADL/Hx</button>
+        <button class="tab-btn" onclick="openTab('page4')">4. Nutri/D-C</button>
+    </div>
+
+    <div id="page1" class="tab-content active">
+        <div class="sect-title">📝 ข้อมูลการรับใหม่ (Admission Data)</div>
+        
+        <div class="grid-2">
+            <div><label>ภาษาที่ใช้:</label> <input type="text" id="lang" placeholder="ไทย/อังกฤษ/..."></div>
+            <div><label>วัน-เวลาถึงตึก:</label> <input type="datetime-local" id="arrive_dt"></div>
+        </div>
+
+        <fieldset>
+            <legend>การแพ้ยา/อาหาร (Allergies)</legend>
+            <div class="row">
+                <div class="check-group">
+                    <label class="check-item"><input type="radio" name="drug_alg" value="No" checked> <span>ปฏิเสธแพ้ยา</span></label>
+                    <label class="check-item"><input type="radio" name="drug_alg" value="Yes"> <span>แพ้ยา (ระบุ)</span></label>
+                </div>
+                <input type="text" id="drug_name" class="flex-grow" placeholder="ชื่อยา/อาการแพ้">
+            </div>
+            <div class="row" style="margin-top:5px;">
+                <div class="check-group">
+                    <label class="check-item"><input type="radio" name="food_alg" value="No" checked> <span>ไม่แพ้อาหาร</span></label>
+                    <label class="check-item"><input type="radio" name="food_alg" value="Yes"> <span>แพ้อาหาร (ระบุ)</span></label>
+                </div>
+                <input type="text" id="food_name" class="flex-grow">
+            </div>
+        </fieldset>
+
+        <div class="grid-2">
+            <fieldset>
+                <legend>การมาถึง & สิทธิ์</legend>
+                <label>มาถึงโดย:</label>
+                <div class="check-group" style="margin-bottom:8px;">
+                    <label class="check-item"><input type="radio" name="arr_by" value="Walk"> <span>เดินมาเอง</span></label>
+                    <label class="check-item"><input type="radio" name="arr_by" value="Wheelchair"> <span>รถนั่ง</span></label>
+                    <label class="check-item"><input type="radio" name="arr_by" value="Stretcher"> <span>รถนอน</span></label>
+                    <label class="check-item"><input type="radio" name="arr_by" value="Carried"> <span>อุ้มมา</span></label>
+                </div>
+                <label>รับใหม่จาก:</label>
+                <div class="check-group" style="margin-bottom:8px;">
+                    <label class="check-item"><input type="radio" name="src" value="ER"> <span>ER</span></label>
+                    <label class="check-item"><input type="radio" name="src" value="OPD"> <span>OPD</span></label>
+                    <label class="check-item"><input type="radio" name="src" value="Refer"> <span>Refer</span></label>
+                </div>
+                <label>ข้อมูลได้จาก:</label>
+                <div class="check-group">
+                    <label class="check-item"><input type="checkbox" id="info_pt"> <span>ผู้ป่วย</span></label>
+                    <label class="check-item"><input type="checkbox" id="info_rel"> <span>ญาติ</span></label>
+                    <label class="check-item"><input type="checkbox" id="info_card"> <span>OPD Card</span></label>
+                </div>
+            </fieldset>
+            <fieldset>
+                <legend>อาการแรกรับ</legend>
+                <label>CC:</label> <input type="text" id="cc" style="width:100%; margin-bottom:5px;">
+                <label>PI:</label> <textarea id="pi" rows="2"></textarea>
+                <label>Dx:</label> <input type="text" id="dx" style="width:100%;">
+            </fieldset>
+        </div>
+
+        <div class="sect-title">🩺 สัญญาณชีพ & ระบบหลัก (Vitals & Systems)</div>
+        <div class="grid-4" style="background:#f8f9fa; padding:10px; border-radius:5px;">
+            <div><label>T (°C)</label><input type="number" id="vs_t" step="0.1" class="flex-grow"></div>
+            <div><label>PR (/min)</label><input type="number" id="vs_pr" class="flex-grow"></div>
+            <div><label>RR (/min)</label><input type="number" id="vs_rr" class="flex-grow"></div>
+            <div><label>BP (mmHg)</label><input type="text" id="vs_bp" class="flex-grow"></div>
+            <div><label>O2 Sat</label><input type="number" id="vs_o2" class="flex-grow"></div>
+            <div><label>BW (kg)</label><input type="number" id="vs_bw" class="flex-grow" oninput="calculateBMI()"></div>
+            <div><label>HT (cm)</label><input type="number" id="vs_ht" class="flex-grow" oninput="calculateBMI()"></div>
+            <div><label>Pain Score</label><input type="number" id="vs_pain"></div>
+        </div>
+
+        <fieldset>
+            <legend>ระบบประสาท (Neuro)</legend>
+            <div class="check-group">
+                <label>ระดับความรู้สึก:</label>
+                <label class="check-item"><input type="radio" name="neuro" value="Alert"> <span>รู้สึกตัวดี</span></label>
+                <label class="check-item"><input type="radio" name="neuro" value="Drowsy"> <span>ซึม/ง่วง</span></label>
+                <label class="check-item"><input type="radio" name="neuro" value="Confusion"> <span>สับสน</span></label>
+                <label class="check-item"><input type="radio" name="neuro" value="Coma"> <span>ไม่รู้สึกตัว</span></label>
+            </div>
+            <div class="row" style="margin-top:8px;">
+                <label>Glasgow Coma Score:</label> 
+                E <input type="number" id="gcs_e" style="width:40px"> 
+                M <input type="number" id="gcs_m" style="width:40px"> 
+                V <input type="number" id="gcs_v" style="width:40px">
+            </div>
+            <div class="row" style="margin-top:8px;">
+                <label>อื่นๆ/หมายเหตุ:</label>
+                <input type="text" id="neuro_other" class="flex-grow" placeholder="ระบุอาการทางระบบประสาทเพิ่มเติม...">
+            </div>
+        </fieldset>
+    </div>
+
+    <div id="page2" class="tab-content">
+        <div class="sect-title">🔎 การตรวจร่างกาย (Physical Exam)</div>
+        
+        <div class="grid-2">
+            <fieldset>
+                <legend>หน้าท้อง (Abdomen)</legend>
+                <div class="check-group">
+                    <label class="check-item"><input type="checkbox" id="abd_norm"> <span>ปกติ</span></label>
+                    <label class="check-item"><input type="checkbox" id="abd_dist"> <span>บวมตึง</span></label>
+                    <label class="check-item"><input type="checkbox" id="abd_mass"> <span>มีก้อน</span></label>
+                    <label class="check-item"><input type="checkbox" id="abd_pain"> <span>กดเจ็บ</span></label>
+                </div>
+                <input type="text" id="abd_other" placeholder="อื่นๆ ระบุ..." style="width:100%; margin-top:5px;">
+            </fieldset>
+            <fieldset>
+                <legend>ระบบปัสสาวะ (Urine)</legend>
+                <div class="check-group">
+                    <label class="check-item"><input type="checkbox" id="uri_norm"> <span>ปกติ</span></label>
+                    <label class="check-item"><input type="checkbox" id="uri_freq"> <span>บ่อย</span></label>
+                    <label class="check-item"><input type="checkbox" id="uri_burn"> <span>แสบขัด</span></label>
+                    <label class="check-item"><input type="checkbox" id="uri_blood"> <span>เลือดปน</span></label>
+                </div>
+                <div class="row" style="margin-top:5px;">
+                    <label class="check-item"><input type="checkbox" id="uri_foley"> <span>สายสวน (Foley)</span></label>
+                    <input type="text" id="foley_no" placeholder="No./Date" class="flex-grow">
+                </div>
+                <div class="row" style="margin-top:5px;">
+                    <label>อื่นๆ:</label>
+                    <input type="text" id="uri_other" class="flex-grow" placeholder="ระบุความผิดปกติอื่นๆ...">
+                </div>
+            </fieldset>
+        </div>
+
+        <fieldset>
+            <legend>ผิวหนัง (Skin)</legend>
+            <div class="check-group">
+                <label class="check-item"><input type="checkbox" id="skin_norm"> <span>ปกติ</span></label>
+                <label class="check-item"><input type="checkbox" id="skin_pale"> <span>ซีด</span></label>
+                <label class="check-item"><input type="checkbox" id="skin_dry"> <span>แห้ง</span></label>
+                <label class="check-item"><input type="checkbox" id="skin_jaundice"> <span>ตัวเหลือง</span></label>
+                <label class="check-item"><input type="checkbox" id="skin_rash"> <span>มีผื่น</span></label>
+                <label class="check-item"><input type="checkbox" id="skin_cyanosis"> <span>เขียวคล้ำ</span></label>
+            </div>
+            <div class="row" style="margin-top:8px;">
+                <label>อื่นๆ:</label>
+                <input type="text" id="skin_other" class="flex-grow" placeholder="ระบุลักษณะผิวหนังเพิ่มเติม...">
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend>การติดต่อสื่อสาร (Communication)</legend>
+            <div class="grid-3">
+                <div>
+                    <label>การพูด:</label>
+                    <div class="check-group">
+                        <label class="check-item"><input type="radio" name="comm_spk" value="Clear"> <span>ชัดเจน</span></label>
+                        <label class="check-item"><input type="radio" name="comm_spk" value="Mute"> <span>ใบ้</span></label>
+                    </div>
+                </div>
+                <div>
+                    <label>การได้ยิน:</label>
+                    <div class="check-group">
+                        <label class="check-item"><input type="radio" name="comm_hear" value="Normal"> <span>ปกติ</span></label>
+                        <label class="check-item"><input type="radio" name="comm_hear" value="Deaf"> <span>ตึง/หนวก</span></label>
+                    </div>
+                </div>
+                <div>
+                    <label>การมองเห็น:</label>
+                    <div class="check-group">
+                        <label class="check-item"><input type="radio" name="comm_see" value="Normal"> <span>ปกติ</span></label>
+                        <label class="check-item"><input type="radio" name="comm_see" value="Blur"> <span>มัว/บอด</span></label>
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="margin-top:8px;">
+                <label>อื่นๆ:</label>
+                <input type="text" id="comm_other" class="flex-grow" placeholder="ระบุเพิ่มเติม (เช่น ใช้อุปกรณ์ช่วยฟัง, แว่นตา)...">
+            </div>
+        </fieldset>
+
+        <div class="sect-title">⚡ ประเมินความปวด (Pain Assessment)</div>
+        <fieldset>
+            <div class="row">
+                <label>เครื่องมือ:</label>
+                <div class="check-group">
+                    <label class="check-item"><input type="radio" name="pain_tool" value="NRS"> <span>NRS (ผู้ใหญ่)</span></label>
+                    <label class="check-item"><input type="radio" name="pain_tool" value="FACES"> <span>FACES (เด็กโต)</span></label>
+                    <label class="check-item"><input type="radio" name="pain_tool" value="FLACC"> <span>FLACC (เด็กเล็ก)</span></label>
+                </div>
+            </div>
+            <div class="grid-2" style="margin-top:10px;">
+                <div>
+                    <label>คะแนน (0-10):</label> 
+                    <input type="number" id="pain_sc" style="width:60px; font-size:16px; font-weight:bold; text-align:center;">
+                </div>
+                <div>
+                    <label>ตำแหน่ง:</label>
+                    <input type="text" id="pain_loc" style="width:80%;">
+                </div>
+            </div>
+            <div class="row" style="margin-top:10px;">
+                <label>ลักษณะปวด:</label>
+                <div class="check-group">
+                    <label class="check-item"><input type="checkbox" id="pain_ache"> <span>ตื้อๆ</span></label>
+                    <label class="check-item"><input type="checkbox" id="pain_sharp"> <span>แปล๊บๆ</span></label>
+                    <label class="check-item"><input type="checkbox" id="pain_burn"> <span>แสบร้อน</span></label>
+                    <label class="check-item"><input type="checkbox" id="pain_sqz"> <span>บีบรัด</span></label>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+
+    <div id="page3" class="tab-content">
+        <div class="sect-title">🛡️ ความเสี่ยง & ประวัติ (Risk & History)</div>
+        
+        <div class="grid-2">
+            <fieldset>
+                <legend>Braden Scale (แผลกดทับ)</legend>
+                <div class="row"><label>คะแนนรวม:</label> <input type="number" id="braden_total" style="width:60px;"></div>
+                <div class="check-group" style="margin-top:5px;">
+                    <label class="check-item" style="background:#d4edda;"><input type="radio" name="braden_risk" value="Low"> <span>เสี่ยงต่ำ (16-23)</span></label>
+                    <label class="check-item" style="background:#fff3cd;"><input type="radio" name="braden_risk" value="Mod"> <span>ปานกลาง (13-15)</span></label>
+                    <label class="check-item" style="background:#f8d7da;"><input type="radio" name="braden_risk" value="High"> <span>สูง (≤12)</span></label>
+                </div>
+                <hr style="border-top:1px dashed #ddd; margin:10px 0;">
+                <label>มีแผลกดทับ:</label>
+                <div class="check-group">
+                    <label class="check-item"><input type="radio" name="pu" value="No"> <span>ไม่มี</span></label>
+                    <label class="check-item"><input type="radio" name="pu" value="Yes"> <span>มี (ระบุ)</span></label>
+                </div>
+                <input type="text" id="pu_note" placeholder="ระดับ/ตำแหน่ง" style="width:100%; margin-top:5px;">
+            </fieldset>
+
+            <fieldset>
+                <legend>Fall Risk (พลัดตกหกล้ม)</legend>
+                <label>ผู้ใหญ่ (Adult):</label>
+                <div class="check-group" style="margin-bottom:10px;">
+                    <label class="check-item"><input type="radio" name="fall_a" value="0"> <span>0 (ไม่เสี่ยง)</span></label>
+                    <label class="check-item"><input type="radio" name="fall_a" value="Low"> <span>1-4 (เสี่ยง)</span></label>
+                    <label class="check-item"><input type="radio" name="fall_a" value="High"> <span>≥5 (สูง)</span></label>
+                </div>
+                <label>เด็ก (Pediatric):</label>
+                <div class="check-group">
+                    <label class="check-item"><input type="radio" name="fall_p" value="Level1"> <span>0-6</span></label>
+                    <label class="check-item"><input type="radio" name="fall_p" value="Level2"> <span>7-11</span></label>
+                    <label class="check-item"><input type="radio" name="fall_p" value="Level3"> <span>12-23</span></label>
+                </div>
+            </fieldset>
+        </div>
+
+        <fieldset>
+            <legend>กิจวัตรประจำวัน (ADL)</legend>
+            <table style="width:100%; text-align:center;">
+                <tr style="background:#eee;">
+                    <th style="text-align:left;">กิจกรรม</th>
+                    <th>ทำได้เอง (0)</th>
+                    <th>ทำได้บ้าง (1)</th>
+                    <th>ไม่ได้เลย (2)</th>
+                </tr>
+                <tr>
+                    <td style="text-align:left;">1. รับประทานอาหาร</td>
+                    <td><input type="radio" name="adl_1" value="0"></td>
+                    <td><input type="radio" name="adl_1" value="1"></td>
+                    <td><input type="radio" name="adl_1" value="2"></td>
+                </tr>
+                <tr>
+                    <td style="text-align:left;">2. การขับถ่าย</td>
+                    <td><input type="radio" name="adl_2" value="0"></td>
+                    <td><input type="radio" name="adl_2" value="1"></td>
+                    <td><input type="radio" name="adl_2" value="2"></td>
+                </tr>
+                <tr>
+                    <td style="text-align:left;">3. การเคลื่อนย้าย/เดิน</td>
+                    <td><input type="radio" name="adl_3" value="0"></td>
+                    <td><input type="radio" name="adl_3" value="1"></td>
+                    <td><input type="radio" name="adl_3" value="2"></td>
+                </tr>
+            </table>
+        </fieldset>
+
+        <fieldset>
+            <legend>ประวัติสารเสพติด</legend>
+            <div class="row">
+                <label>สุรา:</label>
+                <div class="check-group">
+                    <label class="check-item"><input type="radio" name="alc" value="No"> <span>ไม่ดื่ม</span></label>
+                    <label class="check-item"><input type="radio" name="alc" value="Quit"> <span>เลิกแล้ว</span></label>
+                    <label class="check-item"><input type="radio" name="alc" value="Yes"> <span>ดื่ม</span></label>
+                </div>
+            </div>
+            <div class="row" style="margin-top:5px;">
+                <label>บุหรี่:</label>
+                <div class="check-group">
+                    <label class="check-item"><input type="radio" name="smk" value="No"> <span>ไม่สูบ</span></label>
+                    <label class="check-item"><input type="radio" name="smk" value="Quit"> <span>เลิกแล้ว</span></label>
+                    <label class="check-item"><input type="radio" name="smk" value="Yes"> <span>สูบ</span></label>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+
+    <div id="page4" class="tab-content">
+        <div class="sect-title">🍎 โภชนาการ & วางแผนกลับบ้าน</div>
+        
+        <fieldset>
+            <legend>Nutritional Risk (NRS 2002)</legend>
+            <div class="row"><label>BMI:</label> <input type="text" id="bmi_val" style="width:80px;" readonly placeholder="Auto"></div>
+            <div style="margin-top:10px;">
+                <label>คำถามคัดกรอง (ตอบ "ใช่" ข้อใดข้อหนึ่ง = เสี่ยง):</label>
+                <div style="display:flex; flex-direction:column; gap:8px; margin-top:5px;">
+                    <label class="check-item"><input type="checkbox" id="nrs_1"> <span>1. BMI < 18.5 หรือ > 23</span></label>
+                    <label class="check-item"><input type="checkbox" id="nrs_2"> <span>2. ทานอาหารลดลงใน 1 สัปดาห์</span></label>
+                    <label class="check-item"><input type="checkbox" id="nrs_3"> <span>3. น้ำหนักลดใน 3 เดือน</span></label>
+                    <label class="check-item"><input type="checkbox" id="nrs_4"> <span>4. ป่วยหนัก/วิกฤต</span></label>
+                </div>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend>แผนการจำหน่าย (Discharge Planning)</legend>
+            <div class="grid-2">
+                <div>
+                    <label>ความเข้าใจผู้ป่วย/ญาติ:</label>
+                    <div class="check-group" style="flex-direction:column; align-items:flex-start;">
+                        <label class="check-item"><input type="checkbox" id="dc_plan"> <span>แผนการรักษา</span></label>
+                        <label class="check-item"><input type="checkbox" id="dc_cost"> <span>ค่าใช้จ่าย/สิทธิ์</span></label>
+                        <label class="check-item"><input type="checkbox" id="dc_time"> <span>ระยะเวลาพักฟื้น</span></label>
+                    </div>
+                </div>
+                <div>
+                    <label>แผนการจำหน่าย:</label>
+                    <div class="check-group" style="flex-direction:column; align-items:flex-start;">
+                        <label class="check-item"><input type="radio" name="dc_type" value="Home"> <span>กลับบ้าน (ปกติ)</span></label>
+                        <label class="check-item"><input type="radio" name="dc_type" value="HomeHC"> <span>กลับบ้าน (ดูแลต่อใกล้บ้าน)</span></label>
+                        <label class="check-item"><input type="radio" name="dc_type" value="Refer"> <span>Refer ไป รพ.อื่น</span></label>
+                    </div>
+                </div>
+            </div>
+            <div style="margin-top:15px;">
+                <label>ผู้ดูแลหลัก:</label>
+                <input type="text" id="caregiver" placeholder="ชื่อ / ความสัมพันธ์ / เบอร์โทร" style="width:100%;">
+            </div>
+        </fieldset>
+
+        <div style="margin-top:30px; border-top:1px solid #ccc; padding-top:20px;">
+            <div class="grid-2">
+                <div>
+                    <label>พยาบาลผู้ประเมิน:</label>
+                    <input type="text" id="rn_sign" style="width:100%;">
+                </div>
+                <div>
+                    <label>วัน-เวลาบันทึก:</label>
+                    <input type="datetime-local" id="rec_time" style="width:100%;">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="action-bar" data-html2canvas-ignore="true">
+        <button class="btn back-btn" onclick="window.location.href='patient_list.html'">ย้อนกลับ</button>
+        <button class="btn btn-del" onclick="deleteData()">ลบข้อมูล</button>
+        <button class="btn btn-save" onclick="saveData()">บันทึกข้อมูล</button>
+        <button class="btn btn-pdf" onclick="generatePDF()">ออกรายงาน PDF</button>
+    </div>
+
+</div>
+
+<script>
+    // --- ON LOAD: Connect to Patient System ---
+    window.onload = function() {
+        // 1. ดึงข้อมูลผู้ป่วยจากหน้าก่อนหน้า (patient_list.html)
+        const patientProfile = JSON.parse(localStorage.getItem('patientProfile'));
+        if (patientProfile) {
+            // แยกชื่อ-นามสกุล (สมมติว่า name เก็บเป็น "ชื่อ นามสกุล")
+            const nameParts = patientProfile.name.split(' ');
+            document.getElementById('pt_name').value = nameParts[0] || '';
+            document.getElementById('pt_surname').value = nameParts.slice(1).join(' ') || '';
+            document.getElementById('pt_hn').value = patientProfile.hn || '';
+            document.getElementById('pt_an').value = patientProfile.an || '';
+            
+            // ลองค้นหาข้อมูลเก่าของ AN นี้ (ถ้ามี)
+            searchData(true); // true = silent mode (ไม่แจ้งเตือนถ้าไม่เจอ)
+        }
+
+        // 2. ตั้งค่าวันที่ปัจจุบันในช่องบันทึก
+        const now = new Date();
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        document.getElementById('rec_time').value = now.toISOString().slice(0,16);
+    }
+
+    // --- AUTO CALCULATE BMI ---
+    function calculateBMI() {
+        const weight = parseFloat(document.getElementById('vs_bw').value);
+        const height = parseFloat(document.getElementById('vs_ht').value);
+        const bmiField = document.getElementById('bmi_val');
+
+        if (weight > 0 && height > 0) {
+            // สูตร: น้ำหนัก (kg) / ส่วนสูง (m)^2
+            const heightInMeters = height / 100;
+            const bmi = weight / (heightInMeters * heightInMeters);
+            bmiField.value = bmi.toFixed(2); // ทศนิยม 2 ตำแหน่ง
+        } else {
+            bmiField.value = '';
+        }
+    }
+
+    // --- TABS LOGIC ---
+    function openTab(tabName) {
+        let tabs = document.getElementsByClassName("tab-content");
+        for(let t of tabs) t.classList.remove("active");
+        
+        let btns = document.getElementsByClassName("tab-btn");
+        for(let b of btns) b.classList.remove("active");
+        
+        document.getElementById(tabName).classList.add("active");
+        event.currentTarget.classList.add("active");
+    }
+
+    // --- DATA HANDLING ---
+    function getAllInputs() {
+        return document.querySelectorAll('input, select, textarea');
+    }
+
+    function saveData() {
+        const an = document.getElementById('pt_an').value.trim();
+        if(!an) return Swal.fire('แจ้งเตือน', 'กรุณาระบุเลข AN ก่อนบันทึก', 'warning');
+
+        let data = {};
+        getAllInputs().forEach(el => {
+            if(el.type === 'radio') {
+                if(el.checked) data[el.name] = el.value;
+            } else if(el.type === 'checkbox') {
+                data[el.id] = el.checked;
+            } else {
+                if(el.id) data[el.id] = el.value;
+            }
+        });
+
+        localStorage.setItem('RN_Form_' + an, JSON.stringify(data));
+        Swal.fire('บันทึกสำเร็จ', 'ข้อมูลถูกบันทึกเรียบร้อยแล้ว', 'success');
+    }
+
+    function searchData(silent = false) {
+        const an = document.getElementById('pt_an').value.trim();
+        if(!an && !silent) return Swal.fire('แจ้งเตือน', 'ระบุเลข AN ที่ต้องการค้นหา', 'warning');
+        if(!an && silent) return;
+
+        const raw = localStorage.getItem('RN_Form_' + an);
+        if(!raw) {
+            if(!silent) Swal.fire('ไม่พบข้อมูล', 'ไม่พบข้อมูลการประเมินของ AN นี้', 'info');
+            return;
+        }
+
+        const data = JSON.parse(raw);
+        getAllInputs().forEach(el => {
+            if(el.type === 'radio') {
+                if(data[el.name] == el.value) el.checked = true;
+            } else if(el.type === 'checkbox') {
+                if(data[el.id]) el.checked = true;
+            } else {
+                if(data[el.id] !== undefined) el.value = data[el.id];
+            }
+        });
+        
+        // คำนวณ BMI ใหม่อีกครั้งหลังจากโหลดข้อมูลเสร็จ
+        calculateBMI();
+
+        if(!silent) Swal.fire('ค้นหาสำเร็จ', 'โหลดข้อมูลเรียบร้อย', 'success');
+    }
+
+    function deleteData() {
+        const an = document.getElementById('pt_an').value.trim();
+        if(!an) return;
+        
+        Swal.fire({
+            title: 'ยืนยันการลบ?',
+            text: `ต้องการลบข้อมูล AN: ${an} หรือไม่?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            confirmButtonText: 'ลบข้อมูล'
+        }).then((result) => {
+            if(result.isConfirmed) {
+                localStorage.removeItem('RN_Form_' + an);
+                location.reload();
+            }
+        });
+    }
+
+    function generatePDF() {
+        const element = document.getElementById('form-container');
+        const an = document.getElementById('pt_an').value || 'Unknow';
+        
+        // Show all tabs for PDF
+        let tabs = document.getElementsByClassName("tab-content");
+        for(let t of tabs) t.style.display = "block";
+
+        const opt = {
+            margin: [5, 5, 5, 5],
+            filename: `Nurse_Assess_${an}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        html2pdf().set(opt).from(element).save().then(() => {
+            // Revert tabs
+            for(let t of tabs) t.style.display = "none";
+            document.getElementById('page1').style.display = "block";
+        });
+    }
+</script>
+
+</body>
+</html>

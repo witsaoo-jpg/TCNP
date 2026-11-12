@@ -1,0 +1,76 @@
+:root {
+    --primary: #00897b; --primary-dark: #00695c; --primary-light: #e0f2f1;
+    --accent: #fbc02d; --danger: #e53935; --text-dark: #263238; --text-gray: #546e7a;
+    --bg-body: #f0f2f5; --bg-card: #ffffff; --radius: 12px;
+    --shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+}
+
+body { font-family: 'Sarabun', sans-serif; background: var(--bg-body); color: var(--text-dark); margin: 0; padding-bottom: 50px; }
+* { box-sizing: border-box; }
+
+.navbar { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; padding: 0.8rem 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.15); }
+.patient-banner { background: white; padding: 12px 2rem; position: sticky; top: 0; z-index: 90; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-bottom: 1px solid #e0e0e0; display: flex; justify-content: space-between; align-items: flex-start; }
+.patient-info h2 { margin: 0; font-size: 1.2rem; color: var(--primary-dark); display: flex; align-items: center; gap: 10px; }
+.patient-meta { margin-top: 8px; color: var(--text-gray); font-size: 0.9rem; display: grid; grid-template-columns: auto auto auto auto; gap: 8px 25px; }
+.patient-meta div { display: flex; align-items: center; gap: 5px; }
+.patient-meta i { color: var(--primary); width: 16px; }
+
+.container { max-width: 1400px; margin: 20px auto; padding: 0 20px; display: grid; grid-template-columns: 1.4fr 1fr; gap: 25px; }
+
+.type-badge { padding: 2px 8px; border-radius: 4px; color: white; font-weight: bold; font-size: 0.85rem; display: inline-block;}
+.type-1 { background-color: #4caf50; } 
+.type-2 { background-color: #8bc34a; } 
+.type-3 { background-color: #ff9800; } 
+.type-4 { background-color: #f44336; } 
+.type-5 { background-color: #9c27b0; } 
+
+.card { background: var(--bg-card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 25px; margin-bottom: 20px; border: 1px solid rgba(0,0,0,0.02); }
+.card-header h3 { margin: 0; color: var(--primary-dark); font-size: 1.1rem; display: flex; align-items: center; gap: 8px;}
+
+input, textarea, select { width: 100%; padding: 10px 12px; border: 1px solid #cfd8dc; border-radius: 8px; font-family: 'Sarabun'; font-size: 0.95rem; margin-bottom: 15px; background: #fafafa; }
+input:focus, textarea:focus, select:focus { outline: none; border-color: var(--primary); background: white; }
+textarea { resize: vertical; min-height: 80px; }
+
+.btn { border: none; padding: 8px 15px; border-radius: 6px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-family: 'Sarabun'; transition: 0.2s; font-size: 0.9rem; }
+.btn-primary { background: var(--primary); color: white; width: 100%; justify-content: center; padding: 10px; }
+.btn-primary:hover { background: var(--primary-dark); }
+.btn-nav { background: #e0f7fa; color: #006064; border: 1px solid #b2ebf2; }
+.btn-edit-profile { background: #f3e5f5; color: #7b1fa2; padding: 4px 8px; font-size: 0.8rem; border-radius: 4px; cursor: pointer; border: 1px solid #e1bee7; margin-left: 10px; }
+
+.btn-reset { background: #c62828; color: white; font-size: 0.8rem; padding: 5px 10px; border-radius: 4px; margin-left: 10px; border: 1px solid #b71c1c; }
+.btn-reset:hover { background: #b71c1c; }
+
+.modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); align-items: center; justify-content: center; }
+.modal-content { background: white; padding: 25px; border-radius: 12px; width: 600px; max-width: 90%; position: relative; }
+.close-modal { position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer; color: #aaa; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; } .form-full { grid-column: span 2; }
+.modal label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.9rem; color: #555; } .modal input, .modal select { margin-bottom: 0; }
+
+.right-panel-scroll { max-height: 800px; overflow-y: auto; padding-right: 5px; }
+.timeline-container { position: relative; padding-left: 15px; } .timeline-container::before { content: ''; position: absolute; top: 0; bottom: 0; left: 5px; width: 2px; background: #e0e0e0; }
+.timeline-item { position: relative; margin-bottom: 15px; padding-left: 20px; } .timeline-item::after { content: ''; position: absolute; left: 0px; top: 15px; width: 12px; height: 12px; border-radius: 50%; background: white; border: 2px solid var(--primary); z-index: 2; }
+.note-card { background: white; border-radius: 8px; padding: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid #f0f0f0; font-size: 0.85rem; }
+.focus-badge { background: var(--primary-light); color: var(--primary-dark); padding: 2px 8px; border-radius: 12px; font-weight: 600; font-size: 0.8rem; }
+.dar-grid { display: grid; grid-template-columns: 20px 1fr; gap: 2px 8px; margin-top: 8px; line-height: 1.4; }
+.dar-label { font-weight: bold; color: var(--primary); text-align: right; font-size: 0.8rem; }
+.dar-content ul, .dar-content ol { margin: 0; padding-left: 15px; }
+
+.search-wrapper { position: relative; }
+.suggestions-list { position: absolute; top: 100%; left: 0; right: 0; background: white; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); z-index: 50; max-height: 250px; overflow-y: auto; display: none; border: 1px solid #eee; }
+.suggestion-item { padding: 10px 15px; cursor: pointer; border-bottom: 1px solid #f0f0f0; font-size: 0.9rem; }
+.suggestion-item:hover { background: var(--primary-light); }
+.no-result { padding: 10px 15px; color: #999; font-style: italic; font-size: 0.9rem; }
+
+#printable-area { display: none; }
+@media print {
+    body * { visibility: hidden; }
+    .no-print { display: none !important; }
+    #printable-area, #printable-area * { visibility: visible; }
+    #printable-area { display: block; position: absolute; top: 0; left: 0; width: 100%; }
+    @page { size: A4; margin: 1.5cm; }
+    .print-table { width: 100%; border-collapse: collapse; font-family: 'Sarabun'; font-size: 11pt; }
+    .print-table th, .print-table td { border: 1px solid black; padding: 10px; vertical-align: top; }
+    .print-header-info { margin-bottom: 20px; border-bottom: 2px solid black; padding-bottom: 10px; }
+    .print-header-info p { margin: 5px 0; font-size: 14pt; }
+}
+@media (max-width: 900px) { .container { grid-template-columns: 1fr; } .patient-banner { flex-direction: column; gap: 10px; align-items: flex-start; } .right-panel-scroll { max-height: none; overflow: visible; } }
