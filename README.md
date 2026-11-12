@@ -11,6 +11,12 @@ Frontend prototype for an Electronic Nursing Record (ENR) and Thai nursing pract
 - API base is configured as `/api` in `assets/js/core/config.js`.
 - This frontend is not intended for direct public use with real patient data or hospital systems.
 
+## Temporary presentation demo — 19 Nov 2026
+
+For lecture attendees, use the **standalone, fully synthetic** [presentation demo](demo/index.html). It has no authentication or API/backend, stores state **only in current tab memory**, and does not send information to a server. It is **not** the hospital-integrated ENR application. Do not enter any real patient data.
+
+Instructions for the presenter, GitHub Pages deployment, and post-event removal: [Presentation demo guide](docs/PRESENTATION_DEMO.md).
+
 ## Run a local preview
 
 ```bash
