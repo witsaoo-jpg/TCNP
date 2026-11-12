@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <base href="../">
+  <title>TCNP Clinical Analytics | ENR V3</title>
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="admin/assets/admin.css">
+  <link rel="stylesheet" href="admin/assets/analytics.css">
+</head>
+<body class="admin-page analytics-page">
+  <header class="admin-topbar">
+    <div class="admin-brand">
+      <div class="admin-brand__mark">ENR</div>
+      <div><strong>Nursing Analytics</strong><span>Electronic Nursing Record • Chonburi Hospital</span></div>
+    </div>
+    <div class="admin-topbar__actions">
+      <span class="admin-user">👤 <span id="adminUser">...</span></span>
+      <a class="admin-btn admin-btn--ghost" id="adminDashboardLink" href="admin/">← Admin Dashboard</a>
+      <button class="admin-btn admin-btn--ghost" id="backWardBtn">Ward</button>
+      <button class="admin-btn admin-btn--ghost" id="logoutBtn">ออกจากระบบ</button>
+    </div>
+  </header>
+
+  <main class="admin-container analytics-container">
+    <section class="admin-pagehead analytics-head analytics-head--clinical">
+      <div>
+        <div class="analytics-module-chip">↗ TCNP Clinical Analytics Module</div>
+        <h1>ระบบวิเคราะห์ข้อมูลการพยาบาล <span>(Nursing Analytics Dashboard)</span></h1>
+        <p>วิเคราะห์แนวโน้มข้อวินิจฉัย/Focus กิจกรรมการพยาบาล ผลลัพธ์ทางการพยาบาล และการใช้ TCNP จากข้อมูล PostgreSQL จริง</p>
+      </div>
+      <div class="analytics-live-chip"><span></span> PostgreSQL Live</div>
+    </section>
+
+    <div id="adminGuardMessage" class="admin-alert admin-alert--danger" hidden></div>
+    <div id="analyticsError" class="admin-alert admin-alert--danger" hidden></div>
+    <div id="taxonomyWarning" class="admin-alert admin-alert--warning" hidden></div>
+
+    <section class="analytics-filter-panel analytics-global-filter">
+      <div class="analytics-filter-head">
+        <div>
+          <strong>ตัวกรองข้อมูลส่วนกลาง</strong>
+          <span>ใช้กับทุกมุมมอง • ค่าเริ่มต้น SIGNED เพื่อเป็นตัวเลขทางการ • ใช้ org_unit_id เป็นกุญแจหน่วยงานจริง</span>
+        </div>
+        <div class="analytics-filter-head-actions">
+          <span class="analytics-badge analytics-badge--live" id="accessScopePill">กำลังตรวจสิทธิ์...</span>
+          <div class="analytics-quickrange" role="group" aria-label="ช่วงเวลาด่วน">
+          <button type="button" data-days="0">วันนี้</button>
+          <button type="button" data-days="7">7 วัน</button>
+          <button type="button" data-days="30" class="is-active">30 วัน</button>
+          <button type="button" data-days="90">90 วัน</button>
+          </div>
+        </div>
+      </div>
+      <div class="analytics-filter-grid">
+        <label class="admin-field"><span>ตั้งแต่วันที่</span><input type="date" id="fromDate"></label>
+        <label class="admin-field"><span>ถึงวันที่</span><input type="date" id="toDate"></label>
+        <label class="admin-field"><span>กลุ่มงาน</span><select id="groupFilter"><option value="">ทุกกลุ่มงาน</option></select></label>
+        <label class="admin-field"><span>หน่วยงาน</span><select id="unitFilter"><option value="">ทุกหน่วยงาน</option></select></label>
+        <label class="admin-field"><span>พยาบาล / User</span><select id="userFilter"><option value="">ทุกคน</option></select></label>
+        <label class="admin-field"><span>สถานะเอกสาร</span>
+          <select id="statusFilter">
+            <option value="SIGNED">SIGNED เท่านั้น</option>
+            <option value="VALID">DRAFT + SIGNED</option>
+            <option value="DRAFT">DRAFT เท่านั้น</option>
+          </select>
+        </label>
+        <label class="admin-field"><span>ชนิด TCNP (หน้า Overview)</span>
+          <select id="tcnpTypeFilter">
+            <option value="ALL">F + P</option>
+            <option value="F">F • Focus</option>
+            <option value="P">P • Procedure</option>
+          </select>
+        </label>
+        <div class="analytics-filter-action"><button class="admin-btn admin-btn--primary admin-btn--lg" id="applyFilters">แสดงผล</button></div>
+      </div>
+      <div class="analytics-scope-line" id="scopeLine">ขอบเขต: ทั้งโรงพยาบาล</div>
+    </section>
+
+    <section class="analytics-kpis" aria-label="ตัวชี้วัดสรุป">
+      <article class="analytics-kpi"><span>Nursing Notes</span><strong id="kpiNotes">–</strong><small>เอกสารตามตัวกรอง</small></article>
+      <article class="analytics-kpi"><span>TCNP usages</span><strong id="kpiTcnp">–</strong><small>จำนวนรายการ TCNP</small></article>
+      <article class="analytics-kpi"><span>Patients</span><strong id="kpiPatients">–</strong><small>ผู้ป่วยไม่ซ้ำ</small></article>
+      <article class="analytics-kpi"><span>Active nurses</span><strong id="kpiNurses">–</strong><small>ผู้สร้าง/ลงนามเอกสาร</small></article>
+      <article class="analytics-kpi analytics-kpi--accent"><span>TCNP adoption</span><strong id="kpiAdoption">–</strong><small>TCNP ÷ รายการทั้งหมด</small></article>
+    </section>
+
+    <section class="analytics-paperless" aria-labelledby="paperlessUtilizationTitle">
+      <div class="analytics-section-heading">
+        <div>
+          <div class="admin-kicker">PAPERLESS MODULE UTILIZATION</div>
+          <h2 id="paperlessUtilizationTitle">การใช้งานระบบ Paperless</h2>
+          <p>ดูจำนวนการใช้งานแต่ละโมดูลตามช่วงเวลา กลุ่มงาน หน่วยงาน และพยาบาล เพื่อใช้ติดตามการนำระบบไปใช้และวางแผนพัฒนา</p>
+        </div>
+        <span class="analytics-badge analytics-badge--live">ข้อมูลตามตัวกรองส่วนกลาง</span>
+      </div>
+
+      <div class="analytics-module-grid">
+        <article class="analytics-module-card analytics-module-card--pending" data-module="assessment" aria-label="แบบประเมินแรกรับ">
+          <div class="analytics-module-card__icon">▤</div>
+          <div class="analytics-module-card__status">รอเชื่อมฐานข้อมูล</div>
+          <h3>แบบประเมินแรกรับ</h3>
+          <p>Initial Assessment / ADL</p>
+          <div class="analytics-module-card__empty">ยังไม่มีข้อมูลการใช้งาน</div>
+          <div class="analytics-module-card__footer">Phase B</div>
+        </article>
+
+        <article class="analytics-module-card analytics-module-card--pending" data-module="pfe" aria-label="PFE">
+          <div class="analytics-module-card__icon">🎓</div>
+          <div class="analytics-module-card__status">รอเชื่อมฐานข้อมูล</div>
+          <h3>PFE</h3>
+          <p>Patient & Family Education</p>
+          <div class="analytics-module-card__empty">ยังไม่มีข้อมูลการใช้งาน</div>
+          <div class="analytics-module-card__footer">Phase C</div>
+        </article>
+
+        <article class="analytics-module-card analytics-module-card--active" data-module="nursing-note" id="nursingNoteModuleCard" tabindex="0" role="button" aria-label="เปิดภาพรวม Nursing Note Analytics">
+          <div class="analytics-module-card__icon">✎</div>
+          <div class="analytics-module-card__status analytics-module-card__status--live">PostgreSQL Live</div>
+          <h3>บันทึกทางการพยาบาล</h3>
+          <p>Nursing Note / Focus Charting (TCNP)</p>
+          <div class="analytics-module-metrics">
+            <div><strong id="moduleNoteRecords">–</strong><span>Notes</span></div>
+            <div><strong id="moduleNotePatients">–</strong><span>Patients</span></div>
+            <div><strong id="moduleNoteNurses">–</strong><span>Nurses</span></div>
+          </div>
+          <div class="analytics-module-card__highlight"><span>TCNP adoption</span><strong id="moduleNoteAdoption">–</strong></div>
+          <div class="analytics-module-card__footer">ดู Clinical Analytics →</div>
+        </article>
+
+        <article class="analytics-module-card analytics-module-card--pending" data-module="discharge" aria-label="Discharge Summary">
+          <div class="analytics-module-card__icon">↪</div>
+          <div class="analytics-module-card__status">รอเชื่อมฐานข้อมูล</div>
+          <h3>Discharge Summary</h3>
+          <p>สรุปการจำหน่าย</p>
+          <div class="analytics-module-card__empty">ยังไม่มีข้อมูลการใช้งาน</div>
+          <div class="analytics-module-card__footer">Phase D</div>
+        </article>
+      </div>
+
+      <div class="analytics-card analytics-module-usage-card">
+        <div class="analytics-card-head">
+          <div>
+            <div class="admin-kicker">MODULE USAGE COMPARISON</div>
+            <h2>จำนวนเอกสารจากโมดูลที่เชื่อมฐานข้อมูลแล้ว</h2>
+            <p>ไม่แสดงค่า 0 ให้โมดูลที่ยังไม่เชื่อม เพื่อไม่ให้ตีความว่า “ไม่มีการใช้งาน”</p>
+          </div>
+          <span class="analytics-badge" id="moduleConnectedBadge">1 / 4 modules live</span>
+        </div>
+        <div id="moduleUsageChart" class="analytics-module-usage-chart"></div>
+      </div>
+    </section>
+
+    <nav class="analytics-tabs" aria-label="Clinical analytics modules">
+      <button type="button" class="analytics-tab is-active" data-tab="overview">▦ <span>ภาพรวมองค์กร</span><small>Overview</small></button>
+      <button type="button" class="analytics-tab" data-tab="diagnoses">▥ <span>1. Diagnoses Overview</span><small>อุบัติการณ์ข้อวินิจฉัย / Focus</small></button>
+      <button type="button" class="analytics-tab" data-tab="interventions">◔ <span>2. Interventions Analysis</span><small>กิจกรรมการพยาบาล</small></button>
+      <button type="button" class="analytics-tab" data-tab="outcomes">♙ <span>3. Outcomes Tracking</span><small>ผลลัพธ์ทางการพยาบาล</small></button>
+    </nav>
+
+    <!-- OVERVIEW -->
+    <section class="analytics-tabpanel is-active" data-panel="overview">
+      <section class="analytics-card analytics-main-card">
+        <div class="analytics-card-head analytics-card-head--stackable">
+          <div>
+            <div class="admin-kicker">FLEXIBLE VISUALIZATION</div>
+            <h2 id="mainChartTitle">การใช้ TCNP ตามเวลา</h2>
+            <p id="mainChartSubtitle">เปลี่ยนข้อมูล แกน และชนิดกราฟได้ทันที</p>
+          </div>
+          <div class="analytics-chart-controls">
+            <label><span>ข้อมูลที่ดู</span><select id="metricSelect">
+              <option value="tcnp_usage">จำนวน TCNP</option>
+              <option value="notes">จำนวน Nursing Note</option>
+              <option value="patients">จำนวนผู้ป่วย</option>
+              <option value="manual_items">จำนวน Manual</option>
+            </select></label>
+            <label><span>จัดกลุ่มตาม</span><select id="dimensionSelect">
+              <option value="time">ช่วงเวลา</option>
+              <option value="group">กลุ่มงาน</option>
+              <option value="unit">หน่วยงาน</option>
+              <option value="user">พยาบาล</option>
+              <option value="tcnp">รหัส TCNP</option>
+            </select></label>
+            <label id="bucketWrap"><span>ความละเอียดเวลา</span><select id="bucketSelect">
+              <option value="day">รายวัน</option>
+              <option value="week">รายสัปดาห์</option>
+              <option value="month">รายเดือน</option>
+            </select></label>
+            <label><span>กราฟ</span><select id="chartTypeSelect"></select></label>
+            <label id="topWrap" hidden><span>Top</span><select id="topSelect">
+              <option value="10">10</option><option value="20">20</option><option value="30">30</option>
+            </select></label>
+          </div>
+        </div>
+        <div class="analytics-chart-shell">
+          <div id="mainChart" class="analytics-chart" aria-live="polite"></div>
+          <div id="chartEmpty" class="admin-empty" hidden>ยังไม่มีข้อมูลในช่วงเวลาที่เลือก</div>
+        </div>
+        <details class="analytics-data-details">
+          <summary>ดูข้อมูลตารางของกราฟ</summary>
+          <div class="analytics-table-wrap"><table class="analytics-data-table"><thead><tr><th>รายการ</th><th class="is-number">จำนวน</th></tr></thead><tbody id="chartTableBody"></tbody></table></div>
+        </details>
+      </section>
+
+      <section class="analytics-secondary-grid">
+        <article class="analytics-card">
+          <div class="analytics-card-head"><div><div class="admin-kicker">DOCUMENTATION MIX</div><h2>TCNP vs Manual</h2></div></div>
+          <div id="mixChart" class="analytics-mini-chart"></div>
+          <div class="analytics-legend-row"><span><i class="legend-dot legend-dot--1"></i>TCNP <strong id="mixTcnp">0</strong></span><span><i class="legend-dot legend-dot--2"></i>Manual <strong id="mixManual">0</strong></span></div>
+        </article>
+        <article class="analytics-card">
+          <div class="analytics-card-head"><div><div class="admin-kicker">TOP TERMINOLOGY</div><h2>TCNP ที่ใช้มากที่สุด</h2></div><span class="analytics-badge" id="topCodeScope">Top 10</span></div>
+          <div id="topCodesList" class="analytics-ranking"></div>
+        </article>
+        <article class="analytics-card">
+          <div class="analytics-card-head"><div><div class="admin-kicker">EVALUATION OUTCOME</div><h2>ผลการประเมิน</h2></div></div>
+          <div id="outcomeChart" class="analytics-mini-chart"></div>
+          <div id="outcomeLegend" class="analytics-outcome-legend"></div>
+        </article>
+      </section>
+
+      <section class="analytics-card">
+        <div class="analytics-card-head analytics-card-head--stackable">
+          <div><div class="admin-kicker">ORGANIZATION DRILL-DOWN</div><h2>กิจกรรมตามกลุ่มงาน</h2><p>เลือกกลุ่มงานด้านบนเพื่อเจาะต่อไปยังหน่วยงาน และเลือก User เพื่อดู Documentation Activity รายบุคคล</p></div>
+          <span class="analytics-badge">Group → Ward → Nurse</span>
+        </div>
+        <div id="groupActivity" class="analytics-group-grid"></div>
+      </section>
+
+      <section class="analytics-card">
+        <div class="analytics-card-head analytics-card-head--stackable">
+          <div>
+            <div class="admin-kicker">DOCUMENTATION ACTIVITY</div>
+            <h2>กิจกรรมการบันทึกรายพยาบาล</h2>
+            <p>ใช้ประกอบการดูภาระงานด้านการบันทึก ไม่ใช่ Nursing Workload Index ทางคลินิกโดยตรง</p>
+          </div>
+          <span class="analytics-badge">เรียงตามจำนวน Note</span>
+        </div>
+        <div class="analytics-table-wrap">
+          <table class="analytics-data-table analytics-user-table">
+            <thead><tr><th>พยาบาล</th><th class="is-number">Notes</th><th class="is-number">Patients</th><th class="is-number">TCNP</th><th class="is-number">Manual</th><th class="is-number">Items / Note</th></tr></thead>
+            <tbody id="userActivityBody"></tbody>
+          </table>
+        </div>
+        <div class="analytics-footnote">หมายเหตุ: จำนวนการบันทึกไม่เท่ากับความหนักของผู้ป่วย หากต้องการ Workload Index จริงควรรวม patient acuity, intervention complexity, admission/discharge และ shift workload เพิ่มเติม</div>
+      </section>
+    </section>
+
+    <!-- DIAGNOSES -->
+    <section class="analytics-tabpanel" data-panel="diagnoses" hidden>
+      <section class="analytics-card analytics-clinical-filter">
+        <div class="analytics-filter-inline-head"><strong>ตัวกรองตามหมวดหมู่ TCNP Hierarchy</strong><span>ใช้กับ F • Focus / Nursing diagnosis</span></div>
+        <div class="analytics-clinical-filter-grid">
+          <label class="admin-field"><span>Domain</span><select id="diagnosisDomain"><option value="">All domains</option></select></label>
+          <label class="admin-field"><span>Class</span><select id="diagnosisClass"><option value="">All classes</option></select></label>
+          <label class="admin-field"><span>Top</span><select id="diagnosisTop"><option>10</option><option>20</option><option>30</option></select></label>
+          <label class="admin-field"><span>กราฟ</span><select id="diagnosisChartType"><option value="bar">▰ แท่ง</option><option value="donut">◉ Donut</option></select></label>
+        </div>
+      </section>
+      <section class="analytics-card">
+        <div class="analytics-card-head"><div><h2>Top Nursing Diagnoses / Focus</h2><p>เรียงตามจำนวนครั้งที่มีการบันทึกรหัส F ในขอบเขตที่เลือก</p></div><span class="analytics-badge" id="diagnosisCountBadge">Top 10</span></div>
+        <div class="analytics-chart-shell analytics-chart-shell--large"><div id="diagnosisChart" class="analytics-chart analytics-chart--clinical"></div><div id="diagnosisEmpty" class="admin-empty" hidden>ยังไม่มีข้อมูล Focus ในช่วงเวลานี้</div></div>
+        <div class="analytics-table-wrap"><table class="analytics-data-table"><thead><tr><th>TCNP</th><th class="is-number">Usages</th><th class="is-number">Notes</th><th class="is-number">Patients</th></tr></thead><tbody id="diagnosisTableBody"></tbody></table></div>
+      </section>
+      <section class="analytics-two-col">
+        <article class="analytics-card"><div class="analytics-card-head"><div><div class="admin-kicker">DOMAIN DISTRIBUTION</div><h2>การใช้ Focus ตาม Domain</h2></div></div><div id="domainBreakdown" class="analytics-ranking analytics-ranking--wide"></div></article>
+        <article class="analytics-card"><div class="analytics-card-head"><div><div class="admin-kicker">CLASS DISTRIBUTION</div><h2>การใช้ Focus ตาม Class</h2></div></div><div id="classBreakdown" class="analytics-ranking analytics-ranking--wide"></div></article>
+      </section>
+    </section>
+
+    <!-- INTERVENTIONS -->
+    <section class="analytics-tabpanel" data-panel="interventions" hidden>
+      <section class="analytics-card analytics-clinical-filter">
+        <div class="analytics-filter-inline-head"><strong>เลือกกรองตามข้อวินิจฉัย / Focus</strong><span>ดูว่ารหัส P ใดถูกใช้ร่วมกับ Focus ที่เลือก</span></div>
+        <div class="analytics-clinical-filter-grid analytics-clinical-filter-grid--3">
+          <label class="admin-field"><span>Diagnosis / Focus</span><select id="interventionFocus"><option value="">All diagnoses</option></select></label>
+          <label class="admin-field"><span>Top</span><select id="interventionTop"><option>10</option><option>20</option><option>30</option></select></label>
+          <label class="admin-field"><span>กราฟ Procedures</span><select id="interventionChartType"><option value="bar">▥ แท่ง</option><option value="donut">◉ Donut</option></select></label>
+        </div>
+      </section>
+      <section class="analytics-two-col analytics-two-col--intervention">
+        <article class="analytics-card">
+          <div class="analytics-card-head"><div><h2>Intervention Type Breakdown</h2><p>สัดส่วนตาม Action Type ของ TCNP Procedure</p></div></div>
+          <div id="actionTypeChart" class="analytics-mini-chart analytics-mini-chart--large"></div>
+          <div id="actionTypeLegend" class="analytics-action-legend"></div>
+        </article>
+        <article class="analytics-card">
+          <div class="analytics-card-head"><div><h2>Top Frequent Procedures</h2><p>หัตถการและกิจกรรมการพยาบาล P ที่มีความถี่สูงสุด</p></div><span class="analytics-badge" id="procedureCountBadge">Top 10</span></div>
+          <div class="analytics-chart-shell"><div id="procedureChart" class="analytics-chart analytics-chart--clinical"></div><div id="procedureEmpty" class="admin-empty" hidden>ยังไม่มี Procedure ในช่วงเวลานี้</div></div>
+        </article>
+      </section>
+      <section class="analytics-card"><div class="analytics-table-wrap"><table class="analytics-data-table"><thead><tr><th>Procedure</th><th>Action type</th><th class="is-number">Usages</th><th class="is-number">Notes</th><th class="is-number">Patients</th></tr></thead><tbody id="procedureTableBody"></tbody></table></div></section>
+    </section>
+
+    <!-- OUTCOMES -->
+    <section class="analytics-tabpanel" data-panel="outcomes" hidden>
+      <section class="analytics-card analytics-clinical-filter">
+        <div class="analytics-filter-inline-head"><strong>เปรียบเทียบผลลัพธ์เมื่อมีการบันทึก Intervention</strong><span>เป็น association จากเอกสาร ไม่ใช่การพิสูจน์เหตุและผล</span></div>
+        <div class="analytics-clinical-filter-grid analytics-clinical-filter-grid--2">
+          <label class="admin-field"><span>Intervention</span><select id="outcomeIntervention"><option value="">ภาพรวมพื้นฐานทุก Intervention</option></select></label>
+          <label class="admin-field"><span>Top diagnoses</span><select id="outcomeTop"><option>10</option><option>20</option><option>30</option></select></label>
+        </div>
+      </section>
+      <section class="analytics-outcome-summary">
+        <article class="analytics-outcome-kpi analytics-outcome-kpi--improved"><span>ดีขึ้น</span><strong id="outcomeImproved">0</strong></article>
+        <article class="analytics-outcome-kpi analytics-outcome-kpi--stable"><span>คงตัว</span><strong id="outcomeStable">0</strong></article>
+        <article class="analytics-outcome-kpi analytics-outcome-kpi--worse"><span>แย่ลง</span><strong id="outcomeWorse">0</strong></article>
+        <article class="analytics-outcome-kpi"><span>Evaluations</span><strong id="outcomeTotal">0</strong></article>
+      </section>
+      <section class="analytics-card">
+        <div class="analytics-card-head analytics-card-head--stackable">
+          <div><h2>Nursing Outcome Rates by Diagnosis</h2><p>100% Stacked Bar • ดีขึ้น (Improved), คงตัว (Stable), แย่ลง (Worse)</p></div>
+          <div class="analytics-stacked-legend"><span><i class="stack-dot stack-dot--improved"></i>ดีขึ้น</span><span><i class="stack-dot stack-dot--stable"></i>คงตัว</span><span><i class="stack-dot stack-dot--worse"></i>แย่ลง</span></div>
+        </div>
+        <div class="analytics-chart-shell analytics-chart-shell--large"><div id="outcomeStackedChart" class="analytics-chart analytics-chart--stacked"></div><div id="outcomeStackedEmpty" class="admin-empty" hidden>ยังไม่มีข้อมูลผลลัพธ์ตามข้อวินิจฉัย</div></div>
+        <div class="analytics-footnote analytics-footnote--warning" id="outcomeInterpretation">ผลลัพธ์นี้ควรตีความเป็นความสัมพันธ์จากข้อมูลการบันทึกทางการพยาบาล ไม่ใช่ causal effectiveness ของ Intervention</div>
+      </section>
+    </section>
+  </main>
+
+  <script src="assets/js/core/config.js"></script>
+  <script src="assets/js/core/enr-core.js"></script>
+  <script src="assets/js/core/api.js"></script>
+  <script src="admin/assets/admin-core.js"></script>
+  <script src="admin/assets/analytics.js"></script>
+</body>
+</html>

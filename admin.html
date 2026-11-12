@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Admin Template Builder | ENR V3</title>
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/admin-template.css">
+</head>
+<body class="admin-template-page">
+  <nav class="enr-topbar">
+    <div class="enr-topbar__title">⚙ Nursing Template Admin</div>
+    <div class="enr-topbar__actions">
+      <a class="enr-btn enr-btn--soft" href="admin_parameter_master.html" data-cp711-parameter-master>📊 Parameter Master</a>
+      <span class="enr-topbar__user">👤 <span id="adminUser">...</span></span>
+      <button class="enr-btn enr-btn--soft" id="backWardBtn">← กลับหน้า Ward</button>
+      <button class="enr-btn enr-btn--soft" id="logoutBtn">ออกจากระบบ</button>
+    </div>
+  </nav>
+
+  <main class="admin-shell">
+    <aside class="template-sidebar">
+      <div class="sidebar-head">
+        <div>
+          <div class="admin-kicker">TEMPLATE MANAGEMENT</div>
+          <h2>รายการ Template</h2>
+        </div>
+        <button class="enr-btn enr-btn--primary" id="newTemplateBtn">＋ สร้างใหม่</button>
+      </div>
+
+      <div class="sidebar-tools">
+        <input class="enr-input" id="templateListSearch" placeholder="ค้นหา code / ชื่อ Template...">
+        <select class="enr-select" id="templateStatusFilter">
+          <option value="">ทุกสถานะ</option>
+          <option value="DRAFT">DRAFT</option>
+          <option value="ACTIVE">ACTIVE</option>
+          <option value="RETIRED">RETIRED</option>
+        </select>
+      </div>
+
+      <div class="template-list" id="templateList"></div>
+    </aside>
+
+    <section class="template-workspace">
+      <div class="workspace-head">
+        <div>
+          <div class="admin-kicker">TEMPLATE BUILDER</div>
+          <h1 id="workspaceTitle">สร้าง Nursing Template</h1>
+          <p>กำหนด F / A_S / A_O / G / I / E โดยใช้ TCNP และ Manual ได้ในหน้าเดียว</p>
+        </div>
+        <div class="workspace-actions">
+          <button class="enr-btn" id="duplicateTemplateBtn">⧉ Duplicate</button>
+          <button class="enr-btn" id="previewTemplateBtn">👁 Preview</button>
+          <button class="enr-btn enr-btn--primary" id="saveTemplateBtn">💾 บันทึก Draft</button>
+        </div>
+      </div>
+
+      <section class="enr-card meta-card">
+        <div class="meta-grid">
+          <div class="enr-field"><label>Template Code *</label><input class="enr-input" id="templateCode" placeholder="เช่น RESP-001"></div>
+          <div class="enr-field"><label>Template Name *</label><input class="enr-input" id="templateName" placeholder="ชื่อ Template ภาษาไทย"></div>
+          <div class="enr-field"><label>Description</label><input class="enr-input" id="templateDescription" placeholder="วัตถุประสงค์ / กลุ่มผู้ป่วย"></div>
+          <div class="enr-field"><label>Version</label><input class="enr-input" id="templateVersion" type="number" min="1" value="1"></div>
+          <div class="enr-field"><label>Scope</label><select class="enr-select" id="templateScope"><option value="HOSPITAL">HOSPITAL</option><option value="WARD">WARD</option></select></div>
+          <div class="enr-field"><label>Ward (เมื่อ Scope = WARD)</label><select class="enr-select" id="templateWard"><option value="">— เลือก Ward —</option></select></div>
+          <div class="enr-field"><label>Status</label><select class="enr-select" id="templateStatus"><option value="DRAFT">DRAFT</option><option value="ACTIVE">ACTIVE</option><option value="RETIRED">RETIRED</option></select></div>
+          <div class="enr-field"><label>Focus TCNP</label><div class="focus-picker"><input class="enr-input" id="templateFocusCode" placeholder="Fxxxx" readonly><button class="enr-btn" id="pickFocusBtn">🔎 เลือก F</button></div></div>
+          <div class="enr-field meta-span-2"><label>Focus Text</label><input class="enr-input" id="templateFocusText" placeholder="ข้อความ Focus ตั้งต้น"></div>
+        </div>
+        <div class="meta-foot">
+          <span class="enr-badge enr-badge--teal" id="templateSaveState">ยังไม่ได้บันทึก</span>
+          <span class="muted">Database mapping: nursing_templates</span>
+        </div>
+      </section>
+
+      <section class="builder-card enr-card">
+        <div class="builder-head">
+          <div><h2>F-A(S,O)-G-I-E Template Items</h2><p>แต่ละรายการจะ map ไปยัง nursing_template_items</p></div>
+          <div class="builder-legend"><span class="enr-badge enr-badge--teal">TCNP</span><span class="enr-badge enr-badge--gray">MANUAL</span></div>
+        </div>
+        <div id="builderSections"></div>
+      </section>
+
+      <section class="admin-footer-actions">
+        <button class="enr-btn enr-btn--danger" id="retireTemplateBtn">Retire Template</button>
+        <div>
+          <button class="enr-btn" id="saveDraftBottomBtn">บันทึก Draft</button>
+          <button class="enr-btn enr-btn--primary" id="activateTemplateBtn">✓ Save & Activate</button>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <div class="enr-modal-backdrop" id="tcnpAdminModal">
+    <div class="enr-modal tcnp-admin-modal">
+      <div class="enr-modal__header">
+        <div><div class="enr-modal__title">🔎 เลือก TCNP</div><div class="muted" id="tcnpAdminHint"></div></div>
+        <button class="enr-modal__close" data-close-tcnp-admin>×</button>
+      </div>
+      <input class="enr-input" id="tcnpAdminQuery" placeholder="ค้นด้วยรหัส คำไทย หรือคำอังกฤษ...">
+      <div class="tcnp-admin-results" id="tcnpAdminResults"></div>
+      <div class="enr-modal__footer"><button class="enr-btn" data-close-tcnp-admin>ปิด</button></div>
+    </div>
+  </div>
+
+  <div class="enr-modal-backdrop" id="templatePreviewModal">
+    <div class="enr-modal preview-modal">
+      <div class="enr-modal__header"><div class="enr-modal__title">👁 Preview Template</div><button class="enr-modal__close" data-close-preview>×</button></div>
+      <div id="templatePreviewBody"></div>
+      <div class="enr-modal__footer"><button class="enr-btn" data-close-preview>ปิด</button></div>
+    </div>
+  </div>
+
+  <script src="assets/js/core/config.js"></script>
+  <script src="assets/js/core/enr-core.js"></script>
+  <script src="assets/js/mock/wards.js"></script>
+  <script src="data/tcnp_master_codes_v1.8.js"></script>
+  <script src="assets/js/mock/templates.js"></script>
+  <script src="assets/js/core/api.js"></script>
+  <script src="assets/js/pages/admin-template.js"></script>
+</body>
+</html>

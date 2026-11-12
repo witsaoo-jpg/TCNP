@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <base href="../">
+  <title>Nursing Templates | ENR V3 Admin</title>
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="admin/assets/admin.css">
+</head>
+<body class="admin-page">
+  <header class="admin-topbar">
+    <div class="admin-brand"><div class="admin-brand__mark">ENR</div><div><strong>Nursing Template</strong><span>Admin • PostgreSQL</span></div></div>
+    <div class="admin-topbar__actions"><span class="admin-user">👤 <span id="adminUser">...</span></span><a class="admin-btn admin-btn--ghost" href="admin/index.html">← Admin Home</a><button class="admin-btn admin-btn--ghost" id="logoutBtn">ออกจากระบบ</button></div>
+  </header>
+
+  <main class="admin-container">
+    <section class="admin-pagehead">
+      <div><div class="admin-kicker">TEMPLATE MANAGEMENT</div><h1>รายการ Nursing Template</h1><p>ข้อมูลจาก <code>nursing_templates</code> และ <code>nursing_template_items</code></p></div>
+      <a class="admin-btn admin-btn--primary admin-btn--lg" href="admin/template-builder.html">＋ สร้าง Template ใหม่</a>
+    </section>
+
+    <div id="adminGuardMessage" class="admin-alert admin-alert--danger" hidden></div>
+
+    <section class="admin-stats" id="templateStats">
+      <div class="admin-stat"><span>ทั้งหมด</span><strong id="statAll">–</strong></div>
+      <div class="admin-stat"><span>DRAFT</span><strong id="statDraft">–</strong></div>
+      <div class="admin-stat"><span>ACTIVE</span><strong id="statActive">–</strong></div>
+      <div class="admin-stat"><span>RETIRED</span><strong id="statRetired">–</strong></div>
+    </section>
+
+    <section class="admin-panel">
+      <div class="admin-toolbar">
+        <div class="admin-search"><span>⌕</span><input id="templateSearch" placeholder="ค้นหา code / ชื่อ / description..."></div>
+        <select id="statusFilter" class="admin-select"><option value="">ทุกสถานะ</option><option>DRAFT</option><option>ACTIVE</option><option>RETIRED</option></select>
+        <button class="admin-btn" id="refreshBtn">↻ Refresh</button>
+      </div>
+      <div id="templateList" class="admin-template-table-wrap"><div class="admin-empty">กำลังโหลด Template...</div></div>
+    </section>
+  </main>
+
+  <script src="assets/js/core/config.js"></script>
+  <script src="assets/js/core/enr-core.js"></script>
+  <script src="assets/js/core/api.js"></script>
+  <script src="admin/assets/admin-core.js"></script>
+  <script src="admin/assets/templates.js"></script>
+</body>
+</html>

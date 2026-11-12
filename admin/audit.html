@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <base href="../">
+  <title>Audit Viewer | Nursing Administration</title>
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="admin/assets/admin.css">
+  <link rel="stylesheet" href="admin/assets/audit.css">
+</head>
+<body class="admin-page">
+  <header class="admin-topbar">
+    <div class="admin-brand">
+      <div class="admin-brand__mark">ENR</div>
+      <div><strong>Nursing Audit Viewer</strong><span>Electronic Nursing Record • Chonburi Hospital</span></div>
+    </div>
+    <div class="admin-topbar__actions">
+      <span class="admin-user">👤 <span id="adminUser">...</span></span>
+      <a class="admin-btn admin-btn--ghost" href="admin/">← Admin Dashboard</a>
+      <button class="admin-btn admin-btn--ghost" id="backWardBtn">Ward</button>
+      <button class="admin-btn admin-btn--ghost" id="logoutBtn">ออกจากระบบ</button>
+    </div>
+  </header>
+
+  <main class="admin-container admin-builder-container">
+    <section class="admin-pagehead">
+      <div>
+        <div class="admin-kicker">N4 • CLINICAL AUDIT TRAIL</div>
+        <h1>ประวัติการใช้งานและเอกสาร — Audit Viewer</h1>
+        <p>ตรวจย้อนหลังว่าใครทำอะไร เมื่อไร กับ Nursing Note ใด จาก PostgreSQL audit_logs โดยตรง</p>
+      </div>
+      <div class="audit-readonly">👁 Read only • Admin re-auth</div>
+    </section>
+
+    <div id="adminGuardMessage" class="admin-alert admin-alert--danger" hidden></div>
+    <div id="auditError" class="admin-alert admin-alert--danger" hidden></div>
+
+    <section class="admin-panel audit-filter-panel">
+      <div class="admin-panel-head">
+        <div><h2>ตัวกรอง Audit Trail</h2><p>ค้นตามเวลา ผู้ใช้ Action, Note ID หรือผู้ป่วย</p></div>
+        <div class="audit-quick" id="quickActions">
+          <button type="button" data-action="" class="is-active">ทั้งหมด</button>
+          <button type="button" data-action="SIGN">SIGN</button>
+          <button type="button" data-action="CANCEL">CANCEL</button>
+          <button type="button" data-action="ADD_ADDENDUM">ADDENDUM</button>
+          <button type="button" data-action="ADD_AMENDMENT">AMENDMENT</button>
+        </div>
+      </div>
+      <div class="audit-filter-grid">
+        <label class="admin-field"><span>ตั้งแต่วันที่</span><input type="date" id="fromDate"></label>
+        <label class="admin-field"><span>ถึงวันที่</span><input type="date" id="toDate"></label>
+        <label class="admin-field"><span>ผู้ใช้งาน</span><select id="userFilter"><option value="">ทุกคน</option></select></label>
+        <label class="admin-field"><span>Action</span><select id="actionFilter"><option value="">ทุก Action</option></select></label>
+        <label class="admin-field"><span>Entity</span><select id="entityFilter"><option value="">ทุก Entity</option></select></label>
+        <label class="admin-field"><span>Note ID</span><input type="number" min="1" id="noteFilter" placeholder="เช่น 46"></label>
+        <label class="admin-field"><span>Encounter ID</span><input type="number" min="1" id="encounterFilter" placeholder="เช่น 1"></label>
+        <label class="admin-field admin-field--wide"><span>ค้นหา</span><input type="search" id="searchFilter" placeholder="HN / AN / ชื่อผู้ป่วย / ผู้ใช้ / รายละเอียด..."></label>
+      </div>
+      <div class="audit-filter-actions">
+        <button class="admin-btn" id="resetBtn">ล้างตัวกรอง</button>
+        <button class="admin-btn admin-btn--primary admin-btn--lg" id="searchBtn">แสดง Audit Trail</button>
+      </div>
+    </section>
+
+    <section class="audit-stats">
+      <article><span>Events</span><strong id="statEvents">–</strong><small>ตามตัวกรอง</small></article>
+      <article><span>Users</span><strong id="statUsers">–</strong><small>ผู้ใช้งานที่พบ</small></article>
+      <article><span>Notes</span><strong id="statNotes">–</strong><small>Nursing Note ที่เกี่ยวข้อง</small></article>
+      <article><span>Critical actions</span><strong id="statCritical">–</strong><small>Sign / Cancel / หลังลงนาม</small></article>
+    </section>
+
+    <section class="admin-panel">
+      <div class="admin-panel-head">
+        <div><h2>Audit Events</h2><p id="resultCaption">กำลังโหลด...</p></div>
+        <div class="audit-page-size">Read only • ไม่มีปุ่มแก้ไข/ลบ</div>
+      </div>
+      <div class="audit-table-wrap">
+        <table class="admin-table audit-table">
+          <thead><tr>
+            <th>วัน/เวลา</th><th>ผู้ใช้งาน</th><th>Action</th><th>เอกสาร / ผู้ป่วย</th><th>รายละเอียด</th><th></th>
+          </tr></thead>
+          <tbody id="auditRows"></tbody>
+        </table>
+      </div>
+      <div id="auditEmpty" class="admin-empty" hidden>ไม่พบ Audit event ตามตัวกรอง</div>
+      <div class="audit-pagination">
+        <button class="admin-btn" id="prevBtn">← ก่อนหน้า</button>
+        <span id="pageLabel">หน้า 1</span>
+        <button class="admin-btn" id="nextBtn">ถัดไป →</button>
+      </div>
+    </section>
+
+    <section class="admin-note">
+      <strong>หลักฐานระบบ:</strong> หน้านี้อ่านข้อมูลจาก <code>audit_logs</code> เท่านั้น ไม่แก้ไข Nursing Note และไม่ลบ Audit event รายการที่ถูกยกเลิกยังคงปรากฏเพื่อการตรวจสอบย้อนหลัง
+    </section>
+  </main>
+
+  <div class="admin-modal" id="auditModal" hidden>
+    <div class="admin-modal__backdrop" data-close-modal></div>
+    <div class="admin-modal__dialog admin-modal__dialog--wide">
+      <div class="admin-modal__head"><div><h3 id="modalTitle">Audit Event</h3><p id="modalSubtitle"></p></div><button class="admin-icon-btn" data-close-modal>×</button></div>
+      <div id="modalBody" class="audit-detail"></div>
+      <div class="admin-modal__foot"><button class="admin-btn" data-close-modal>ปิด</button></div>
+    </div>
+  </div>
+
+  <script src="assets/js/core/config.js"></script>
+  <script src="assets/js/core/enr-core.js"></script>
+  <script src="assets/js/core/api.js"></script>
+  <script src="admin/assets/admin-core.js"></script>
+  <script src="admin/assets/audit.js"></script>
+</body>
+</html>

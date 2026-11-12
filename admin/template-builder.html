@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <base href="../">
+  <title>Template Builder | ENR V3 Admin</title>
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="admin/assets/admin.css">
+</head>
+<body class="admin-page admin-builder-page">
+  <header class="admin-topbar">
+    <div class="admin-brand"><div class="admin-brand__mark">ENR</div><div><strong>Template Builder</strong><span>F-A(S,O)-G-I-E • TCNP + Manual</span></div></div>
+    <div class="admin-topbar__actions"><span class="admin-user">👤 <span id="adminUser">...</span></span><a class="admin-btn admin-btn--ghost" href="admin/templates.html">← รายการ Template</a><button class="admin-btn admin-btn--ghost" id="logoutBtn">ออกจากระบบ</button></div>
+  </header>
+
+  <main class="admin-container admin-builder-container">
+    <section class="admin-pagehead admin-pagehead--compact">
+      <div><div class="admin-kicker">TEMPLATE BUILDER</div><h1 id="pageTitle">สร้าง Nursing Template</h1><p id="pageSubtitle">Template ใหม่จะเริ่มต้นเป็น DRAFT</p></div>
+      <div class="admin-actions"><button class="admin-btn" id="previewBtn">👁 Preview</button><button class="admin-btn admin-btn--primary" id="editVersionBtn" hidden>✎ แก้ไข Template</button><button class="admin-btn" id="duplicateBtn" hidden>⧉ ทำสำเนา</button><button class="admin-btn admin-btn--primary" id="saveDraftBtn">💾 บันทึก Draft</button><button class="admin-btn admin-btn--primary" id="activateBtn">✓ Save & Activate</button></div>
+    </section>
+
+    <div id="adminGuardMessage" class="admin-alert admin-alert--danger" hidden></div>
+    <div id="builderNotice" class="admin-alert" hidden></div>
+
+    <section class="admin-panel admin-meta-panel">
+      <div class="admin-form-grid">
+        <label class="admin-field"><span>Template Code *</span><input id="templateCode" maxlength="50" placeholder="เช่น TPL-RESP-001"></label>
+        <label class="admin-field"><span>Template Name *</span><input id="templateName" maxlength="255" placeholder="ชื่อ Template"></label>
+        <label class="admin-field admin-field--wide"><span>Description</span><textarea id="templateDescription" rows="2" placeholder="วัตถุประสงค์ / กลุ่มผู้ป่วย"></textarea></label>
+        <label class="admin-field"><span>Version</span><input id="templateVersion" type="number" min="1" value="1" readonly></label>
+        <label class="admin-field"><span>Scope</span><select id="templateScope"><option value="HOSPITAL">HOSPITAL</option><option value="WARD">WARD</option></select></label>
+        <label class="admin-field"><span>Ward</span><select id="templateWard" disabled><option value="">— เลือก Ward —</option></select></label>
+        <label class="admin-field"><span>Status</span><input id="templateStatus" value="DRAFT" readonly></label>
+        <label class="admin-field"><span>Focus TCNP</span><div class="admin-inline"><input id="focusCode" placeholder="Fxxxx" readonly><button class="admin-btn" id="focusSearchBtn" type="button">⌕ เลือก F</button></div></label>
+        <label class="admin-field admin-field--wide"><span>Focus Text</span><input id="focusText" placeholder="ข้อความ Focus ตั้งต้น"></label>
+      </div>
+      <div class="admin-meta-foot"><span id="saveState" class="admin-pill admin-pill--amber">ยังไม่ได้บันทึก</span><span>Mapping: <code>nursing_templates</code></span></div>
+    </section>
+
+    <section class="admin-panel">
+      <div class="admin-panel-head"><div><h2>F-A(S,O)-G-I-E Template Items</h2><p>รายการด้านล่าง map ไปยัง <code>nursing_template_items</code></p></div><div class="admin-legend"><span class="admin-pill admin-pill--teal">TCNP</span><span class="admin-pill">MANUAL</span></div></div>
+      <div id="builderSections" class="admin-builder-sections"></div>
+    </section>
+
+    <footer class="admin-builder-footer">
+      <button class="admin-btn admin-btn--danger" id="retireBtn" hidden>Retire Template</button>
+      <div><a class="admin-btn" href="admin/templates.html">ยกเลิก</a><button class="admin-btn admin-btn--primary" id="saveBottomBtn">บันทึก Draft</button></div>
+    </footer>
+  </main>
+
+  <div class="admin-modal" id="tcnpModal" hidden>
+    <div class="admin-modal__backdrop" data-close-modal></div>
+    <div class="admin-modal__dialog">
+      <div class="admin-modal__head"><div><h3>⌕ เลือก TCNP</h3><p id="tcnpHint"></p></div><button class="admin-icon-btn" data-close-modal>×</button></div>
+      <div class="admin-search admin-search--modal"><span>⌕</span><input id="tcnpQuery" placeholder="ค้นด้วยรหัส คำไทย หรือคำอังกฤษ..."></div>
+      <div id="tcnpResults" class="admin-tcnp-results"></div>
+      <div class="admin-modal__foot"><button class="admin-btn" data-close-modal>ปิด</button></div>
+    </div>
+  </div>
+
+  <div class="admin-modal" id="previewModal" hidden>
+    <div class="admin-modal__backdrop" data-close-preview></div>
+    <div class="admin-modal__dialog admin-modal__dialog--wide">
+      <div class="admin-modal__head"><div><h3>👁 Preview Template</h3><p>ตัวอย่างก่อนนำไปใช้ใน Clinical UI</p></div><button class="admin-icon-btn" data-close-preview>×</button></div>
+      <div id="previewBody" class="admin-preview"></div>
+      <div class="admin-modal__foot"><button class="admin-btn" data-close-preview>ปิด</button></div>
+    </div>
+  </div>
+
+  <script src="assets/js/core/config.js"></script>
+  <script src="assets/js/core/enr-core.js"></script>
+  <script src="assets/js/core/api.js"></script>
+  <script src="admin/assets/admin-core.js"></script>
+  <script src="admin/assets/template-builder.js"></script>
+</body>
+</html>

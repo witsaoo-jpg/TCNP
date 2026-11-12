@@ -1,23 +1,10 @@
-# Security policy
+# Security and Privacy
 
-This repository is a **public code repository for a demonstration-only frontend**. It is not an approved clinical deployment.
+This public repository contains a **prototype frontend**, not a deployed clinical service.
 
-## Never commit
-
-- Real patient data, hospital number (HN) lists, medical record numbers, names, contact details, photos, exports, or screenshots containing identifiers.
-- Database dumps, internal hospital configuration, API credentials, JWT secrets, passwords, access tokens, private keys, or real environment files.
-- Copyrighted clinical classification/reference PDFs without explicit permission.
-- Backup/original copies containing old passwords or test accounts.
-
-## Development and publication
-
-1. Run the preflight checker before every public release: `python3 scripts/preflight_public.py`.
-2. Review every added file manually; a pattern scan cannot guarantee the absence of sensitive information.
-3. Keep the backend, PostgreSQL database, private hospital APIs and production configuration outside this public repository.
-4. Never rely on frontend-only checks for authentication, authorization, or clinical record signing.
-5. Verify that all published screenshots and demo fixtures are entirely synthetic.
-6. If a secret is ever committed, **revoke/rotate it immediately**. Removing it in a later commit does not erase it from Git history.
-
-## Reporting
-
-Report vulnerabilities privately to the repository owner rather than opening an issue containing secrets or patient data.
+- Never commit patient records, personal identifiers, hospital numbers (HN), screenshots of real cases, research data, access credentials, secrets, or clinical PDF content.
+- Clinical authentication, authorizations, signed-record lifecycle, RLS and audit logging **must be validated by the backend**. Client-side checks are not sufficient.
+- No real patient data should be placed in browser localStorage/sessionStorage.
+- Rotate any credential disclosed in Git history immediately; deleting the latest version of a file is insufficient.
+- Use only fictitious patient data for demos and training.
+- Obtain permission for every externally licensed clinical classification or reference material before redistributing.
