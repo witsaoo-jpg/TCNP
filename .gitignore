@@ -1,0 +1,66 @@
+# macOS / Windows metadata
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+__MACOSX/
+Thumbs.db
+Desktop.ini
+
+# Local settings, credentials and certificates
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa*
+*.secret
+secrets/
+credentials/
+
+# Dependencies, caches and logs
+node_modules/
+__pycache__/
+.pytest_cache/
+*.pyc
+*.log
+.cache/
+.vscode/
+.idea/
+
+# Source archives and stale/back-up versions
+*.zip
+*.7z
+*.rar
+*.tar
+*.gz
+*.bak
+*.backup
+*.orig
+*.old
+*~
+* copy.*
+* - Copy.*
+backup/
+backups/
+
+# Clinical documents, database dumps and exported records
+*.pdf
+*.csv
+*.tsv
+*.xls
+*.xlsx
+*.db
+*.sqlite
+*.sqlite3
+*.dump
+*.sql
+*.sql.gz
+patients*.json
+patient_*.json
+export*.json
+clinical_data/
+patient_data/
+uploads/
