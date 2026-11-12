@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discharge Planning (D-M-E-T-H-O-D)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #00796b;
+            --primary-dark: #004d40;
+            --primary-light: #e0f2f1;
+            --accent: #2e7d32;
+            --danger: #c62828;
+            --shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #f4f7f6; font-family: 'Sarabun', sans-serif; color: #333; }
+
+        /* Navbar */
+        .navbar { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; color: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
+
+        .container { max-width: 1400px; margin: 20px auto; padding: 0 20px; }
+
+        /* Layout */
+        .layout-container { display: grid; grid-template-columns: 320px 1fr; gap: 20px; align-items: start; }
+
+        /* Sidebar Templates */
+        .sidebar-card { background: white; border-radius: 12px; box-shadow: var(--shadow); padding: 20px; height: fit-content; position: sticky; top: 80px; }
+        .template-item { padding: 10px; border: 1px solid #eee; margin-bottom: 8px; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+        .template-item:hover { background: var(--primary-light); border-color: var(--primary); }
+
+        /* Main Form Card */
+        .form-card { background: white; padding: 30px; border-radius: 12px; box-shadow: var(--shadow); }
+        .dm-group { margin-bottom: 20px; }
+        .dm-group label { display: block; font-weight: bold; margin-bottom: 8px; color: var(--primary-dark); }
+        .dm-textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-family: 'Sarabun'; font-size: 1rem; line-height: 1.6; min-height: 100px; resize: vertical; background: #fafafa; }
+
+        /* Timeline Style */
+        .history-item { background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 5px solid var(--primary); position: relative; }
+        .timeline-actions { position: absolute; right: 15px; top: 15px; display: flex; gap: 8px; }
+
+        /* Print Settings (Running Header Logic) */
+        #printArea { width: 100%; }
+        .print-table { width: 100%; border-collapse: collapse; }
+        
+        /* สั่งให้ Header ของ Table แสดงซ้ำทุกหน้า */
+        .print-header-group { display: none; } 
+
+        @media print {
+            .no-print, .navbar, .sidebar-card, .action-toolbar, .timeline-actions { display: none !important; }
+            body { background: white; }
+            .container { max-width: 100%; margin: 0; padding: 0; }
+            .layout-container { display: block; }
+            
+            /* แสดง Header ทุกหน้าใน PDF */
+            .print-header-group { display: table-header-group; }
+            .running-header { border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px; text-align: left; }
+            .running-header p { font-size: 14pt; font-weight: bold; margin: 5px 0; }
+
+            .form-card { box-shadow: none; padding: 0; }
+            .dm-textarea { border: none; background: none; min-height: auto; padding: 0; overflow: visible; }
+            .dm-group { page-break-inside: avoid; margin-bottom: 15px; }
+            .dm-group label { text-decoration: underline; font-size: 12pt; }
+        }
+
+        .btn { padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-save { background: var(--accent); color: white; }
+        .btn-print { background: var(--primary); color: white; }
+        .btn-sm { padding: 4px 8px; font-size: 0.8rem; background: white; border: 1px solid #ddd; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar no-print">
+        <div style="font-weight: bold;"><i class="fas fa-file-medical"></i> Discharge Planning (D-M-E-T-H-O-D)</div>
+        <button class="btn" style="background: rgba(255,255,255,0.2); color: white;" onclick="window.location.href='index.html'"><i class="fas fa-arrow-left"></i> กลับ</button>
+    </nav>
+
+    <div class="container">
+        <table id="printArea" class="print-table">
+            <thead class="print-header-group">
+                <tr>
+                    <td>
+                        <div class="running-header">
+                            <p>ใบบันทึกการวางแผนจำหน่าย (Discharge Planning)</p>
+                            <p>ชื่อ-สกุล: <span class="p-name"></span> | HN: <span class="p-hn"></span> | AN: <span class="p-an"></span></p>
+                        </div>
+                    </td>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr>
+                    <td>
+                        <div class="layout-container">
+                            <div class="sidebar-card no-print">
+                                <div style="font-weight: bold; color: var(--primary); margin-bottom: 15px;">เลือกกลุ่มโรค</div>
+                                <div id="templateList"></div>
+                            </div>
+
+                            <div class="form-card">
+                                <div class="action-toolbar no-print" style="display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 20px;">
+                                    <button class="btn btn-save" onclick="saveData()"><i class="fas fa-save"></i> บันทึกข้อมูลและลง Timeline</button>
+                                    <button class="btn btn-print" onclick="window.print()"><i class="fas fa-print"></i> พิมพ์ใบกลับบ้าน (PDF)</button>
+                                </div>
+
+                                <div class="dm-group"><label>D - Diagnosis</label><textarea id="inp_d" class="dm-textarea"></textarea></div>
+                                <div class="dm-group"><label>M - Medicine</label><textarea id="inp_m" class="dm-textarea"></textarea></div>
+                                <div class="dm-group"><label>E - Environment</label><textarea id="inp_e" class="dm-textarea"></textarea></div>
+                                <div class="dm-group"><label>T - Treatment</label><textarea id="inp_t" class="dm-textarea"></textarea></div>
+                                <div class="dm-group"><label>H - Health</label><textarea id="inp_h" class="dm-textarea"></textarea></div>
+                                <div class="dm-group"><label>O - Outpatient</label><textarea id="inp_o" class="dm-textarea"></textarea></div>
+                                <div class="dm-group"><label>D - Diet</label><textarea id="inp_d2" class="dm-textarea"></textarea></div>
+
+                                <div class="history-section no-print">
+                                    <h3 style="margin-bottom:20px; color:#666;"><i class="fas fa-history"></i> ประวัติการลงบันทึก (Timeline)</h3>
+                                    <div id="historyLog"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+<script>
+    // 1. แม่แบบกลุ่มโรค
+    const masterTemplates = [
+        { id: 'APP', title: 'ไส้ติ่งอักเสบ (Appendectomy)', d: 'ไส้ติ่งอักเสบเฉียบพลัน ผ่าตัดเรียบร้อย', m: 'Paracetamol 500mg ทุก 6 ชม.', e: 'พักผ่อนชั้นล่าง 7 วัน', t: 'รักษาแผลให้แห้ง', h: 'ไข้สูง แผลบวมแดง', o: 'นัดตัดไหม 7 วัน', d2: 'อาหารอ่อนย่อยง่าย' }
+    ];
+
+    // 2. ดึงข้อมูล Profile
+    const profile = JSON.parse(localStorage.getItem('patientProfile')) || { name: '-', hn: '-', an: '-' };
+    const hn = profile.hn;
+
+    window.onload = function() {
+        document.querySelectorAll('.p-name').forEach(el => el.innerText = profile.name);
+        document.querySelectorAll('.p-hn').forEach(el => el.innerText = profile.hn);
+        document.querySelectorAll('.p-an').forEach(el => el.innerText = profile.an);
+        
+        renderTemplates();
+        loadTimeline();
+    };
+
+    function renderTemplates() {
+        const list = document.getElementById('templateList');
+        list.innerHTML = masterTemplates.map(t => `<div class="template-item" onclick="applyTemplate('${t.id}')"><strong>${t.title}</strong></div>`).join('');
+    }
+
+    function applyTemplate(id) {
+        const t = masterTemplates.find(x => x.id === id);
+        if(!t) return;
+        ['d','m','e','t','h','o','d2'].forEach(key => document.getElementById('inp_'+key).value = t[key]);
+    }
+
+    // 3. ระบบ Timeline CRUD
+    function saveData() {
+        const data = { d: document.getElementById('inp_d').value, m: document.getElementById('inp_m').value, e: document.getElementById('inp_e').value, t: document.getElementById('inp_t').value, h: document.getElementById('inp_h').value, o: document.getElementById('inp_o').value, d2: document.getElementById('inp_d2').value };
+        
+        localStorage.setItem(`discharge_current_${hn}`, JSON.stringify(data));
+
+        let history = JSON.parse(localStorage.getItem(`discharge_history_${hn}`)) || [];
+        history.unshift({ id: Date.now(), time: new Date().toLocaleString('th-TH'), user: "พยาบาลประจำตึก", content: data });
+        localStorage.setItem(`discharge_history_${hn}`, JSON.stringify(history.slice(0, 10)));
+        
+        loadTimeline();
+        alert("บันทึกข้อมูลและลง Timeline เรียบร้อย");
+    }
+
+    function loadTimeline() {
+        const history = JSON.parse(localStorage.getItem(`discharge_history_${hn}`)) || [];
+        const logDiv = document.getElementById('historyLog');
+        if(history.length === 0) { logDiv.innerHTML = "ไม่มีประวัติ"; return; }
+        
+        logDiv.innerHTML = history.map(h => `
+            <div class="history-item">
+                <div class="timeline-actions no-print">
+                    <button class="btn btn-sm" onclick="restoreHistory(${h.id})"><i class="fas fa-undo"></i> ดึงคืน</button>
+                    <button class="btn btn-sm" style="color:red;" onclick="deleteHistory(${h.id})"><i class="fas fa-trash"></i></button>
+                </div>
+                <b><i class="fas fa-clock"></i> ${h.time}</b> โดย ${h.user}
+            </div>
+        `).join('');
+    }
+
+    function restoreHistory(id) {
+        const history = JSON.parse(localStorage.getItem(`discharge_history_${hn}`));
+        const log = history.find(i => i.id === id);
+        if(log) ['d','m','e','t','h','o','d2'].forEach(k => document.getElementById('inp_'+k).value = log.content[k]);
+    }
+
+    function deleteHistory(id) {
+        let history = JSON.parse(localStorage.getItem(`discharge_history_${hn}`));
+        history = history.filter(i => i.id !== id);
+        localStorage.setItem(`discharge_history_${hn}`, JSON.stringify(history));
+        loadTimeline();
+    }
+</script>
+</body>
+</html>

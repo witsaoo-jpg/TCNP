@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discharge Summary - Chonburi Hospital</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        :root {
+            --primary: #00796b;
+            --primary-light: #e0f2f1;
+            --primary-dark: #004d40;
+            --text-dark: #2c3e50;
+            --border-color: #cfd8dc;
+            --shadow: 0 4px 6px rgba(0,0,0,0.05);
+            --radius: 8px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background: #f0f2f5;
+            padding-top: 80px;
+            padding-bottom: 40px;
+            font-size: 14px;
+            color: var(--text-dark);
+            line-height: 1.5;
+        }
+        /* --- Header Bar --- */
+        .patient-header-bar {
+            position: fixed; top: 0; left: 0; width: 100%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white; padding: 10px 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .patient-info-display { font-size: 1.1rem; font-weight: 500; display: flex; gap: 20px; }
+        .patient-info-display span { background: rgba(255,255,255,0.15); padding: 4px 12px; border-radius: 20px; display: inline-flex; align-items: center; gap: 5px; }
+        .back-btn {
+            background: white; color: var(--primary); border: none; padding: 8px 15px;
+            border-radius: 6px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;
+            transition: 0.2s; text-decoration: none; font-family: 'Sarabun', sans-serif;
+        }
+        .back-btn:hover { background: #f1f1f1; transform: translateX(-3px); }
+        /* --- Container --- */
+        .container {
+            max-width: 1000px; margin: 0 auto; background: white;
+            padding: 30px; border-radius: var(--radius);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
+        .header { text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 3px double var(--primary-light); }
+        .header h1 { color: var(--primary); font-size: 24px; font-weight: 700; margin-bottom: 5px; }
+        .header h2 { color: #546e7a; font-size: 16px; font-weight: 500; }
+        /* --- Form Sections --- */
+        .form-section {
+            background: #fff; border: 1px solid var(--border-color); border-radius: var(--radius);
+            padding: 20px; margin-bottom: 20px; position: relative; transition: 0.3s;
+            page-break-inside: avoid;
+        }
+        .form-section:hover { box-shadow: var(--shadow); border-color: var(--primary); }
+        .section-title {
+            background: var(--primary); color: white; padding: 8px 15px; display: inline-block;
+            border-radius: 20px; font-weight: 600; font-size: 14px; margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .form-row { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 15px; }
+        .form-group { margin-bottom: 10px; }
+        .form-group label { display: block; margin-bottom: 6px; font-weight: 600; color: #455a64; font-size: 13px; }
+        input[type="text"], input[type="date"], input[type="time"], input[type="number"], textarea, select {
+            width: 100%; padding: 10px 12px; border: 1px solid var(--border-color);
+            border-radius: 6px; font-family: 'Sarabun', sans-serif; font-size: 14px;
+            transition: all 0.3s ease; background: #fafafa;
+        }
+        textarea { resize: vertical; min-height: 80px; }
+        .checkbox-options { display: flex; flex-wrap: wrap; gap: 15px; align-items: center; }
+        .checkbox-options label {
+            display: flex; align-items: center; gap: 8px; cursor: pointer;
+            background: #f8f9fa; padding: 6px 12px; border-radius: 20px;
+            border: 1px solid transparent; transition: 0.2s; font-size: 13px;
+        }
+        .checkbox-options input { margin: 0; cursor: pointer; }
+        .vitals-wrapper { background: linear-gradient(to right, #e0f2f1, #ffffff); padding: 15px; border-radius: 8px; border: 1px dashed var(--primary); }
+        .vitals-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 15px; }
+        .vitals-item label { color: var(--primary-dark); text-align: center; display: block; margin-bottom: 5px; }
+        .vitals-item input { text-align: center; font-weight: bold; color: var(--primary); }
+        .btn-group { display: flex; gap: 15px; justify-content: center; margin-top: 30px; }
+        .btn {
+            padding: 10px 25px; border: none; border-radius: 30px; cursor: pointer;
+            font-family: 'Sarabun', sans-serif; font-weight: 600; font-size: 14px;
+            display: flex; align-items: center; gap: 8px; transition: transform 0.2s;
+        }
+        .btn:active { transform: scale(0.98); }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-success { background: #2e7d32; color: white; }
+        .btn-danger { background: #c62828; color: white; }
+        .btn-secondary { background: #546e7a; color: white; }
+        .records-table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; border-radius: 8px; overflow: hidden; box-shadow: var(--shadow); }
+        .records-table th { background: var(--primary); color: white; padding: 12px; text-align: left; }
+        .records-table td { padding: 12px; border-bottom: 1px solid #eee; }
+        .action-btn {
+            width: 32px; height: 32px; border: none; border-radius: 4px; cursor: pointer;
+            font-size: 14px; margin-right: 4px; display: inline-flex; align-items: center; justify-content: center;
+            transition: 0.2s;
+        }
+        .action-btn:hover { opacity: 0.8; transform: translateY(-1px); }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(3px); z-index: 1000; }
+        .modal-content { background: white; margin: 30px auto; padding: 30px; width: 90%; max-width: 800px; max-height: 90vh; overflow-y: auto; border-radius: 12px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); }
+        .modal-header-text { color: var(--primary); border-bottom: 2px solid var(--primary-light); padding-bottom: 10px; margin-bottom: 20px; }
+        .view-row { display: flex; border-bottom: 1px solid #eee; padding: 8px 0; }
+        .view-label { font-weight: bold; width: 40%; color: #546e7a; }
+        .view-value { width: 60%; color: #2c3e50; }
+        .signature-line { width: 200px; border-bottom: 1px dotted #000; height: 30px; margin: 5px 0; }
+        .note { font-size: 12px; color: #78909c; margin-top: 5px; font-style: italic; }
+        .inline-fields { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+        .inline-field { display: flex; align-items: center; gap: 5px; }
+        .history-badge { font-size: 11px; background: #e0e0e0; padding: 2px 6px; border-radius: 4px; color: #555; display: inline-block; margin-top: 4px; }
+        #recordsView { display: none; }
+        @media (max-width: 768px) {
+            .patient-header-bar { flex-direction: column; gap: 10px; padding: 10px; }
+            .patient-info-display { font-size: 0.9rem; width: 100%; justify-content: space-between; gap: 5px; }
+            .back-btn { width: 100%; justify-content: center; }
+            body { padding-top: 130px; }
+        }
+
+        /* PDF-only styles */
+        .pdf-patient-header {
+            display: none;
+            border: 1px solid #ccc;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            background-color: #fff;
+            font-family: 'Sarabun', sans-serif;
+        }
+        .pdf-patient-header .header-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            border-bottom: 1px dashed #eee;
+            padding-bottom: 10px;
+        }
+        .pdf-patient-header .info-row {
+            display: flex;
+            justify-content: flex-start;
+            gap: 30px;
+        }
+        .pdf-patient-header h3 {
+            margin: 0 0 8px 0;
+            font-size: 16px;
+            color: var(--primary-dark);
+        }
+        .pdf-patient-header p {
+            margin: 2px 0;
+            font-size: 14px;
+        }
+        .pdf-patient-header strong {
+            color: var(--text-dark);
+        }
+    </style>
+</head>
+<body>
+    <nav class="patient-header-bar no-print-section">
+        <button class="back-btn" onclick="window.location.href='paperless.html'">
+            <i class="fas fa-arrow-left"></i> ย้อนกลับ
+        </button>
+        <div class="patient-info-display">
+            <span id="headerName"><i class="fas fa-user-injured"></i> ชื่อ: -</span>
+            <span id="headerHN">HN: -</span>
+            <span id="headerAN">AN: -</span>
+        </div>
+    </nav>
+
+    <div class="container" id="printableArea">
+        <div class="header">
+            <h1><i class="fas fa-hospital-symbol"></i> โรงพยาบาลชลบุรี (Chonburi Hospital)</h1>
+            <h2>DISCHARGE SUMMARY (Part II : To be completed by RN.)</h2>
+        </div>
+
+        <div class="pdf-patient-header" id="pdfPatientHeader">
+            <div class="header-row">
+                <h3><strong>ข้อมูลผู้ป่วย</strong></h3>
+            </div>
+            <div class="info-row">
+                <p><strong>ชื่อ-สกุล:</strong> <span id="pdfFullName">-</span></p>
+                <p><strong>HN:</strong> <span id="pdfHN">-</span></p>
+                <p><strong>AN:</strong> <span id="pdfAN">-</span></p>
+            </div>
+            <div class="info-row">
+                <p><strong>หอผู้ป่วย (Ward):</strong> <span id="pdfWard">-</span></p>
+                <p><strong>วันที่จำหน่าย:</strong> <span id="pdfDate">-</span></p>
+            </div>
+        </div>
+
+        <div class="view-toggle no-print-section" style="text-align: right; margin-bottom: 20px;">
+            <button class="btn btn-primary" onclick="showForm()" style="display: inline-flex;"><i class="fas fa-plus-circle"></i> สร้างรายการใหม่</button>
+            <button class="btn btn-secondary" onclick="showRecords()" style="display: inline-flex;"><i class="fas fa-list"></i> ดูรายการทั้งหมด</button>
+        </div>
+
+        <div id="formView">
+            <form id="dischargeForm">
+                <input type="hidden" id="recordId">
+                <input type="hidden" id="createdDate">
+                <div class="form-section">
+                    <div class="section-title"><i class="fas fa-calendar-alt"></i> ข้อมูลการรับเข้าและจำหน่าย</div>
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 1;">
+                            <label>Admit Date:</label>
+                            <input type="date" id="admitDate" required>
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label>Time:</label>
+                            <input type="time" id="admitTime">
+                        </div>
+                        <div class="form-group" style="flex: 2;">
+                            <label>จำหน่ายออกจากตึก:</label>
+                            <input type="text" id="dischargeWard" placeholder="ระบุชื่อหอผู้ป่วย">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 1;">
+                            <label>Discharge Date:</label>
+                            <input type="date" id="dischargeDate" required>
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label>Time:</label>
+                            <input type="time" id="dischargeTime">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-section">
+                    <div class="section-title"><i class="fas fa-sign-out-alt"></i> ประเภทของการจำหน่าย</div>
+                    <div class="checkbox-options">
+                        <label><input type="checkbox" name="dischargeType" value="แพทย์อนุมัติ"> แพทย์อนุมัติ</label>
+                        <label><input type="checkbox" name="dischargeType" value="แพทย์ส่งตัวไปรักษาต่อที่"> แพทย์ส่งตัวไปรักษาต่อที่ <input type="text" id="transferLocation" style="width: 150px; padding: 2px 5px;" placeholder="ระบุสถานที่"></label>
+                        <label><input type="checkbox" name="dischargeType" value="ไม่สมัครใจอยู่"> ไม่สมัครใจอยู่ (เหตุผล): <input type="text" id="dischargeReason" style="width: 150px; padding: 2px 5px;"></label>
+                        <label><input type="checkbox" name="dischargeType" value="ไม่สมัครใจอยู่โดยไม่ได้แจ้ง"> หนีกลับ</label>
+                    </div>
+                    <div style="margin-top: 15px; border-top: 1px dashed #eee; padding-top: 10px;">
+                        <label style="font-weight: bold; margin-bottom: 8px; display: block;">หน่วยการดูแลต่อเนื่อง ติดตามผู้ป่วยโดย:</label>
+                        <div class="checkbox-options">
+                            <label><input type="radio" name="followUpType" value="patient_in_area"> ในเขตพื้นที่ รพ.ชลบุรี (ส่งเวชกรรมสังคม)</label>
+                            <label><input type="radio" name="followUpType" value="patient_out_area"> นอกเขตพื้นที่ (ประสานหน่วยบริการในพื้นที่)</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-section">
+                    <div class="section-title"><i class="fas fa-procedures"></i> สภาพผู้ป่วยเมื่อจำหน่าย</div>
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 1;">
+                            <label>การวินิจฉัยโรคแรกเริ่ม:</label>
+                            <textarea id="initialDiagnosis" rows="2"></textarea>
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label>การวินิจฉัยโรคก่อนจำหน่าย:</label>
+                            <textarea id="dischargeDiagnosis" rows="2"></textarea>
+                        </div>
+                    </div>
+                    <div class="vitals-wrapper">
+                        <label style="font-weight: bold; color: var(--primary); margin-bottom: 10px; display: block;"><i class="fas fa-heartbeat"></i> สัญญาณชีพเมื่อจำหน่าย:</label>
+                        <div class="vitals-grid">
+                            <div class="vitals-item">
+                                <label>T (°C)</label>
+                                <input type="text" id="temperature" placeholder="37.0">
+                            </div>
+                            <div class="vitals-item">
+                                <label>PR (/min)</label>
+                                <input type="text" id="pulse" placeholder="80">
+                            </div>
+                            <div class="vitals-item">
+                                <label>RR (/min)</label>
+                                <input type="text" id="respiration" placeholder="20">
+                            </div>
+                            <div class="vitals-item">
+                                <label>BP (mmHg)</label>
+                                <input type="text" id="bloodPressure" placeholder="120/80">
+                            </div>
+                            <div class="vitals-item">
+                                <label>O2 Sat (%)</label>
+                                <input type="text" id="o2Sat" placeholder="98" style="background: #e3f2fd; border-color: #2196f3; color: #1565c0;">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row" style="margin-top: 20px;">
+                        <div class="form-group" style="flex: 1;">
+                            <label>ระดับความรู้สึกตัว:</label>
+                            <div class="checkbox-options">
+                                <label><input type="radio" name="consciousness" value="รู้สึกตัวดี"> รู้สึกตัวดี</label>
+                                <label><input type="radio" name="consciousness" value="ดี"> ดี</label>
+                                <label><input type="radio" name="consciousness" value="ปานกลาง"> ปานกลาง</label>
+                                <label><input type="radio" name="consciousness" value="ต้องยืนยัน"> Coma/Stupor</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 1;">
+                            <label>ความสามารถในการดูแลตนเอง:</label>
+                            <div class="checkbox-options">
+                                <label><input type="radio" name="selfCare" value="ช่วยเหลือตนเองได้"> ได้</label>
+                                <label><input type="radio" name="selfCare" value="ช่วยเหลือตนเองได้บางส่วน"> ได้บางส่วน</label>
+                                <label><input type="radio" name="selfCare" value="ช่วยเหลือตนเองไม่ได้"> ไม่ได้</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 1;">
+                            <label>พฤติกรรมแสดงออก:</label>
+                            <div class="checkbox-options">
+                                <label><input type="checkbox" name="behavior" value="ปกติ"> ปกติ</label>
+                                <label><input type="checkbox" name="behavior" value="เครียด"> เครียด/วิตกกังวล</label>
+                                <label><input type="checkbox" name="behavior" value="อื่นๆ"> อื่นๆ <input type="text" id="behaviorOther" style="width: 150px; margin-left: 5px;"></label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 1;">
+                            <label>เคลื่อนย้ายโดย:</label>
+                            <div class="checkbox-options">
+                                <label><input type="checkbox" name="transport" value="เดิน"> เดิน</label>
+                                <label><input type="checkbox" name="transport" value="รถนั่ง"> รถนั่ง</label>
+                                <label><input type="checkbox" name="transport" value="รถนอน"> รถนอน</label>
+                                <label><input type="checkbox" name="transport" value="รถพยาบาล"> Ambulance</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 1;">
+                            <label>อุปกรณ์การรักษาที่ติดกลับบ้าน:</label>
+                            <div class="checkbox-options">
+                                <label><input type="radio" name="medEquipment" value="ไม่มี"> ไม่มี</label>
+                                <label><input type="radio" name="medEquipment" value="มี"> มี (ระบุ): <input type="text" id="medEquipmentDetail" style="width: 200px;"></label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-section">
+                    <div class="section-title"><i class="fas fa-clipboard-list"></i> คำแนะนำ (Discharge Instruction)</div>
+                    <div class="form-group">
+                        <div class="checkbox-options">
+                            <label style="font-weight: bold; width: 150px;">1. การใช้ยา:</label>
+                            <label><input type="radio" name="medication" value="ไม่มี" onclick="toggleTextarea('medicationTextarea', false)"> ไม่มี</label>
+                            <label><input type="radio" name="medication" value="มี" onclick="toggleTextarea('medicationTextarea', true)"> มี (ระบุ)</label>
+                        </div>
+                        <textarea id="medicationTextarea" rows="2" style="display: none; margin-top: 5px;"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <div class="checkbox-options">
+                            <label style="font-weight: bold; width: 150px;">2. การพยาบาล:</label>
+                            <label><input type="radio" name="nursing" value="ไม่มี" onclick="toggleTextarea('nursingTextarea', false)"> ไม่มี</label>
+                            <label><input type="radio" name="nursing" value="มี" onclick="toggleTextarea('nursingTextarea', true)"> มี (ระบุ)</label>
+                        </div>
+                        <textarea id="nursingTextarea" rows="2" style="display: none; margin-top: 5px;"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <div class="checkbox-options">
+                            <label style="font-weight: bold; width: 150px;">3. อาหาร:</label>
+                            <label><input type="radio" name="diet" value="ไม่มี" onclick="toggleTextarea('dietTextarea', false)"> ไม่มี</label>
+                            <label><input type="radio" name="diet" value="มี" onclick="toggleTextarea('dietTextarea', true)"> มี (ระบุ)</label>
+                        </div>
+                        <textarea id="dietTextarea" rows="2" style="display: none; margin-top: 5px;"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <div class="checkbox-options">
+                            <label style="font-weight: bold; width: 150px;">4. การจัดการความเจ็บปวด:</label>
+                            <label><input type="radio" name="painManage" value="ไม่มี" onclick="toggleTextarea('painTextarea', false)"> ไม่มี</label>
+                            <label><input type="radio" name="painManage" value="มี" onclick="toggleTextarea('painTextarea', true)"> มี (ระบุ)</label>
+                        </div>
+                        <textarea id="painTextarea" rows="2" style="display: none; margin-top: 5px;"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <div class="checkbox-options">
+                            <label style="font-weight: bold; width: 150px;">5. การดูแลพิเศษ:</label>
+                            <label><input type="radio" name="specialCare" value="ไม่มี" onclick="toggleTextarea('specialCareTextarea', false)"> ไม่มี</label>
+                            <label><input type="radio" name="specialCare" value="มี" onclick="toggleTextarea('specialCareTextarea', true)"> มี (ระบุ)</label>
+                        </div>
+                        <textarea id="specialCareTextarea" rows="2" style="display: none; margin-top: 5px;"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <div class="checkbox-options">
+                            <label style="font-weight: bold; width: 150px;">6. การติดตามนัด:</label>
+                        </div>
+                        <div class="vitals-wrapper" style="margin-top: 5px;">
+                            <div class="inline-fields" style="margin-bottom: 10px;">
+                                <label style="font-weight: bold;">นัดครั้งที่ 1:</label>
+                                <div class="inline-field">วันที่ <input type="date" id="followUpDate1"></div>
+                                <div class="inline-field">เวลา <input type="time" id="followUpTime1"></div>
+                                <div class="inline-field">แผนก <input type="text" id="followUpDept1" style="width: 150px;"></div>
+                            </div>
+                            <div class="inline-fields" style="margin-bottom: 10px;">
+                                <label style="font-weight: bold;">นัดครั้งที่ 2:</label>
+                                <div class="inline-field">วันที่ <input type="date" id="followUpDate2"></div>
+                                <div class="inline-field">เวลา <input type="time" id="followUpTime2"></div>
+                                <div class="inline-field">แผนก <input type="text" id="followUpDept2" style="width: 150px;"></div>
+                            </div>
+                            <div class="inline-fields">
+                                <label style="font-weight: bold;">การดูแลต่อเนื่อง:</label>
+                                <label><input type="radio" name="homeVisit" value="ไม่ต้องการ"> ไม่ต้องการเยี่ยมบ้าน</label>
+                                <label><input type="radio" name="homeVisit" value="ต้องการ"> ต้องการเยี่ยมบ้าน</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top: 15px;">
+                        <label>7. อาการเร่งด่วนที่ต้องมาก่อนนัด (Urgent Signs & Symptoms):</label>
+                        <textarea id="urgentSigns" rows="3"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 1;">
+                            <label>พยาบาลผู้ประสานงาน (Coordinator Name):</label>
+                            <input type="text" id="coordName">
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label>เบอร์โทรศัพท์ (Tel):</label>
+                            <input type="text" id="coordTel">
+                        </div>
+                    </div>
+                    <div class="note">Emergency call for ambulance Tel 1669</div>
+                </div>
+                <div class="form-section">
+                    <div class="section-title"><i class="fas fa-notes-medical"></i> การเตรียมตัวเพื่อตรวจพิเศษ / หัตถการ</div>
+                    <textarea id="specialPrep" rows="3" placeholder="ระบุการเตรียมตัวและเลขที่ใบ Patient Instruction"></textarea>
+                </div>
+                <div class="form-section">
+                    <div class="section-title"><i class="fas fa-language"></i> Interpreter's Statement</div>
+                    <div class="checkbox-options">
+                        <label><input type="radio" name="interpreter" value="No"> No</label>
+                        <label><input type="radio" name="interpreter" value="Yes"> Yes</label>
+                        <span>Language: <input type="text" id="interpLanguage" style="width:150px;"></span>
+                    </div>
+                </div>
+                <div class="form-section">
+                    <div class="section-title"><i class="fas fa-pen-nib"></i> ลายเซ็น (Signatures)</div>
+                    <div class="form-row">
+                        <div class="form-group" style="flex:1; text-align:center;">
+                            <div class="signature-line"></div>
+                            <div class="note">ลายเซ็นผู้ป่วย/ผู้ดูแล</div>
+                            Date: <input type="date" id="patSignDate" style="width:140px;">
+                        </div>
+                        <div class="form-group" style="flex:1; text-align:center;">
+                            <div class="signature-line"></div>
+                            <div class="note">ลายเซ็นพยาบาล (RN)</div>
+                            Date: <input type="date" id="rnSignDate" style="width:140px;">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-section" style="border-color: #ef5350;">
+                    <div class="section-title" style="background: #ef5350;"><i class="fas fa-book-dead"></i> กรณีเสียชีวิต (Death Case)</div>
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 1;">
+                            <label>Date of Death:</label>
+                            <input type="date" id="deathDate">
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label>Time:</label>
+                            <input type="time" id="deathTime">
+                        </div>
+                        <div class="form-group" style="flex: 2;">
+                            <label>Notify By:</label>
+                            <input type="text" id="notifyBy">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 1;">
+                            <label>รับรองการตายโดย (Pronounce By):</label>
+                            <input type="text" id="pronounceBy">
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label>ชันสูตร (Autopsy):</label>
+                            <div class="checkbox-options">
+                                <label><input type="radio" name="autopsy" value="Yes"> Yes</label>
+                                <label><input type="radio" name="autopsy" value="No"> No</label>
+                            </div>
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label>บริจาคอวัยวะ:</label>
+                            <div class="checkbox-options">
+                                <label><input type="radio" name="organDonate" value="Yes"> Yes</label>
+                                <label><input type="radio" name="organDonate" value="No"> No</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="btn-group no-print-section">
+                    <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> บันทึกข้อมูล</button>
+                    <button type="button" class="btn btn-danger" onclick="resetForm()"><i class="fas fa-undo"></i> ล้างข้อมูล</button>
+                </div>
+                <div style="text-align: right; margin-top: 10px; font-size: 12px; color: #999;">FM-AOP-CBH-002</div>
+            </form>
+        </div>
+        <div id="recordsView">
+            <h2 style="text-align: center; margin-bottom: 20px; color: var(--primary);">รายการ Discharge Summary ทั้งหมด</h2>
+            <table class="records-table">
+                <thead>
+                    <tr>
+                        <th>HN/AN</th>
+                        <th>ชื่อผู้ป่วย</th>
+                        <th>วันที่จำหน่าย</th>
+                        <th>ประวัติการบันทึก (History)</th>
+                        <th>O2 Sat</th>
+                        <th>จัดการ</th>
+                    </tr>
+                </thead>
+                <tbody id="recordsTableBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div id="viewModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()" style="float:right; font-size:28px; cursor:pointer;">&times;</span>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+    <script>
+        // แก้ไข: ใช้ localStorage ของจริงแทน Mock
+        let records = JSON.parse(localStorage.getItem('dischargeRecords')) || [];
+        let editingId = null;
+        let currentPatient = null;
+
+        window.onload = function() {
+            // โหลดข้อมูลผู้ป่วยจาก localStorage ของจริง
+            const profile = JSON.parse(localStorage.getItem('patientProfile'));
+            if (profile) {
+                currentPatient = profile;
+                document.getElementById('headerName').innerHTML = `<i class="fas fa-user-injured"></i> ชื่อ: ${profile.name}`;
+                document.getElementById('headerHN').innerText = `HN: ${profile.hn}`;
+                document.getElementById('headerAN').innerText = `AN: ${profile.an}`;
+            } else {
+                document.getElementById('headerName').innerHTML = `<i class="fas fa-user-slash"></i> ไม่ได้เลือกผู้ป่วย`;
+            }
+
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('admitDate').value = today;
+            document.getElementById('dischargeDate').value = today;
+            
+            displayRecords();
+        };
+
+        function showForm() {
+            document.getElementById('formView').style.display = 'block';
+            document.getElementById('recordsView').style.display = 'none';
+        }
+
+        function showRecords() {
+            document.getElementById('formView').style.display = 'none';
+            document.getElementById('recordsView').style.display = 'block';
+            displayRecords();
+        }
+
+        function toggleTextarea(textareaId, show) {
+            const textarea = document.getElementById(textareaId);
+            textarea.style.display = show ? 'block' : 'none';
+            if (!show) textarea.value = '';
+        }
+
+        function printRecord(id) {
+            editRecord(id);
+            exportToPDF(true);
+        }
+
+        function exportToPDF(returnToTable = false) {
+            // Update PDF Header from current context or form values
+            document.getElementById('pdfFullName').innerText = currentPatient ? currentPatient.name : '-';
+            document.getElementById('pdfHN').innerText = currentPatient ? currentPatient.hn : '-';
+            document.getElementById('pdfAN').innerText = currentPatient ? currentPatient.an : '-';
+            
+            const wardVal = document.getElementById('dischargeWard').value;
+            const dateVal = document.getElementById('dischargeDate').value;
+            document.getElementById('pdfWard').innerText = wardVal || '-';
+            document.getElementById('pdfDate').innerText = dateVal || '-';
+
+            const pdfHeader = document.getElementById('pdfPatientHeader');
+            pdfHeader.style.display = 'block';
+
+            const noPrintElements = document.querySelectorAll('.no-print-section');
+            noPrintElements.forEach(el => el.style.display = 'none');
+
+            // Force values into attributes for correct rendering
+            document.querySelectorAll('input, textarea, select').forEach(el => {
+                if (el.type === 'checkbox' || el.type === 'radio') {
+                    if (el.checked) {
+                        el.setAttribute('checked', 'checked');
+                    } else {
+                        el.removeAttribute('checked');
+                    }
+                } else {
+                    el.setAttribute('value', el.value);
+                    if (el.tagName === 'TEXTAREA') {
+                        el.innerHTML = el.value;
+                    }
+                }
+            });
+
+            const opt = {
+                margin:       [10, 10, 10, 10], 
+                filename:     `Discharge_Summary_${currentPatient ? currentPatient.hn : 'Report'}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true, letterRendering: true },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(document.getElementById('printableArea')).save().then(() => {
+                pdfHeader.style.display = 'none';
+                noPrintElements.forEach(el => el.style.display = '');
+                
+                // คืนค่า display ที่ถูกต้อง
+                document.querySelector('.view-toggle').style.display = 'block';
+                document.querySelector('.btn-group').style.display = 'flex';
+                document.querySelector('.patient-header-bar').style.display = 'flex';
+
+                if (returnToTable) {
+                    showRecords();
+                }
+            });
+        }
+
+        document.getElementById('dischargeForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const now = new Date().toLocaleString('th-TH');
+
+            const formData = {
+                id: editingId || Date.now(),
+                createdAt: document.getElementById('createdDate').value || now,
+                updatedAt: now,
+
+                hn: currentPatient ? currentPatient.hn : '-',
+                an: currentPatient ? currentPatient.an : '-',
+                patientName: currentPatient ? currentPatient.name : '-',
+
+                admitDate: document.getElementById('admitDate').value,
+                admitTime: document.getElementById('admitTime').value,
+                dischargeWard: document.getElementById('dischargeWard').value,
+                dischargeDate: document.getElementById('dischargeDate').value,
+                dischargeTime: document.getElementById('dischargeTime').value,
+                
+                dischargeType: Array.from(document.querySelectorAll('input[name="dischargeType"]:checked')).map(cb => cb.value),
+                transferLocation: document.getElementById('transferLocation').value,
+                dischargeReason: document.getElementById('dischargeReason').value,
+                followUpType: document.querySelector('input[name="followUpType"]:checked')?.value || '',
+                
+                initialDiagnosis: document.getElementById('initialDiagnosis').value,
+                dischargeDiagnosis: document.getElementById('dischargeDiagnosis').value,
+                
+                temperature: document.getElementById('temperature').value,
+                pulse: document.getElementById('pulse').value,
+                respiration: document.getElementById('respiration').value,
+                bloodPressure: document.getElementById('bloodPressure').value,
+                o2Sat: document.getElementById('o2Sat').value,
+                
+                consciousness: document.querySelector('input[name="consciousness"]:checked')?.value || '',
+                selfCare: document.querySelector('input[name="selfCare"]:checked')?.value || '',
+                behavior: Array.from(document.querySelectorAll('input[name="behavior"]:checked')).map(cb => cb.value),
+                behaviorOther: document.getElementById('behaviorOther').value,
+                transport: Array.from(document.querySelectorAll('input[name="transport"]:checked')).map(cb => cb.value),
+                medEquipment: document.querySelector('input[name="medEquipment"]:checked')?.value || '',
+                medEquipmentDetail: document.getElementById('medEquipmentDetail').value,
+                
+                medication: document.querySelector('input[name="medication"]:checked')?.value || '',
+                medicationDetails: document.getElementById('medicationTextarea').value,
+                nursing: document.querySelector('input[name="nursing"]:checked')?.value || '',
+                nursingDetails: document.getElementById('nursingTextarea').value,
+                diet: document.querySelector('input[name="diet"]:checked')?.value || '',
+                dietDetails: document.getElementById('dietTextarea').value,
+                painManage: document.querySelector('input[name="painManage"]:checked')?.value || '',
+                painDetails: document.getElementById('painTextarea').value,
+                specialCare: document.querySelector('input[name="specialCare"]:checked')?.value || '',
+                specialCareDetails: document.getElementById('specialCareTextarea').value,
+                
+                followUpDate1: document.getElementById('followUpDate1').value,
+                followUpTime1: document.getElementById('followUpTime1').value,
+                followUpDept1: document.getElementById('followUpDept1').value,
+                followUpDate2: document.getElementById('followUpDate2').value,
+                followUpTime2: document.getElementById('followUpTime2').value,
+                followUpDept2: document.getElementById('followUpDept2').value,
+                homeVisit: document.querySelector('input[name="homeVisit"]:checked')?.value || '',
+                
+                urgentSigns: document.getElementById('urgentSigns').value,
+                coordName: document.getElementById('coordName').value,
+                coordTel: document.getElementById('coordTel').value,
+                specialPrep: document.getElementById('specialPrep').value,
+                
+                interpreter: document.querySelector('input[name="interpreter"]:checked')?.value || '',
+                interpLanguage: document.getElementById('interpLanguage').value,
+                patSignDate: document.getElementById('patSignDate').value,
+                rnSignDate: document.getElementById('rnSignDate').value,
+
+                deathDate: document.getElementById('deathDate').value,
+                deathTime: document.getElementById('deathTime').value,
+                notifyBy: document.getElementById('notifyBy').value,
+                pronounceBy: document.getElementById('pronounceBy').value,
+                autopsy: document.querySelector('input[name="autopsy"]:checked')?.value || '',
+                organDonate: document.querySelector('input[name="organDonate"]:checked')?.value || '',
+                
+                dischargeTypeSimple: document.querySelector('input[name="dischargeType"]:checked')?.value || 'แพทย์อนุมัติ'
+            };
+
+            if (editingId) {
+                const index = records.findIndex(r => r.id === editingId);
+                // Keep existing patient info if editing unless blank
+                if(!formData.hn || formData.hn === '-') formData.hn = records[index].hn;
+                if(!formData.an || formData.an === '-') formData.an = records[index].an;
+                if(!formData.patientName || formData.patientName === '-') formData.patientName = records[index].patientName;
+                
+                records[index] = formData;
+                editingId = null;
+            } else {
+                records.push(formData);
+            }
+
+            // บันทึกลง localStorage ของจริง
+            localStorage.setItem('dischargeRecords', JSON.stringify(records));
+            alert('บันทึกข้อมูลเรียบร้อยแล้ว');
+            resetForm();
+            showRecords();
+        });
+
+        function displayRecords() {
+            const tbody = document.getElementById('recordsTableBody');
+            tbody.innerHTML = '';
+            
+            const displayList = records; 
+
+            if (displayList.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 20px; color: #999;">ไม่พบข้อมูล</td></tr>`;
+                return;
+            }
+
+            displayList.forEach(record => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${record.hn || '-'}<br><small style="color:#999">${record.an || '-'}</small></td>
+                    <td>${record.patientName || '-'}</td>
+                    <td>${record.dischargeDate || '-'}</td>
+                    <td>
+                        <div class="history-badge"><i class="fas fa-plus"></i> ${record.createdAt}</div><br>
+                        <div class="history-badge" style="background:#e3f2fd; color:#1565c0;"><i class="fas fa-pen"></i> ${record.updatedAt}</div>
+                    </td>
+                    <td style="color: ${record.o2Sat && parseInt(record.o2Sat) < 95 ? 'red' : 'green'}; font-weight:bold;">
+                        ${record.o2Sat ? record.o2Sat + '%' : '-'}
+                    </td>
+                    <td>
+                        <button class="action-btn" onclick="viewRecord(${record.id})" style="background: var(--primary-dark); color: white;" title="ดูข้อมูล"><i class="fas fa-eye"></i></button>
+                        <button class="action-btn" onclick="editRecord(${record.id})" style="background: #ffa000; color: white;" title="แก้ไข"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn" onclick="printRecord(${record.id})" style="background: #ff9800; color: white;" title="Export PDF"><i class="fas fa-file-pdf"></i></button>
+                        <button class="action-btn" onclick="deleteRecord(${record.id})" style="background: #d32f2f; color: white;" title="ลบ"><i class="fas fa-trash"></i></button>
+                    </td>
+                `;
+            });
+        }
+
+        function viewRecord(id) {
+            const record = records.find(r => r.id === id);
+            if (!record) return;
+
+            const modalBody = document.getElementById('modalBody');
+            modalBody.innerHTML = `
+                <h2 class="modal-header-text">รายละเอียด Discharge Summary</h2>
+                <div style="background:#f9f9f9; padding:10px; border-radius:6px; margin-bottom:15px; font-size:0.9rem;">
+                    <strong>ผู้ป่วย:</strong> ${record.patientName} (HN: ${record.hn}, AN: ${record.an})<br>
+                    <strong>แก้ไขล่าสุด:</strong> ${record.updatedAt}
+                </div>
+                
+                 <div class="view-row"><div class="view-label">การรับเข้า:</div><div class="view-value">${record.admitDate || '-'} ${record.admitTime || ''}</div></div>
+                 <div class="view-row"><div class="view-label">การจำหน่าย:</div><div class="view-value">${record.dischargeDate || '-'} ${record.dischargeTime || ''}</div></div>
+                 <div class="view-row"><div class="view-label">วินิจฉัย:</div><div class="view-value">${record.dischargeDiagnosis || '-'}</div></div>
+            `;
+            document.getElementById('viewModal').style.display = 'block';
+        }
+
+        function editRecord(id) {
+            const record = records.find(r => r.id === id);
+            if (!record) return;
+
+            editingId = id;
+            document.getElementById('createdDate').value = record.createdAt;
+
+            const setVal = (id, val) => { if(document.getElementById(id)) document.getElementById(id).value = val || ''; }
+            const setCheck = (name, vals) => {
+                document.querySelectorAll(`input[name="${name}"]`).forEach(el => {
+                    el.checked = Array.isArray(vals) ? vals.includes(el.value) : el.value === vals;
+                });
+            }
+
+            setVal('admitDate', record.admitDate);
+            setVal('admitTime', record.admitTime);
+            setVal('dischargeWard', record.dischargeWard);
+            setVal('dischargeDate', record.dischargeDate);
+            setVal('dischargeTime', record.dischargeTime);
+            setCheck('dischargeType', record.dischargeType);
+            setVal('transferLocation', record.transferLocation);
+            setVal('dischargeReason', record.dischargeReason);
+            setCheck('followUpType', record.followUpType);
+            setVal('initialDiagnosis', record.initialDiagnosis);
+            setVal('dischargeDiagnosis', record.dischargeDiagnosis);
+            setVal('temperature', record.temperature);
+            setVal('pulse', record.pulse);
+            setVal('respiration', record.respiration);
+            setVal('bloodPressure', record.bloodPressure);
+            setVal('o2Sat', record.o2Sat);
+            setCheck('consciousness', record.consciousness);
+            setCheck('selfCare', record.selfCare);
+            setCheck('behavior', record.behavior);
+            setVal('behaviorOther', record.behaviorOther);
+            setCheck('transport', record.transport);
+            setCheck('medEquipment', record.medEquipment);
+            setVal('medEquipmentDetail', record.medEquipmentDetail);
+            setCheck('medication', record.medication);
+            setVal('medicationTextarea', record.medicationDetails);
+            toggleTextarea('medicationTextarea', record.medication === 'มี');
+            setCheck('nursing', record.nursing);
+            setVal('nursingTextarea', record.nursingDetails);
+            toggleTextarea('nursingTextarea', record.nursing === 'มี');
+            setCheck('diet', record.diet);
+            setVal('dietTextarea', record.dietDetails);
+            toggleTextarea('dietTextarea', record.diet === 'มี');
+            setCheck('painManage', record.painManage);
+            setVal('painTextarea', record.painDetails);
+            toggleTextarea('painTextarea', record.painManage === 'มี');
+            setCheck('specialCare', record.specialCare);
+            setVal('specialCareTextarea', record.specialCareDetails);
+            toggleTextarea('specialCareTextarea', record.specialCare === 'มี');
+            
+            setVal('followUpDate1', record.followUpDate1);
+            setVal('followUpTime1', record.followUpTime1);
+            setVal('followUpDept1', record.followUpDept1);
+            setVal('followUpDate2', record.followUpDate2);
+            setVal('followUpTime2', record.followUpTime2);
+            setVal('followUpDept2', record.followUpDept2);
+            setCheck('homeVisit', record.homeVisit);
+            
+            setVal('urgentSigns', record.urgentSigns);
+            setVal('coordName', record.coordName);
+            setVal('coordTel', record.coordTel);
+            setVal('specialPrep', record.specialPrep);
+            setCheck('interpreter', record.interpreter);
+            setVal('interpLanguage', record.interpLanguage);
+            setVal('patSignDate', record.patSignDate);
+            setVal('rnSignDate', record.rnSignDate);
+            
+            setVal('deathDate', record.deathDate);
+            setVal('deathTime', record.deathTime);
+            setVal('notifyBy', record.notifyBy);
+            setVal('pronounceBy', record.pronounceBy);
+            setCheck('autopsy', record.autopsy);
+            setCheck('organDonate', record.organDonate);
+
+            showForm();
+            window.scrollTo(0, 0);
+        }
+
+        function deleteRecord(id) {
+            if (confirm('ยืนยันการลบรายการนี้?')) {
+                records = records.filter(r => r.id !== id);
+                localStorage.setItem('dischargeRecords', JSON.stringify(records));
+                displayRecords();
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('dischargeForm').reset();
+            editingId = null;
+            ['medicationTextarea', 'nursingTextarea', 'dietTextarea', 'painTextarea', 'specialCareTextarea'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.style.display = 'none';
+            });
+        }
+
+        function closeModal() {
+            document.getElementById('viewModal').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('viewModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

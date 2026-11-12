@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Graphic Sheet | ENR V3</title>
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/graphic-sheet.css">
+</head>
+<body class="gs-page">
+  <!-- CP7.10.1-CLINICAL-EVENT-SLOT-ALIGNMENT -->
+
+  <header class="gs-topbar no-print">
+    <div class="gs-brand">
+      <span class="gs-logo">ENR</span>
+      <div>
+        <strong>Patient Parameters &amp; Graphic Sheet</strong>
+        <small>สัญญาณชีพและใบบันทึกกราฟ</small>
+      </div>
+    </div>
+    <div class="gs-actions">
+      <button class="gs-btn gs-btn--ghost" type="button" onclick="location.href='paperless.html'">← Paperless Hub</button>
+      <button class="gs-btn gs-btn--ghost" type="button" onclick="location.href='patient_list.html'">ผู้ป่วย</button>
+    </div>
+  </header>
+
+  <section class="gs-patientbar no-print">
+    <strong id="patientName">-</strong>
+    <span>HN <b id="patientHN">-</b></span>
+    <span>AN <b id="patientAN">-</b></span>
+    <span>Ward <b id="patientWard">-</b></span>
+  </section>
+
+  <nav class="gs-tabs no-print">
+    <a class="gs-tab" href="patient_parameters.html">Parameters</a>
+    <a class="gs-tab" href="clinical_events.html">Clinical Events</a>
+    <a class="gs-tab gs-tab--active" href="graphic_sheet.html">Graphic Sheet</a>
+  </nav>
+
+  <main class="gs-wrap">
+    <section class="gs-toolbar no-print">
+      <div class="gs-toolbar__left gs-sheet-toolbar">
+        <div class="gs-sheet-nav" aria-label="Graphic Sheet pagination">
+          <button class="gs-btn gs-btn--ghost gs-sheet-nav__btn" id="prevSheetBtn" type="button">← แผ่นก่อนหน้า</button>
+
+          <div class="gs-sheet-current" aria-live="polite">
+            <span>GRAPHIC SHEET</span>
+            <strong id="sheetPosition">แผ่นที่ 01</strong>
+            <small id="sheetRange">Hospital Day 1–7</small>
+          </div>
+
+          <button class="gs-btn gs-btn--ghost gs-sheet-nav__btn" id="nextSheetBtn" type="button">แผ่นถัดไป →</button>
+        </div>
+
+        <div class="gs-sheet-tools">
+          <label class="gs-sheet-jump">
+            <span>ไปแผ่นที่</span>
+            <select id="sheetSelect" aria-label="เลือก Graphic Sheet"></select>
+          </label>
+
+          <label class="gs-sheet-date-jump">
+            <span>วันที่อ้างอิง</span>
+            <input type="date" id="startDate">
+          </label>
+
+          <button class="gs-btn gs-btn--ghost" id="admissionBtn" type="button">แผ่นแรก</button>
+          <button class="gs-btn gs-btn--ghost" id="currentSheetBtn" type="button">แผ่นปัจจุบัน</button>
+          <span class="gs-hospital-day-range" id="hospitalDayRange">Hospital Day -</span>
+        </div>
+      </div>
+      <div class="gs-toolbar__right">
+        <div class="gs-slot-rule">
+          <strong>Plot rule:</strong> 02 / 06 / 10 / 14 / 18 / 22 น. ±20 นาที
+          <small>หลายค่าใน Slot เดียว → ใช้ค่าที่ใกล้เวลา Slot ที่สุด • ค่าอื่นยังอยู่ใน Parameters table/Audit</small>
+        </div>
+        <div class="gs-print-actions">
+          <button class="gs-btn gs-btn--ghost" id="printBtn" type="button">🖨 พิมพ์แผ่นนี้</button>
+          <button class="gs-btn gs-btn--primary" id="printAllBtn" type="button">📚 พิมพ์ทุกแผ่น</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="gs-rollover-notice no-print" id="sheetRolloverNotice" hidden>
+      <div>
+        <strong id="sheetRolloverTitle">Graphic Sheet updated</strong>
+        <span id="sheetRolloverText"></span>
+      </div>
+      <button class="gs-btn gs-btn--ghost" id="openCurrentSheetBtn" type="button" hidden>
+        เปิดแผ่นปัจจุบัน
+      </button>
+    </section>
+
+    <section class="gs-screen-frame">
+      <article class="graphic-sheet-page" id="graphicSheet">
+        <header class="sheet-header">
+          <div class="sheet-hospital">โรงพยาบาลชลบุรี • Chonburi Hospital</div>
+          <h1>ฟอร์มปรอท</h1>
+          <div class="sheet-subtitle">Patient Parameters &amp; Graphic Sheet</div>
+
+          <div class="sheet-patient-meta">
+            <span>ชื่อ-สกุล: <b id="sheetPatientName">-</b></span>
+            <span>HN: <b id="sheetHN">-</b></span>
+            <span>AN: <b id="sheetAN">-</b></span>
+            <span>Ward: <b id="sheetWard">-</b></span>
+            <span>DX: <b id="sheetDX">-</b></span>
+          </div>
+
+          <div class="sheet-document-meta">
+            <span id="sheetNumberMeta">Graphic Sheet No. 01</span>
+            <span id="sheetHospitalDayMeta">Hospital Day 1–7</span>
+            <span id="sheetDateRangeMeta">-</span>
+          </div>
+        </header>
+
+        <div id="sheetBody"></div>
+
+        <footer class="sheet-footer">
+          <span>Electronic Nursing Record • Graphic Sheet Prototype</span>
+          <span id="sheetFooterPage">Sheet 01 • HD 1–7 • AN -</span>
+          <span>Plot slots: 02 / 06 / 10 / 14 / 18 / 22 ±20 min</span>
+        </footer>
+      </article>
+    </section>
+
+    <section
+      class="gs-print-all-host"
+      id="printAllSheets"
+      aria-hidden="true"
+    ></section>
+  </main>
+
+  <script src="assets/js/core/enr-core.js"></script>
+  <script src="assets/js/modules/parameter-store.js"></script>
+  <script src="assets/js/modules/io-source-master.js"></script>
+  <script src="assets/js/modules/io-engine.js"></script>
+  <script src="assets/js/modules/clinical-event-store.js"></script>
+  <script src="assets/js/pages/graphic-sheet.js"></script>
+</body>
+</html>
