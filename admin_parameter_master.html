@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Parameter Master | Nursing Admin | ENR V3</title>
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/admin-parameter-master.css">
+</head>
+<body class="pm-admin-page">
+  <!-- CP7.12-PARAMETER-LIFECYCLE-GRAPHIC-CORE-LOCK -->
+
+  <nav class="pm-topbar">
+    <div class="pm-topbar__brand">
+      <span class="pm-logo">ENR</span>
+      <div>
+        <strong>Nursing Admin • Parameter Master</strong>
+        <small>กำหนด Parameter เพิ่มเติมจาก Browser โดยไม่แก้ Graphic Sheet</small>
+      </div>
+    </div>
+    <div class="pm-topbar__actions">
+      <span class="pm-admin-user">👤 <span id="adminUser">Nursing Admin</span></span>
+      <a class="pm-btn pm-btn--ghost" href="admin.html">← Template Admin</a>
+      <a class="pm-btn pm-btn--ghost" href="patient_parameters.html">Patient Parameters</a>
+    </div>
+  </nav>
+
+  <main class="pm-shell">
+    <section class="pm-hero">
+      <div>
+        <span class="pm-kicker">NURSING ADMIN • DATA-DRIVEN PARAMETERS</span>
+        <h1>Parameter Master</h1>
+        <p>
+          เพิ่ม Parameter เช่น CBG, CVP, ETCO₂ หรือข้อมูลเฉพาะ Ward ได้จาก Browser
+          โดย Custom Parameter จะ <b>ไม่ Plot ใน Graphic Sheet</b> จนกว่าจะมี System Mapping ที่อนุมัติ
+        </p>
+      </div>
+      <div class="pm-safety-card">
+        <strong>🔒 Graphic Sheet Mapping = System Controlled</strong>
+        <span>ป้องกัน Parameter ใหม่ทำให้ฟอร์มปรอท/A4 ที่อนุมัติแล้วเปลี่ยนเอง</span>
+      </div>
+    </section>
+
+    <section class="pm-summary" id="summaryCards"></section>
+
+    <div class="pm-workbench">
+      <aside class="pm-list-panel">
+        <div class="pm-list-head">
+          <div>
+            <span class="pm-kicker">MASTER LIST</span>
+            <h2>รายการ Parameter</h2>
+          </div>
+          <button class="pm-btn pm-btn--primary" id="newParameterBtn" type="button">＋ เพิ่ม Parameter</button>
+        </div>
+
+        <div class="pm-list-tools">
+          <input id="parameterSearch" type="search" placeholder="ค้นหา code / ชื่อ / unit...">
+          <select id="parameterFilter">
+            <option value="ALL">ทั้งหมด</option>
+            <option value="CORE">Core / System</option>
+            <option value="CUSTOM_ACTIVE">Custom ACTIVE</option>
+            <option value="CUSTOM_RETIRED">Custom RETIRED</option>
+          </select>
+        </div>
+
+        <div class="pm-list" id="parameterList"></div>
+      </aside>
+
+      <section class="pm-editor">
+        <div class="pm-editor-head">
+          <div>
+            <span class="pm-kicker" id="editorKicker">CREATE CUSTOM PARAMETER</span>
+            <h2 id="editorTitle">เพิ่ม Parameter</h2>
+            <p id="editorSubtext">ค่าที่สร้างใหม่จะแสดงใน Patient Parameters เท่านั้น</p>
+          </div>
+          <div class="pm-editor-actions">
+            <button class="pm-btn pm-btn--ghost" id="resetEditorBtn" type="button">ล้างฟอร์ม</button>
+            <button class="pm-btn pm-btn--primary" id="saveParameterBtn" type="button">💾 บันทึก</button>
+          </div>
+        </div>
+
+        <section class="pm-card pm-system-view" id="systemParameterView" hidden>
+          <div class="pm-lock-banner">
+            <strong>🔒 Core Parameter • System Locked</strong>
+            <span>ดูข้อมูลได้ แต่ไม่แก้ mapping จาก Nursing Admin</span>
+          </div>
+          <div class="pm-system-grid" id="systemParameterDetails"></div>
+
+          <div class="pm-core-lifecycle" id="systemStatusControl" hidden>
+            <div class="pm-core-lifecycle__text">
+              <strong>Parameter Availability</strong>
+              <span>RETIRED = หยุดรับค่ารายการใหม่ แต่ข้อมูลย้อนหลังยังคงอยู่ • ไม่ใช่การลบข้อมูล</span>
+            </div>
+            <label class="pm-field pm-core-lifecycle__select">
+              <span>Status</span>
+              <select id="systemParameterStatus">
+                <option value="ACTIVE">ACTIVE</option>
+                <option value="RETIRED">RETIRED</option>
+              </select>
+            </label>
+            <button class="pm-btn pm-btn--primary" id="saveSystemStatusBtn" type="button">บันทึกสถานะ</button>
+          </div>
+        </section>
+
+        <form class="pm-card" id="parameterForm" autocomplete="off">
+          <input type="hidden" id="parameterId">
+
+          <div class="pm-form-grid">
+            <label class="pm-field">
+              <span>Parameter Code *</span>
+              <input id="parameterCode" maxlength="30" placeholder="เช่น CBG / CVP / ETCO2">
+              <small>อังกฤษ/ตัวเลข/_ • เมื่อบันทึกแล้ว Code จะล็อก</small>
+            </label>
+
+            <label class="pm-field">
+              <span>ชื่อภาษาไทย *</span>
+              <input id="parameterNameTh" placeholder="เช่น น้ำตาลในเลือดปลายนิ้ว">
+            </label>
+
+            <label class="pm-field">
+              <span>English Name</span>
+              <input id="parameterNameEn" placeholder="Capillary Blood Glucose">
+            </label>
+
+            <label class="pm-field">
+              <span>Short Label</span>
+              <input id="parameterShortLabel" maxlength="20" placeholder="CBG">
+            </label>
+
+            <label class="pm-field">
+              <span>Data Type *</span>
+              <select id="parameterDataType">
+                <option value="NUMBER">NUMBER</option>
+                <option value="TEXT">TEXT</option>
+                <option value="BOOLEAN">BOOLEAN</option>
+                <option value="SELECT">SELECT</option>
+              </select>
+            </label>
+
+            <label class="pm-field">
+              <span>Unit</span>
+              <input id="parameterUnit" maxlength="30" placeholder="mg/dL / mmHg / cmH₂O">
+            </label>
+
+            <label class="pm-field pm-number-only">
+              <span>Minimum</span>
+              <input id="parameterMin" type="number" step="any">
+            </label>
+
+            <label class="pm-field pm-number-only">
+              <span>Maximum</span>
+              <input id="parameterMax" type="number" step="any">
+            </label>
+
+            <label class="pm-field pm-number-only">
+              <span>Decimal Places</span>
+              <input id="parameterDecimals" type="number" min="0" max="4" step="1" value="0">
+            </label>
+
+            <label class="pm-field">
+              <span>Display Order</span>
+              <input id="parameterOrder" type="number" min="1" step="1" value="900">
+            </label>
+
+            <label class="pm-field">
+              <span>Scope</span>
+              <select id="parameterScope">
+                <option value="HOSPITAL">HOSPITAL</option>
+                <option value="WARD">WARD</option>
+              </select>
+            </label>
+
+            <label class="pm-field" id="wardScopeField" hidden>
+              <span>Ward Code / Ward Name *</span>
+              <input id="parameterWard" placeholder="เช่น 34 หรือ หอผู้ป่วยเคมีบำบัด">
+            </label>
+
+            <label class="pm-field pm-span-2" id="selectOptionsField" hidden>
+              <span>SELECT Options</span>
+              <textarea id="parameterOptions" rows="3" placeholder="หนึ่งตัวเลือกต่อบรรทัด เช่น&#10;Negative&#10;Positive"></textarea>
+            </label>
+          </div>
+
+          <div class="pm-config-grid">
+            <label class="pm-check-card">
+              <input id="showInParameters" type="checkbox" checked>
+              <span>
+                <strong>Patient Parameters</strong>
+                <small>แสดงช่องให้พยาบาลบันทึก</small>
+              </span>
+            </label>
+
+            <label class="pm-check-card">
+              <input id="showInMonitoringTrend" type="checkbox">
+              <span>
+                <strong>Monitoring Trend metadata</strong>
+                <small>เก็บ flag ไว้สำหรับเชื่อม Trend ใน M2</small>
+              </span>
+            </label>
+
+            <div class="pm-check-card pm-check-card--locked">
+              <span class="pm-lock-icon">🔒</span>
+              <span>
+                <strong>Graphic Sheet: NO</strong>
+                <small>Custom Parameter ไม่สามารถ Plot เองจาก Admin</small>
+              </span>
+            </div>
+          </div>
+
+          <div class="pm-status-row">
+            <label class="pm-field">
+              <span>Status</span>
+              <select id="parameterStatus">
+                <option value="ACTIVE">ACTIVE</option>
+                <option value="RETIRED">RETIRED</option>
+              </select>
+            </label>
+
+            <div class="pm-rule-note">
+              <strong>Clinical Master Rule</strong>
+              <span>
+                Parameter ที่เคยใช้งานแล้วไม่ Hard delete • ใช้ RETIRED เพื่อรักษาข้อมูลย้อนหลัง
+              </span>
+            </div>
+          </div>
+        </form>
+
+        <section class="pm-card">
+          <div class="pm-card-head">
+            <div>
+              <span class="pm-kicker">AUDIT PREVIEW</span>
+              <h3>การเปลี่ยนแปลงล่าสุด</h3>
+            </div>
+            <span class="pm-prototype-badge">Browser Prototype</span>
+          </div>
+          <div class="pm-audit" id="auditList"></div>
+        </section>
+      </section>
+    </div>
+  </main>
+
+  <script src="assets/js/core/enr-core.js"></script>
+  <script src="assets/js/modules/parameter-master-store.js"></script>
+  <script src="assets/js/pages/admin-parameter-master.js"></script>
+</body>
+</html>
