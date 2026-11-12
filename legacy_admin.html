@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Manage Diagnosis</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    
+    <script src="data.js"></script> 
+
+    <style>
+        .admin-container { max-width: 1400px; margin: 30px auto; padding: 0 20px; display: grid; grid-template-columns: 400px 1fr; gap: 25px; }
+        .list-group { height: 750px; overflow-y: auto; border: 1px solid #ddd; border-radius: 8px; background: white; }
+        .list-item { padding: 15px; border-bottom: 1px solid #eee; cursor: pointer; transition: 0.2s; }
+        .list-item:hover { background: #e0f2f1; }
+        .list-item.active { background: var(--primary); color: white; }
+        .list-item h4 { margin: 0 0 5px 0; font-size: 1rem; }
+        .list-item p { margin: 0; font-size: 0.8rem; opacity: 0.8; }
+        .cat-badge { font-size: 0.75rem; background: #ddd; color: #333; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-bottom: 5px; }
+        
+        .editor-card { background: white; padding: 30px; border-radius: 12px; box-shadow: var(--shadow); position: sticky; top: 20px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; color: var(--text-gray); }
+        .btn-add { background: var(--success); color: white; width: 100%; margin-bottom: 15px; }
+        .btn-delete { background: var(--danger); color: white; float: right; }
+        
+        /* โซน Backup */
+        .backup-zone { background: #e3f2fd; border: 1px dashed #2196f3; padding: 15px; border-radius: 8px; margin-top: 20px; }
+        .backup-zone h4 { margin-top: 0; color: #1565c0; font-size: 1rem; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div style="font-weight:bold; font-size:1.1rem;"><i class="fas fa-cog"></i> Focus/NANDA-I Manager</div>
+        <div>
+            <button onclick="window.location.href='index.html'" style="background:rgba(255,255,255,0.2); border:none; color:white; padding:5px 15px; border-radius:4px; cursor:pointer;">
+                <i class="fas fa-home"></i> กลับหน้าบันทึก
+            </button>
+            <button onclick="window.location.href='login.html'" style="background:rgba(255,255,255,0.2); border:none; color:white; padding:5px 15px; border-radius:4px; cursor:pointer; margin-left:10px;">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+    </nav>
+
+    <div class="admin-container">
+        <div>
+            <button class="btn btn-primary btn-add" onclick="addNewItem()"><i class="fas fa-plus"></i> เพิ่มรายการใหม่ (Add New)</button>
+            <div class="list-group" id="diagnosisList"></div>
+            <div style="margin-top:10px; font-size:0.8rem; color:#666;">* คลิกที่รายชื่อเพื่อแก้ไข</div>
+        </div>
+
+        <div class="editor-card">
+            <h3 style="margin-top:0; color:var(--primary); border-bottom:1px solid #eee; padding-bottom:10px;">
+                <i class="fas fa-edit"></i> Edit Focus / NANDA-I
+            </h3>
+            
+            <input type="hidden" id="editId">
+            
+            <div class="form-group">
+                <label>Category (หมวดหมู่โรค):</label>
+                <input type="text" id="editCategory" list="catList" placeholder="เลือกหรือพิมพ์เอง..." style="background:#fff3e0;">
+                <datalist id="catList">
+                    <option value="ทั่วไป/สุขสบาย (General)">
+                    <option value="ระบบหายใจ (Respiratory)">
+                    <option value="ระบบหัวใจ/หลอดเลือด (Cardiovascular)">
+                    <option value="ระบบทางเดินอาหาร (GI)">
+                    <option value="ศัลยกรรม/แผล (Surgical)">
+                    <option value="ระบบประสาท/จิตใจ (Neuro/Psych)">
+                    <option value="ความปลอดภัย (Safety)">
+                    <option value="กระดูกและกล้ามเนื้อ (Orthopedic)">
+                </datalist>
+            </div>
+
+            <div class="form-group">
+                <label>Focus Name / NANDA-I Diagnosis:</label>
+                <input type="text" id="editNanda" placeholder="เช่น Acute Pain, Risk for Infection...">
+            </div>
+
+            <div class="form-group">
+                <label>Keywords (คำค้นหา - คั่นด้วยลูกน้ำ):</label>
+                <input type="text" id="editKeywords" placeholder="เช่น ปวด, เจ็บ, pain, แผลผ่าตัด">
+            </div>
+
+            <div class="form-group" style="background:#f9f9f9; padding:15px; border-radius:8px; border:1px dashed #ccc;">
+                <label style="color:var(--primary-dark);">Template: Data (S, O)</label>
+                <textarea id="editD" style="height:80px;"></textarea>
+                <label style="color:var(--primary-dark);">Template: Action (A)</label>
+                <textarea id="editA" style="height:80px;"></textarea>
+                <label style="color:var(--primary-dark);">Template: Response (R)</label>
+                <textarea id="editR" style="height:60px;"></textarea>
+            </div>
+
+            <div style="margin-top:20px;">
+                <button class="btn btn-primary" onclick="saveItem()"><i class="fas fa-save"></i> บันทึก (Save Changes)</button>
+                <button class="btn btn-reset btn-delete" onclick="deleteItem()"><i class="fas fa-trash"></i> ลบรายการนี้</button>
+            </div>
+            
+            <div class="backup-zone">
+                <h4><i class="fas fa-database"></i> ระบบสำรองข้อมูล / ย้ายเครื่อง</h4>
+                <div style="display:flex; gap:10px; align-items:center;">
+                    <button class="btn" onclick="exportBackup()" style="background:#1976d2; color:white; font-size:0.85rem;">
+                        <i class="fas fa-download"></i> Backup (ดาวน์โหลด)
+                    </button>
+                    <span style="color:#999;">|</span>
+                    <input type="file" id="restoreFile" accept=".json" style="width:180px; font-size:0.8rem;">
+                    <button class="btn" onclick="importBackup()" style="background:#f57c00; color:white; font-size:0.85rem;">
+                        <i class="fas fa-upload"></i> Restore (กู้คืน)
+                    </button>
+                </div>
+            </div>
+
+            <hr style="margin: 20px 0; border:0; border-top:1px solid #eee;">
+            <details>
+                <summary style="cursor:pointer; color:#666;">เครื่องมือขั้นสูง (Advanced Tools)</summary>
+                <textarea id="jsonImport" placeholder="วางโค้ด JSON ที่นี่..." style="font-family:monospace; font-size:0.8rem; width:100%; margin-top:5px;"></textarea>
+                <button class="btn" onclick="importJSON()" style="background:#607d8b; color:white; font-size:0.8rem; margin-top:5px;">Import JSON</button>
+                <button class="btn" onclick="autoCategorize()" style="background:#ff9800; color:white; font-size:0.8rem; margin-top:5px;">Auto Categorize</button>
+                <button class="btn" onclick="resetToInitial()" style="background:#d32f2f; color:white; font-size:0.8rem; margin-top:5px; float:right;">Reset to Data.js</button>
+            </details>
+        </div>
+    </div>
+
+    <script>
+        // 1. Security Check
+        if (!sessionStorage.getItem('isLoggedIn') || !sessionStorage.getItem('currentUser').includes('Admin')) {
+            alert("เฉพาะ Admin เท่านั้นที่เข้าถึงหน้านี้ได้"); window.location.href = 'index.html';
+        }
+
+        // 2. Load Data Logic (Load from LocalStorage or Data.js)
+        let masterData = JSON.parse(localStorage.getItem('masterDiagnosis'));
+
+        // ★★★ จุดสำคัญ: ถ้าไม่มีข้อมูลในเครื่อง ให้ดึงจาก data.js (initialMasterData) มาใช้ ★★★
+        if (!masterData || masterData.length < 5) {
+            if (typeof initialMasterData !== 'undefined') {
+                masterData = initialMasterData;
+                localStorage.setItem('masterDiagnosis', JSON.stringify(masterData));
+                console.log("Loaded data from data.js");
+            } else {
+                masterData = []; // กรณีไม่มีไฟล์ data.js
+            }
+        }
+        
+        // 3. Render List
+        function renderList() {
+            const list = document.getElementById('diagnosisList'); list.innerHTML = '';
+            // Sort by Category then NANDA Name
+            masterData.sort((a,b) => (a.category || "").localeCompare(b.category || "") || a.nanda.localeCompare(b.nanda));
+
+            masterData.forEach((item, index) => {
+                const div = document.createElement('div'); div.className = 'list-item';
+                const catBadge = item.category ? `<span class="cat-badge">${item.category}</span>` : `<span class="cat-badge" style="background:#eee; color:#999;">Uncategorized</span>`;
+                div.innerHTML = `${catBadge}<h4>${item.nanda}</h4><p>${item.keywords.join(', ')}</p>`;
+                div.onclick = () => loadEditor(index); div.id = `item-${index}`;
+                list.appendChild(div);
+            });
+        }
+
+        function loadEditor(index) {
+            document.querySelectorAll('.list-item').forEach(el => el.classList.remove('active'));
+            document.getElementById(`item-${index}`).classList.add('active');
+            const item = masterData[index];
+            document.getElementById('editId').value = index;
+            document.getElementById('editCategory').value = item.category || "ทั่วไป/สุขสบาย (General)";
+            document.getElementById('editNanda').value = item.nanda;
+            document.getElementById('editKeywords').value = item.keywords.join(', ');
+            document.getElementById('editD').value = item.template.d;
+            document.getElementById('editA').value = item.template.a;
+            document.getElementById('editR').value = item.template.r;
+        }
+
+        function addNewItem() {
+            document.getElementById('editId').value = 'NEW';
+            document.getElementById('editCategory').value = 'ทั่วไป/สุขสบาย (General)';
+            document.getElementById('editNanda').value = '';
+            document.getElementById('editKeywords').value = '';
+            document.getElementById('editD').value = ''; document.getElementById('editA').value = ''; document.getElementById('editR').value = '';
+            document.getElementById('editNanda').focus();
+            document.querySelectorAll('.list-item').forEach(el => el.classList.remove('active'));
+        }
+
+        function saveItem() {
+            const id = document.getElementById('editId').value;
+            const newItem = {
+                id: id === 'NEW' ? Date.now().toString() : masterData[parseInt(id)].id,
+                category: document.getElementById('editCategory').value, 
+                nanda: document.getElementById('editNanda').value,
+                keywords: document.getElementById('editKeywords').value.split(',').map(k => k.trim()),
+                template: { d: document.getElementById('editD').value, a: document.getElementById('editA').value, r: document.getElementById('editR').value },
+                guide: ""
+            };
+            if(!newItem.nanda) return alert("ระบุชื่อ Focus");
+            if (id === 'NEW') masterData.push(newItem); else masterData[parseInt(id)] = newItem;
+            localStorage.setItem('masterDiagnosis', JSON.stringify(masterData)); renderList(); alert("บันทึกเรียบร้อย!");
+        }
+
+        function deleteItem() {
+            const id = document.getElementById('editId').value;
+            if(id === 'NEW') return;
+            if(confirm("ลบรายการนี้?")) { masterData.splice(parseInt(id), 1); localStorage.setItem('masterDiagnosis', JSON.stringify(masterData)); renderList(); addNewItem(); }
+        }
+
+        // --- Advanced Functions ---
+        function importJSON() {
+            try {
+                const json = JSON.parse(document.getElementById('jsonImport').value);
+                if(Array.isArray(json)) {
+                    if(confirm("เพิ่มต่อท้ายข้อมูลเดิม?")) { masterData = masterData.concat(json); localStorage.setItem('masterDiagnosis', JSON.stringify(masterData)); renderList(); alert("เพิ่มข้อมูลสำเร็จ"); }
+                }
+            } catch(e) { alert("JSON Error: " + e.message); }
+        }
+
+        function autoCategorize() {
+            if(!confirm("จัดหมวดหมู่อัตโนมัติจาก Keywords?")) return;
+            let count = 0;
+            masterData.forEach(item => {
+                const txt = (item.nanda + " " + item.keywords.join(" ")).toLowerCase();
+                if(!item.category || item.category === "Uncategorized") {
+                    if(txt.includes('pain')||txt.includes('ไข้')||txt.includes('bath')) item.category = "ทั่วไป/สุขสบาย (General)";
+                    else if(txt.includes('breath')||txt.includes('airway')||txt.includes('gas')||txt.includes('เหนื่อย')) item.category = "ระบบหายใจ (Respiratory)";
+                    else if(txt.includes('heart')||txt.includes('fluid')||txt.includes('shock')||txt.includes('bp')) item.category = "ระบบหัวใจ/หลอดเลือด (Cardiovascular)";
+                    else if(txt.includes('bowel')||txt.includes('diarrhea')||txt.includes('nutri')||txt.includes('nausea')) item.category = "ระบบทางเดินอาหาร (GI)";
+                    else if(txt.includes('surg')||txt.includes('wound')||txt.includes('infect')||txt.includes('skin')) item.category = "ศัลยกรรม/แผล (Surgical)";
+                    else if(txt.includes('stroke')||txt.includes('confus')||txt.includes('anxiet')||txt.includes('brain')) item.category = "ระบบประสาท/จิตใจ (Neuro/Psych)";
+                    else if(txt.includes('fall')||txt.includes('safe')||txt.includes('sore')||txt.includes('allergy')) item.category = "ความปลอดภัย (Safety)";
+                    else item.category = "ทั่วไป/สุขสบาย (General)";
+                    count++;
+                }
+            });
+            localStorage.setItem('masterDiagnosis', JSON.stringify(masterData));
+            renderList(); alert(`จัดหมวดหมู่แล้ว ${count} รายการ`);
+        }
+
+        function resetToInitial() {
+            if(confirm("คำเตือน: ข้อมูลโรคปัจจุบันทั้งหมดจะหายไป และจะโหลดใหม่จากไฟล์ data.js ยืนยันไหม?")) {
+                if (typeof initialMasterData !== 'undefined') {
+                    localStorage.setItem('masterDiagnosis', JSON.stringify(initialMasterData));
+                    location.reload();
+                } else {
+                    alert("ไม่พบตัวแปร initialMasterData ในไฟล์ data.js");
+                }
+            }
+        }
+
+        // --- Backup & Restore ---
+        function exportBackup() {
+            const backupData = JSON.stringify(localStorage);
+            const blob = new Blob([backupData], {type: "application/json"});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            const date = new Date().toISOString().slice(0,10);
+            a.download = `Nursing_Backup_${date}.json`;
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        }
+
+        function importBackup() {
+            const fileInput = document.getElementById('restoreFile');
+            const file = fileInput.files[0];
+            if (!file) return alert("กรุณาเลือกไฟล์ .json ก่อน");
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (confirm("ข้อมูลปัจจุบันในเครื่องจะถูกลบและแทนที่ด้วยไฟล์ Backup ยืนยัน?")) {
+                        localStorage.clear();
+                        Object.keys(data).forEach(k => localStorage.setItem(k, data[k]));
+                        alert("กู้คืนข้อมูลสำเร็จ! ระบบจะรีเฟรช");
+                        location.reload();
+                    }
+                } catch (err) { alert("ไฟล์เสียหาย"); }
+            };
+            reader.readAsText(file);
+        }
+
+        renderList();
+    </script>
+<script src="assets/js/mock/demo-notice.js"></script>
+</body>
+</html>

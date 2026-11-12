@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Clinical Events | ENR V3</title>
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/patient-parameters.css">
+  <link rel="stylesheet" href="assets/css/clinical-events.css">
+</head>
+<body class="pp-page">
+  <!-- CP7.10.4-SAFE-LONG-CLINICAL-EVENT -->
+
+  <header class="pp-topbar">
+    <div class="pp-topbar__brand">
+      <span class="pp-logo">ENR</span>
+      <div>
+        <strong>Clinical Events</strong>
+        <small>รับใหม่ • รับย้าย • ผ่าตัด • หัตถการ</small>
+      </div>
+    </div>
+    <div class="pp-topbar__actions">
+      <button type="button" class="pp-btn pp-btn--ghost" onclick="location.href='paperless.html'">← Paperless Hub</button>
+      <button type="button" class="pp-btn pp-btn--ghost" onclick="location.href='patient_list.html'">ผู้ป่วย</button>
+    </div>
+  </header>
+
+  <section class="pp-patientbar">
+    <div>
+      <strong id="patientName">-</strong>
+      <span>HN: <b id="patientHN">-</b></span>
+      <span>AN: <b id="patientAN">-</b></span>
+      <span>Ward: <b id="patientWard">-</b></span>
+      <span>DX: <b id="patientDX">-</b></span>
+    </div>
+  </section>
+
+  <nav class="pp-tabs">
+    <a class="pp-tab" href="patient_parameters.html">Parameters</a>
+    <a class="pp-tab pp-tab--active" href="clinical_events.html">Clinical Events</a>
+    <a class="pp-tab" href="monitoring_trend.html">Monitoring Trend</a>
+    <a class="pp-tab" href="graphic_sheet.html">Graphic Sheet</a>
+  </nav>
+
+  <main class="pp-wrap">
+    <section class="pp-hero ce-hero">
+      <div>
+        <span class="pp-kicker">CLINICAL EVENT ENGINE • M1 PROTOTYPE</span>
+        <h1>เหตุการณ์สำคัญตามเวลาจริง</h1>
+        <p>
+          สำหรับข้อความแบบฟอร์มจริง เช่น “รับใหม่จาก…เวลา…น.”, “รับย้ายจาก…เวลา…น.”,
+          PO/การผ่าตัด และหัตถการ โดยเก็บ Clinical time จริงเสมอ
+        </p>
+      </div>
+      <div class="ce-rule-card">
+        <strong>Graphic Sheet placement</strong>
+        <span>Event ไม่ใช้กฎ ±20 นาทีของ T/P</span>
+        <span>พยาบาลเลือกช่องเวลาเอง • Event ยาวสามารถย่อเฉพาะข้อความบน Graphic Sheet ได้ โดยข้อมูล Clinical เดิมไม่เปลี่ยน</span>
+      </div>
+    </section>
+
+    <section class="pp-card ce-form-card">
+      <div class="pp-card__head">
+        <div>
+          <span class="pp-section-label">NEW CLINICAL EVENT</span>
+          <h2>บันทึกเหตุการณ์</h2>
+        </div>
+        <div id="eventSlotPreview" class="ce-slot-preview">ยังไม่ประเมินตำแหน่ง</div>
+      </div>
+
+      <form id="clinicalEventForm" autocomplete="off">
+        <div class="ce-grid ce-grid--top">
+          <div class="pp-field pp-observed-field">
+            <div class="pp-field-head">
+              <span>Clinical / Event date-time *</span>
+              <button type="button" class="pp-now-btn" id="useCurrentTimeBtn">⏱ เวลาปัจจุบัน</button>
+            </div>
+            <input id="eventAt" name="eventAt" type="datetime-local" required>
+            <small>เลือกย้อนหลังได้ • ไม่อนุญาตเวลาอนาคต</small>
+          </div>
+
+          <label class="pp-field ce-event-type-field">
+            <span>Event Type *</span>
+            <input
+              id="eventType"
+              name="eventTypeDisplay"
+              type="text"
+              list="eventTypeOptions"
+              autocomplete="off"
+              required
+              placeholder="เลือกจากรายการ หรือพิมพ์ Event Type เอง..."
+              aria-describedby="eventTypeHint"
+            >
+            <datalist id="eventTypeOptions"></datalist>
+            <input id="eventTypeCode" name="eventType" type="hidden" value="ADMISSION">
+            <small id="eventTypeHint">
+              เลือกจากรายการมาตรฐาน หรือพิมพ์คำใหม่ได้เอง • ระบบเก็บข้อความต้นฉบับไว้
+            </small>
+            <small class="ce-safe-graphic-hint" id="eventTypeSafeHint">
+              Event Type ยาวได้ • ถ้ายาวเกินพื้นที่กราฟ ระบบจะย่อเฉพาะข้อความบน Graphic Sheet พร้อม Event ID โดยอัตโนมัติ
+            </small>
+          </label>
+
+          <label class="pp-field ce-plot-slot-field">
+            <span>Plot ในช่องเวลา *</span>
+            <select id="plotSlotHour" name="plotSlotHour" required>
+              <option value="2">02:00</option>
+              <option value="6">06:00</option>
+              <option value="10">10:00</option>
+              <option value="14">14:00</option>
+              <option value="18">18:00</option>
+              <option value="22">22:00</option>
+            </select>
+            <small>
+              <button type="button" class="ce-use-nearest" id="useNearestSlotBtn">ใช้เวลาที่ใกล้สุด</button>
+              <span id="nearestSlotHint">-</span>
+            </small>
+          </label>
+
+          <label class="pp-field ce-font-size-field">
+            <span>ขนาดตัวอักษรบนกราฟ</span>
+            <select id="graphicFontPt" name="graphicFontPt">
+              <option value="">Auto • ยาวแล้วเล็กลงอัตโนมัติ</option>
+              <option value="2.8">เล็กมาก • 2.8 pt</option>
+              <option value="3.2">เล็ก • 3.2 pt</option>
+              <option value="3.6">ปกติ • 3.6 pt</option>
+              <option value="4.0">ใหญ่ • 4.0 pt</option>
+            </select>
+            <small>แนะนำ Auto สำหรับ Event ข้อความยาว</small>
+          </label>
+
+          <label class="pp-field ce-event-color-field">
+            <span>สี Event บน Graphic Sheet</span>
+            <select id="graphicColor" name="graphicColor">
+              <option value="BLACK">ดำ</option>
+              <option value="BLUE">น้ำเงิน</option>
+              <option value="RED">แดง</option>
+              <option value="GREEN">เขียว</option>
+              <option value="PURPLE">ม่วง</option>
+            </select>
+            <small>
+              <span class="ce-color-dot" id="graphicColorDot"></span>
+              ใช้เพื่อการแสดงผลบนฟอร์มเท่านั้น
+            </small>
+          </label>
+        </div>
+
+        <div class="ce-grid">
+          <label class="pp-field" id="sourceWrap">
+            <span id="sourceLabel">รับจาก / Source</span>
+            <input name="source" type="text" placeholder="ER / OPD / ICU / Ward...">
+          </label>
+
+          <label class="pp-field" id="destinationWrap">
+            <span>ย้ายไป / Destination</span>
+            <input name="destination" type="text" placeholder="ICU / OR / Ward...">
+          </label>
+
+          <label class="pp-field ce-span-2">
+            <span id="eventNameLabel">ชื่อเหตุการณ์ / Operation / Procedure</span>
+            <input name="eventName" type="text" placeholder="Appendectomy / EGD / Colonoscopy">
+          </label>
+        </div>
+
+        <div class="ce-grid">
+          <label class="pp-field">
+            <span>Site</span>
+            <input name="site" type="text" placeholder="abdomen / chest">
+          </label>
+
+          <label class="pp-field">
+            <span>Side</span>
+            <select name="laterality">
+              <option value="">-</option>
+              <option value="R">Right</option>
+              <option value="L">Left</option>
+              <option value="B">Bilateral</option>
+            </select>
+          </label>
+
+          <label class="pp-field ce-span-2">
+            <span>Note</span>
+            <input name="note" type="text" placeholder="รายละเอียดเพิ่มเติม">
+          </label>
+        </div>
+
+        <div class="ce-grid ce-grid--graphic-text">
+          <label class="pp-field ce-span-2">
+            <span>ข้อความบน Graphic Sheet <small>(ไม่บังคับ)</small></span>
+            <input
+              id="graphicText"
+              name="graphicText"
+              type="text"
+              maxlength="64"
+              placeholder="ปล่อยว่าง = สร้างจาก Event อัตโนมัติ • ใช้เมื่อต้องการย่อข้อความยาว"
+            >
+            <small>
+              ตัวอย่าง: “รับใหม่ ER 23:00”, “PO Appendectomy 14:30” • แนะนำไม่เกิน 64 ตัวอักษร • ข้อมูล Clinical Event ฉบับเต็มยังเก็บเหมือนเดิม
+            </small>
+          </label>
+        </div>
+
+        <label class="ce-pod-option" id="podOption" hidden>
+          <input id="countsForPOD" name="countsForPOD" type="checkbox" checked>
+          <span>
+            <strong>ใช้เป็นจุดเริ่ม DAY AFTER OPERATION</strong>
+            <small>วันผ่าตัด = PO • วันถัดไป = 1 • Re-operation จะเริ่ม PO ใหม่จาก operation ล่าสุด</small>
+          </span>
+        </label>
+
+        <div class="ce-preview-box">
+          <span>ข้อความตัวอย่างบน Graphic Sheet</span>
+          <strong id="eventTextPreview">-</strong>
+        </div>
+
+        <div class="pp-form-actions ce-actions">
+          <button type="reset" class="pp-btn pp-btn--ghost">ล้าง</button>
+          <button type="submit" class="pp-btn pp-btn--primary">บันทึก Event</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="pp-card ce-table-card">
+      <div class="pp-card__head">
+        <div>
+          <span class="pp-section-label">ACTIVE EVENTS</span>
+          <h2>เหตุการณ์ที่ใช้งานอยู่</h2>
+        </div>
+        <button type="button" class="ce-cancelled-btn" id="toggleCancelledBtn">
+          🚫 ยกเลิกแล้ว <span id="cancelledCount">0</span>
+        </button>
+      </div>
+
+      <div class="ce-table-scroll">
+        <table class="ce-table">
+          <thead>
+            <tr>
+              <th>Clinical time</th>
+              <th>Event</th>
+              <th>วางใกล้ช่อง</th>
+              <th>POD</th>
+              <th>ผู้บันทึก</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="activeEventRows"></tbody>
+        </table>
+      </div>
+
+      <div class="ce-empty" id="activeEventEmpty" hidden>ยังไม่มี Clinical Event</div>
+    </section>
+
+    <section class="pp-card ce-cancelled-card" id="cancelledCard" hidden>
+      <div class="pp-card__head">
+        <div>
+          <span class="pp-section-label">CANCELLED ARCHIVE</span>
+          <h2>รายการที่ยกเลิก</h2>
+        </div>
+        <span class="ce-readonly">Read only • เก็บไว้เพื่อ Audit</span>
+      </div>
+
+      <div class="ce-table-scroll">
+        <table class="ce-table">
+          <thead>
+            <tr>
+              <th>Clinical time</th>
+              <th>Event</th>
+              <th>ยกเลิกเมื่อ</th>
+              <th>เหตุผล</th>
+            </tr>
+          </thead>
+          <tbody id="cancelledEventRows"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="assets/js/core/enr-core.js"></script>
+  <script src="assets/js/modules/clinical-event-store.js"></script>
+  <script src="assets/js/pages/clinical-events.js"></script>
+<script src="assets/js/mock/demo-notice.js"></script>
+</body>
+</html>

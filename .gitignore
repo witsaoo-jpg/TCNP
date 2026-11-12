@@ -1,0 +1,34 @@
+# credentials and private configuration
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.p12
+*.pfx
+secrets/
+credentials/
+# local files
+.DS_Store
+__MACOSX/
+node_modules/
+__pycache__/
+*.log
+# backup archives and clinical exports
+*.backup*
+*.orig
+*.rej
+*.zip
+*.7z
+*.rar
+*.pdf
+*.csv
+*.xlsx
+*.xls
+*.db
+*.sqlite*
+*.dump
+*.sql
+patient_data/
+clinical_data/
+uploads/

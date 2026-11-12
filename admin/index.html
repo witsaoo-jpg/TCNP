@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <base href="../">
+  <title>Nursing Administration | ENR V3</title>
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="admin/assets/admin.css">
+</head>
+<body class="admin-page">
+  <header class="admin-topbar">
+    <div class="admin-brand">
+      <div class="admin-brand__mark">ENR</div>
+      <div><strong>Nursing Administration</strong><span>Electronic Nursing Record • Chonburi Hospital</span></div>
+    </div>
+    <div class="admin-topbar__actions">
+      <span class="admin-user">👤 <span id="adminUser">...</span></span>
+      <button class="admin-btn admin-btn--ghost" id="backWardBtn">← กลับหน้า Ward</button>
+      <button class="admin-btn admin-btn--ghost" id="logoutBtn">ออกจากระบบ</button>
+    </div>
+  </header>
+
+  <main class="admin-container">
+    <section class="admin-hero">
+      <div>
+        <div class="admin-kicker">NURSING SYSTEM CONTROL</div>
+        <h1>ศูนย์บริหารระบบการพยาบาล</h1>
+        <p>แยกจากหน้าบันทึกผู้ป่วยโดยสมบูรณ์ ใช้สำหรับจัดการ Template, Master data, แบบฟอร์ม และ Audit โดยพยาบาล Admin</p>
+      </div>
+      <div class="admin-security-chip">🔒 Admin only</div>
+    </section>
+
+    <div id="adminGuardMessage" class="admin-alert admin-alert--danger" hidden></div>
+
+    <section class="admin-grid" id="adminModules">
+      <a class="admin-module admin-module--primary" href="admin/templates.html">
+        <div class="admin-module__icon">▦</div>
+        <div class="admin-module__body"><h2>Nursing Template</h2><p>สร้างและจัดการ F / A-S / A-O / G / I / E รองรับ TCNP + Manual</p></div>
+        <span class="admin-module__status">พร้อมใช้งาน</span>
+      </a>
+
+      <a class="admin-module" href="admin/tcnp-master.html">
+        <div class="admin-module__icon">⌕</div>
+        <div class="admin-module__body"><h2>TCNP Master</h2><p>ค้นหาและตรวจสอบรหัส TCNP ที่ใช้ใน Nursing Template</p></div>
+        <span class="admin-module__status">Read only</span>
+      </a>
+
+      <a class="admin-module admin-module--primary" href="admin/analytics.html">
+        <div class="admin-module__icon">▥</div>
+        <div class="admin-module__body"><h2>Nursing Analytics</h2><p>Dashboard การใช้ TCNP, Nursing Note, หน่วยงาน และ Documentation Activity รายพยาบาล</p></div>
+        <span class="admin-module__status">Interactive</span>
+      </a>
+
+      <div class="admin-module admin-module--disabled">
+        <div class="admin-module__icon">☑</div>
+        <div class="admin-module__body"><h2>ADL / Assessment Form</h2><p>จัดการรายการประเมิน คะแนน และเวอร์ชันแบบประเมินแรกรับ</p></div>
+        <span class="admin-module__status">Phase B</span>
+      </div>
+
+      <div class="admin-module admin-module--disabled">
+        <div class="admin-module__icon">◎</div>
+        <div class="admin-module__body"><h2>PFE Master</h2><p>จัดการหัวข้อการให้ความรู้ผู้ป่วยและญาติ ทั้งระดับโรงพยาบาลและ Ward</p></div>
+        <span class="admin-module__status">Phase C</span>
+      </div>
+
+      <div class="admin-module admin-module--disabled">
+        <div class="admin-module__icon">↪</div>
+        <div class="admin-module__body"><h2>Discharge Form</h2><p>จัดการหัวข้อสรุปจำหน่ายและรายการคำแนะนำก่อนกลับบ้าน</p></div>
+        <span class="admin-module__status">Phase D</span>
+      </div>
+
+      <a class="admin-module admin-module--primary" href="admin/audit.html">
+        <div class="admin-module__icon">◴</div>
+        <div class="admin-module__body"><h2>Audit Viewer</h2><p>ตรวจสอบผู้ใช้งาน เวลา ผู้ป่วย Note ID และกิจกรรมสำคัญย้อนหลังจาก Audit Trail จริง</p></div>
+        <span class="admin-module__status">Read only</span>
+      </a>
+
+      <div class="admin-module admin-module--disabled">
+        <div class="admin-module__icon">♟</div>
+        <div class="admin-module__body"><h2>User & Role</h2><p>จัดการผู้ใช้ บทบาท สิทธิ์ และขอบเขตหน่วยงาน</p></div>
+        <span class="admin-module__status">Phase E</span>
+      </div>
+
+      <a class="admin-module admin-module--primary" href="admin/parameter_master.html" data-cp71113-parameter-master>
+        <div class="admin-module__icon">▦</div>
+        <div class="admin-module__body">
+          <h2>Parameter Master</h2>
+          <p>เพิ่ม / แก้ / Retire Parameter และกำหนด Hospital/Ward scope โดยไม่กระทบ Graphic Sheet</p>
+        </div>
+        <span class="admin-module__status">Ready</span>
+      </a>
+    </section>
+
+    <section class="admin-note">
+      <strong>หลักการสำคัญ:</strong> Clinical UI ที่ใช้งานผู้ป่วยแล้วจะไม่ถูกแก้จากโมดูล Admin ชุดนี้ การเปลี่ยน Master/Template จะผ่าน API + PostgreSQL และเก็บประวัติแยกจากเอกสารผู้ป่วย
+    </section>
+  </main>
+
+  <script src="assets/js/core/config.js"></script>
+  <script src="assets/js/mock/browser-api.js"></script>
+  <script src="assets/js/core/enr-core.js"></script>
+  <script src="assets/js/core/api.js"></script>
+  <script src="admin/assets/admin-core.js"></script>
+  <script src="admin/assets/dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,464 @@
+.paperless-page{
+  background:#f3f7f7;
+  min-height:100vh;
+  color:#24333a;
+}
+
+.paperless-head{
+  background:linear-gradient(100deg,var(--enr-teal-800),var(--enr-teal-950));
+  color:#fff;
+  padding:22px 28px;
+  box-shadow:var(--shadow-sm);
+}
+
+.paperless-head__inner{
+  width:min(1500px,calc(100% - 12px));
+  margin:0 auto;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:24px;
+}
+
+.paperless-head__eyebrow,
+.paperless-kicker,
+.paperless-section__kicker{
+  font-size:.72rem;
+  letter-spacing:.17em;
+  font-weight:900;
+  color:#5ee1d0;
+}
+
+.paperless-head h1{
+  margin:5px 0 5px;
+  font-size:1.65rem;
+}
+
+.paperless-head p{
+  margin:0;
+  opacity:.92;
+  font-weight:650;
+}
+
+.paperless-sep{opacity:.55;margin:0 5px}
+
+.paperless-shared-badge{
+  border:1px solid rgba(255,255,255,.28);
+  background:rgba(255,255,255,.11);
+  border-radius:15px;
+  padding:10px 14px;
+  font-size:.82rem;
+  font-weight:850;
+  line-height:1.15;
+  text-align:left;
+  white-space:nowrap;
+}
+
+.paperless-shared-badge small{
+  display:block;
+  margin-top:4px;
+  font-size:.68rem;
+  opacity:.78;
+  font-weight:700;
+}
+
+.paperless-wrap{
+  width:min(1500px,calc(100% - 34px));
+  margin:28px auto 50px;
+}
+
+.paperless-intro{
+  background:#fff;
+  border:1px solid #e1e9eb;
+  border-radius:20px;
+  padding:22px 24px;
+  box-shadow:0 9px 26px rgba(34,67,71,.06);
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  gap:24px;
+  margin-bottom:24px;
+}
+
+.paperless-intro h2{
+  margin:4px 0 4px;
+  font-size:1.65rem;
+}
+
+.paperless-intro p{
+  margin:0;
+  color:#6b7a80;
+}
+
+.paperless-legend{
+  display:flex;
+  gap:14px;
+  align-items:center;
+  flex-wrap:wrap;
+  color:#66777d;
+  font-size:.75rem;
+  font-weight:800;
+}
+
+.paperless-legend span{
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+
+.legend-dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#cbd5d8;
+}
+.legend-dot--ready{background:#1aa190}
+.legend-dot--major{background:#0c6d67}
+
+.paperless-section{
+  margin:0 0 30px;
+}
+
+.paperless-section__head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  gap:20px;
+  padding:0 4px 11px;
+  border-bottom:1px solid #dce6e8;
+  margin-bottom:16px;
+}
+
+.paperless-section__head h3{
+  margin:3px 0 0;
+  font-size:1.15rem;
+}
+
+.paperless-section__count{
+  border-radius:999px;
+  background:#e7eff1;
+  color:#61727a;
+  padding:5px 9px;
+  font-size:.68rem;
+  font-weight:850;
+}
+
+.paperless-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:18px;
+}
+
+.paperless-grid--compact{
+  grid-template-columns:repeat(4,minmax(0,1fr));
+}
+
+.paperless-card{
+  position:relative;
+  appearance:none;
+  width:100%;
+  border:1px solid #dfe8ea;
+  border-bottom:6px solid #8eb5b0;
+  background:#fff;
+  border-radius:18px;
+  min-height:190px;
+  padding:28px 20px 21px;
+  text-align:left;
+  box-shadow:0 8px 22px rgba(34,67,71,.06);
+  color:#24333a;
+  font:inherit;
+  cursor:pointer;
+  transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease;
+  overflow:hidden;
+}
+
+.paperless-card:hover,
+.paperless-card:focus-visible{
+  transform:translateY(-3px);
+  box-shadow:0 15px 30px rgba(24,82,78,.12);
+  border-color:#a9cfca;
+  outline:none;
+}
+
+.paperless-card--ready{
+  border-bottom-color:#0c8e80;
+}
+
+.paperless-card--major{
+  border:2px solid #159a8b;
+  border-bottom:7px solid #0a7169;
+  background:linear-gradient(145deg,#ffffff 0%,#f1fbf9 100%);
+  box-shadow:0 14px 32px rgba(8,112,103,.13);
+}
+
+.paperless-card--major::after{
+  content:"";
+  position:absolute;
+  width:140px;
+  height:140px;
+  border-radius:50%;
+  background:rgba(15,152,139,.07);
+  right:-42px;
+  bottom:-58px;
+}
+
+.paperless-card__status{
+  position:absolute;
+  top:13px;
+  right:13px;
+  padding:5px 8px;
+  border-radius:999px;
+  background:#eef3f4;
+  color:#74858b;
+  font-size:.62rem;
+  font-weight:900;
+  letter-spacing:.03em;
+}
+
+.paperless-card__status--ready{
+  background:#e2f7f1;
+  color:#08796f;
+}
+
+.paperless-card__status--major{
+  background:#d9f5f0;
+  color:#076b63;
+}
+
+.paperless-icon{
+  width:48px;
+  height:48px;
+  display:grid;
+  place-items:center;
+  margin-bottom:19px;
+  border-radius:14px;
+  background:#e8f6f4;
+  color:#0c887c;
+  font-size:1.8rem;
+  font-weight:900;
+}
+
+.paperless-card--major .paperless-icon{
+  width:54px;
+  height:54px;
+  background:#d8f3ef;
+  color:#086f67;
+}
+
+.paperless-card h4{
+  margin:0 0 7px;
+  font-size:1.06rem;
+  line-height:1.25;
+}
+
+.paperless-card p{
+  margin:0;
+  color:#6c7a81;
+  font-size:.84rem;
+  line-height:1.52;
+}
+
+.paperless-card__major-note{
+  margin-top:14px;
+  padding:8px 9px;
+  border-radius:10px;
+  background:#e5f5f2;
+  color:#35716c;
+  font-size:.69rem;
+  font-weight:800;
+  line-height:1.35;
+}
+
+.paperless-card--planned{
+  background:linear-gradient(#fff,#fcfdfd);
+}
+
+.paperless-back{
+  text-align:center;
+  margin-top:33px;
+}
+
+.paperless-toast{
+  position:fixed;
+  left:50%;
+  bottom:28px;
+  transform:translateX(-50%);
+  z-index:1000;
+  min-width:min(520px,calc(100vw - 32px));
+  border:1px solid #cfe5e2;
+  border-radius:14px;
+  background:#ffffff;
+  color:#29454a;
+  padding:13px 16px;
+  box-shadow:0 18px 40px rgba(21,60,64,.18);
+  font-weight:750;
+  text-align:center;
+}
+
+@media(max-width:1150px){
+  .paperless-grid,
+  .paperless-grid--compact{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+
+@media(max-width:760px){
+  .paperless-head__inner,
+  .paperless-intro{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+  .paperless-shared-badge{white-space:normal}
+  .paperless-grid,
+  .paperless-grid--compact{grid-template-columns:1fr}
+  .paperless-card{min-height:170px}
+  .paperless-wrap{width:min(100% - 22px,1500px);margin-top:18px}
+  .paperless-head{padding:18px}
+  .paperless-head__inner{width:100%}
+}
+
+
+/* =====================================================
+   CP6.16.1 — Patient Parameters + e-ปรอท in one Major card
+===================================================== */
+.paperless-card--combined{
+  grid-column:span 2;
+  min-height:220px;
+}
+
+.paperless-combined{
+  display:grid;
+  grid-template-columns:minmax(0,1.05fr) minmax(250px,.95fr);
+  gap:22px;
+  align-items:center;
+  position:relative;
+  z-index:1;
+}
+
+.paperless-combined__parameters .paperless-icon{
+  margin-bottom:13px;
+}
+
+.paperless-parameter-chips{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+  margin-top:14px;
+}
+
+.paperless-parameter-chips span{
+  min-width:32px;
+  padding:5px 8px;
+  border-radius:999px;
+  background:#e8f5f3;
+  color:#236e68;
+  font-size:.66rem;
+  font-weight:900;
+  text-align:center;
+  border:1px solid #d2e9e5;
+}
+
+.paperless-combined__chart{
+  min-height:135px;
+  border:1px solid #cfe6e2;
+  background:rgba(255,255,255,.78);
+  border-radius:15px;
+  padding:12px 13px 10px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+
+.paperless-mini-chart__title{
+  color:#206e68;
+  font-weight:900;
+  font-size:.75rem;
+  margin-bottom:4px;
+}
+
+.paperless-mini-chart{
+  width:100%;
+  height:82px;
+  overflow:visible;
+}
+
+.paperless-mini-chart line{
+  stroke:#c9d8da;
+  stroke-width:1.5;
+}
+
+.paperless-mini-chart polyline{
+  fill:none;
+  stroke:#0c887c;
+  stroke-width:4;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+.paperless-mini-chart circle{
+  fill:#fff;
+  stroke:#0c887c;
+  stroke-width:3;
+}
+
+.paperless-mini-chart__caption{
+  color:#688087;
+  font-size:.68rem;
+  font-weight:800;
+  margin-top:1px;
+}
+
+@media(max-width:1150px){
+  .paperless-card--combined{grid-column:span 2}
+}
+
+@media(max-width:760px){
+  .paperless-card--combined{grid-column:span 1}
+  .paperless-combined{grid-template-columns:1fr}
+  .paperless-combined__chart{min-height:120px}
+}
+
+
+/* =====================================================
+   CP6.16.3 — Top navigation back to Patient List
+===================================================== */
+.paperless-head__actions{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.paperless-head__back{
+  appearance:none;
+  border:1px solid rgba(255,255,255,.30);
+  background:rgba(255,255,255,.14);
+  color:#fff;
+  min-height:46px;
+  padding:0 16px;
+  border-radius:13px;
+  font:inherit;
+  font-size:.82rem;
+  font-weight:900;
+  cursor:pointer;
+  white-space:nowrap;
+  transition:background .15s ease,transform .15s ease,border-color .15s ease;
+}
+
+.paperless-head__back:hover,
+.paperless-head__back:focus-visible{
+  background:rgba(255,255,255,.22);
+  border-color:rgba(255,255,255,.46);
+  transform:translateY(-1px);
+  outline:none;
+}
+
+@media(max-width:760px){
+  .paperless-head__actions{
+    width:100%;
+    justify-content:flex-start;
+  }
+
+  .paperless-head__back{
+    width:100%;
+  }
+}

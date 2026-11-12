@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <base href="../">
+  <title>TCNP Master | ENR V3 Admin</title>
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="admin/assets/admin.css">
+</head>
+<body class="admin-page">
+  <header class="admin-topbar">
+    <div class="admin-brand"><div class="admin-brand__mark">ENR</div><div><strong>TCNP Master</strong><span>Read-only browser</span></div></div>
+    <div class="admin-topbar__actions"><span class="admin-user">👤 <span id="adminUser">...</span></span><a class="admin-btn admin-btn--ghost" href="admin/index.html">← Admin Home</a><button class="admin-btn admin-btn--ghost" id="logoutBtn">ออกจากระบบ</button></div>
+  </header>
+  <main class="admin-container">
+    <section class="admin-pagehead"><div><div class="admin-kicker">TCNP MASTER</div><h1>ค้นหารหัส TCNP</h1><p>ใช้ตรวจสอบรหัสก่อนนำไปประกอบ Nursing Template • หน้านี้ไม่แก้ Master</p></div></section>
+    <div id="adminGuardMessage" class="admin-alert admin-alert--danger" hidden></div>
+    <section class="admin-panel">
+      <div class="admin-toolbar"><div class="admin-search admin-search--grow"><span>⌕</span><input id="tcnpSearch" placeholder="เช่น F0019, คลื่นไส้, oxygen..."></div><select id="sectionFilter" class="admin-select"><option value="F">Focus (F)</option><option value="I">Procedure / P code</option></select></div>
+      <div id="tcnpTable" class="admin-template-table-wrap"><div class="admin-empty">พิมพ์คำค้นเพื่อค้นหา TCNP</div></div>
+    </section>
+  </main>
+  <script src="assets/js/core/config.js"></script>
+  <script src="assets/js/mock/browser-api.js"></script>
+  <script src="assets/js/core/enr-core.js"></script>
+  <script src="assets/js/core/api.js"></script>
+  <script src="admin/assets/admin-core.js"></script>
+  <script src="admin/assets/tcnp-master.js"></script>
+</body>
+</html>

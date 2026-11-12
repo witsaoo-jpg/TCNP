@@ -1,0 +1,19 @@
+
+.mt-wrap{max-width:1540px;}
+.mt-hero{align-items:center;}
+.mt-filter{display:flex;gap:8px;flex-wrap:wrap;}
+.mt-range-btn--active{background:#e1f5ef;border-color:#8fcfc1;color:#087469;}
+.mt-card{padding:18px;margin-bottom:18px;}
+.mt-card-head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:12px;}
+.mt-card-head strong{display:block;color:#27454f;font-size:1rem;}
+.mt-card-head small{display:block;color:#809098;margin-top:2px;}
+.mt-legend{display:flex;gap:10px;font-weight:900}.mt-blue{color:#1f5fbf}.mt-red{color:#d13030}
+.mt-chart{min-height:330px;border:1px solid #dce7ea;border-radius:14px;background:#fff;overflow:hidden;}
+.mt-chart svg{display:block;width:100%;height:330px;}
+.mt-grid{stroke:#e6eef0;stroke-width:1}.mt-axis{stroke:#91a5ad;stroke-width:1.2}
+.mt-temp-line{fill:none;stroke:#1f5fbf;stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round}
+.mt-pulse-line{fill:none;stroke:#d13030;stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round}
+.mt-temp-point{fill:#fff;stroke:#1f5fbf;stroke-width:2}.mt-pulse-point{fill:#fff;stroke:#d13030;stroke-width:2}
+.mt-time-label{font-size:10px;fill:#667d86}.mt-y-label{font-size:10px;fill:#7a8d94}
+.mt-table td,.mt-table th{white-space:nowrap;}
+@media(max-width:900px){.mt-chart{overflow:auto}.mt-chart svg{min-width:950px}}

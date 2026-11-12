@@ -1,0 +1,19 @@
+.cp7111-admin-module-section{
+  margin:18px 0;padding:16px;border:1px solid #dce7e9;border-radius:16px;background:#fff;
+}
+.cp7111-admin-module-section__head{display:flex;justify-content:space-between;align-items:end;margin-bottom:10px}
+.cp7111-admin-module-section__head span{color:#0c8f83;font-size:.66rem;font-weight:900;letter-spacing:.14em}
+.cp7111-admin-module-section__head h2{margin:2px 0 0;color:#29454c;font-size:1.1rem}
+.cp7111-admin-module-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px}
+.cp7111-admin-module-card{
+  min-height:92px;display:flex;align-items:center;gap:12px;padding:14px 15px;
+  border:1px solid #cfe3e0;border-radius:13px;background:linear-gradient(180deg,#fbfefe,#f4fbf9);
+  color:#29474e;text-decoration:none;box-shadow:0 4px 14px rgba(38,83,78,.035)
+}
+.cp7111-admin-module-card:hover{border-color:#83c9c1;box-shadow:0 7px 18px rgba(38,83,78,.07);transform:translateY(-1px)}
+.cp7111-admin-module-card__icon{width:42px;height:42px;display:grid;place-items:center;border-radius:11px;background:#e9f7f4;font-size:1.25rem}
+.cp7111-admin-module-card__body{min-width:0;display:flex;flex-direction:column;gap:2px}
+.cp7111-admin-module-card__body strong{color:#0b7169;font-size:.9rem}
+.cp7111-admin-module-card__body small{color:#708489;font-size:.69rem;line-height:1.35}
+.cp7111-admin-module-card__body .cp7111-admin-module-card__safe{margin-top:3px;color:#7b6a42}
+.cp7111-admin-module-card__arrow{margin-left:auto;color:#0c8f83;font-size:1.7rem;line-height:1}

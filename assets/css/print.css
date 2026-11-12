@@ -1,0 +1,139 @@
+@media print{.no-print{display:none!important}body{background:#fff!important;color:#000!important}.pdf-wrap{width:100%!important;margin:0!important}.pdf-table{width:100%;border-collapse:collapse}.pdf-table th,.pdf-table td{border:1px solid #000;padding:7px;vertical-align:top}.pdf-table thead{display:table-header-group}.pdf-table tr{break-inside:avoid;page-break-inside:avoid}@page{size:A4 portrait;margin:1.2cm}}
+
+/* =========================================================
+   CP6.11 Care Summary Print Final
+   - Active + Resolved always print sequentially
+   - problem cards avoid splitting across pages
+   - print source / generated timestamp
+   - compact HN/AN footer repeated on printed pages
+   ========================================================= */
+@media print{
+  @page{
+    size:A4 portrait;
+    margin:12mm 10mm 20mm;
+  }
+
+  body.summary-page{
+    background:#fff!important;
+    color:#111!important;
+    overflow:visible!important;
+  }
+
+  body.summary-page .summary-wrap{
+    width:100%!important;
+    max-width:none!important;
+    margin:0!important;
+    padding:0 0 12mm!important;
+    overflow:visible!important;
+  }
+
+  body.summary-page .summary-columns{
+    display:block!important;
+    width:100%!important;
+    overflow:visible!important;
+  }
+
+  body.summary-page .summary-columns>section{
+    display:block!important;
+    width:100%!important;
+    max-width:none!important;
+    overflow:visible!important;
+  }
+
+  body.summary-page .summary-columns>section+section{
+    margin-top:8mm!important;
+  }
+
+  body.summary-page .problem-list{
+    display:block!important;
+    width:100%!important;
+    overflow:visible!important;
+  }
+
+  body.summary-page .problem-card{
+    display:block!important;
+    width:100%!important;
+    margin:0 0 5mm!important;
+    box-shadow:none!important;
+    break-inside:avoid-page!important;
+    page-break-inside:avoid!important;
+    overflow:visible!important;
+  }
+
+  body.summary-page .summary-heading{
+    break-after:avoid-page!important;
+    page-break-after:avoid!important;
+    margin-top:0!important;
+  }
+
+  body.summary-page .summary-empty{
+    break-inside:avoid-page!important;
+    page-break-inside:avoid!important;
+  }
+
+  body.summary-page .problem-card__actions,
+  body.summary-page .problem-timeline{
+    display:none!important;
+  }
+
+  body.summary-page .summary-print-only{
+    display:flex!important;
+  }
+
+  body.summary-page .summary-print-meta{
+    display:block!important;
+    border:1px solid #cfd8dc;
+    border-radius:8px;
+    padding:7px 9px;
+    margin:0 0 7mm;
+    background:#fff!important;
+    color:#263238!important;
+    break-inside:avoid-page;
+    page-break-inside:avoid;
+  }
+
+  body.summary-page .summary-print-meta__title{
+    font-size:12pt;
+    font-weight:800;
+    margin-bottom:2px;
+  }
+
+  body.summary-page .summary-print-meta__source{
+    font-size:9pt;
+    font-weight:700;
+  }
+
+  body.summary-page .summary-print-meta__facts{
+    display:flex;
+    flex-wrap:wrap;
+    gap:4mm;
+    margin-top:3px;
+    font-size:8pt;
+    color:#546e7a;
+  }
+
+  body.summary-page .summary-print-footer{
+    position:fixed;
+    left:10mm;
+    right:10mm;
+    bottom:3mm;
+    z-index:9999;
+    display:flex!important;
+    justify-content:space-between;
+    align-items:center;
+    gap:4mm;
+    padding-top:2mm;
+    border-top:1px solid #cfd8dc;
+    background:#fff!important;
+    color:#546e7a!important;
+    font-size:7.5pt;
+    line-height:1.2;
+  }
+
+  /* Important: Resolved Problems must never be hidden by screen layout. */
+  body.summary-page #resolvedList,
+  body.summary-page #activeList{
+    display:block!important;
+    visibility:visible!important;
+  }
+}

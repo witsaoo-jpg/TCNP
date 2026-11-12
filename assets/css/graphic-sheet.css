@@ -1,0 +1,2794 @@
+:root{
+  --gs-blue:#1669a8;
+  --gs-blue-dark:#0d4779;
+  --gs-temp-blue:#1f5fbf;
+  --gs-pulse-red:#d13030;
+  --gs-red:#d94841;
+  --gs-ink:#20323a;
+  --gs-grid:#83b5d8;
+  --gs-grid-strong:#2877ae;
+  --gs-bg:#eef3f4;
+}
+
+*{box-sizing:border-box}
+
+body.gs-page{
+  margin:0;
+  background:var(--gs-bg);
+  color:var(--gs-ink);
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans Thai",sans-serif;
+}
+
+.gs-topbar{
+  min-height:66px;
+  padding:10px 24px;
+  background:linear-gradient(100deg,#0d8b80,#086b64);
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+.gs-brand{display:flex;align-items:center;gap:10px}
+.gs-brand strong{display:block}
+.gs-brand small{display:block;opacity:.82}
+.gs-logo{
+  width:42px;height:42px;display:grid;place-items:center;border-radius:12px;
+  background:rgba(255,255,255,.16);font-weight:950
+}
+.gs-actions{display:flex;gap:8px}
+
+.gs-patientbar{
+  padding:10px 24px;
+  background:#fff;
+  border-bottom:1px solid #dce6e8;
+  display:flex;
+  gap:18px;
+  flex-wrap:wrap;
+  color:#526870;
+}
+.gs-patientbar strong{color:#0b746c}
+
+.gs-tabs{
+  width:min(1500px,calc(100% - 32px));
+  margin:16px auto 0;
+  display:flex;
+  gap:8px;
+}
+.gs-tab{
+  border:1px solid #d4e0e2;
+  background:#fff;
+  border-radius:12px 12px 0 0;
+  padding:10px 18px;
+  font-weight:900;
+  color:#516970;
+  text-decoration:none;
+}
+.gs-tab--active{background:#0d887e;color:#fff;border-color:#0d887e}
+
+.gs-wrap{
+  width:min(1500px,calc(100% - 32px));
+  margin:0 auto 42px;
+}
+
+.gs-toolbar{
+  background:#fff;
+  border:1px solid #dce5e7;
+  border-radius:0 17px 17px 17px;
+  padding:14px;
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:18px;
+}
+.gs-toolbar__left,.gs-toolbar__right{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap}
+.gs-toolbar label span{display:block;font-size:.72rem;font-weight:850;margin-bottom:4px}
+.gs-toolbar input{
+  min-height:40px;border:1px solid #ccdadd;border-radius:9px;padding:7px 9px;font:inherit
+}
+
+.gs-btn{
+  min-height:40px;border-radius:10px;border:1px solid #d1dee1;padding:0 13px;
+  font:inherit;font-weight:850;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center
+}
+.gs-btn--ghost{background:#fff;color:#304950}
+.gs-topbar .gs-btn--ghost{background:rgba(255,255,255,.13);color:#fff;border-color:rgba(255,255,255,.25)}
+.gs-btn--primary{background:#0c897e;color:#fff;border-color:#0c897e}
+
+.gs-slot-rule{
+  max-width:520px;border:1px solid #cfe2df;background:#f4fbfa;border-radius:11px;padding:8px 10px;
+  color:#55716f;font-size:.72rem;line-height:1.35
+}
+.gs-slot-rule strong{color:#0d756c}
+.gs-slot-rule small{display:block;margin-top:2px}
+
+.gs-screen-frame{
+  margin-top:18px;
+  overflow:auto;
+  padding:12px;
+  background:#dfe6e8;
+  border-radius:16px;
+}
+
+.graphic-sheet-page{
+  width:190mm;
+  min-height:270mm;
+  margin:0 auto;
+  background:#fff;
+  border:1px solid #9fb6c4;
+  padding:5mm;
+  box-shadow:0 15px 40px rgba(35,64,76,.14);
+  color:#12384f;
+}
+
+.sheet-header{
+  text-align:center;
+  border-bottom:1.5px solid var(--gs-blue-dark);
+  padding-bottom:2.5mm;
+}
+.sheet-hospital{font-size:10pt;font-weight:850}
+.sheet-header h1{margin:1mm 0 0;font-size:18pt;color:#185d91}
+.sheet-subtitle{font-size:8pt;color:#5d7585}
+
+.sheet-patient-meta{
+  margin-top:2.2mm;
+  display:grid;
+  grid-template-columns:2fr 1fr 1fr;
+  text-align:left;
+  gap:1mm 4mm;
+  font-size:7.3pt;
+  color:#294b60;
+}
+
+.sheet-grid{
+  margin-top:2.5mm;
+  border:1px solid var(--gs-blue-dark);
+  font-size:6.2pt;
+}
+
+.gs-date-header,
+.gs-time-header,
+.gs-slot-row,
+.gs-daily-row{
+  display:grid;
+  grid-template-columns:31mm repeat(42,1fr);
+}
+
+.gs-date-header .gs-left,
+.gs-time-header .gs-left,
+.gs-slot-row .gs-left,
+.gs-daily-row .gs-left{
+  border-right:1px solid var(--gs-blue-dark);
+}
+
+.gs-date-header{
+  border-bottom:1px solid var(--gs-blue-dark);
+  min-height:7mm;
+}
+.gs-date-header .gs-left{
+  display:grid;place-items:center;font-weight:900;background:#eef7fb
+}
+.gs-date-cell{
+  grid-column:span 6;
+  display:grid;place-items:center;
+  border-right:1px solid var(--gs-blue-dark);
+  font-weight:900;
+  background:#f5fbfe;
+}
+
+.gs-dayafter-row{
+  display:grid;
+  grid-template-columns:31mm repeat(7,1fr);
+  min-height:5mm;
+  border-bottom:1px solid var(--gs-blue-dark);
+}
+.gs-dayafter-row .gs-left{
+  border-right:1px solid var(--gs-blue-dark);
+  padding:1mm;
+  font-weight:850;
+  background:#f7fbfd;
+}
+.gs-dayafter-cell{
+  display:grid;place-items:center;border-right:1px solid var(--gs-blue-dark)
+}
+
+.gs-time-header{
+  min-height:5mm;
+  border-bottom:1px solid var(--gs-blue-dark);
+}
+.gs-time-header .gs-left{display:grid;place-items:center;font-weight:900;background:#eef7fb}
+.gs-slot-cell{
+  display:grid;place-items:center;
+  border-right:.45px solid var(--gs-grid);
+  min-width:0;
+  overflow:hidden;
+}
+
+.gs-chart-row{
+  display:grid;
+  grid-template-columns:31mm 1fr;
+  min-height:66mm;
+  border-bottom:1px solid var(--gs-blue-dark);
+}
+.gs-chart-scale{
+  position:relative;
+  border-right:1px solid var(--gs-blue-dark);
+  background:#f8fcfe;
+  overflow:hidden;
+}
+.gs-chart-scale__title{
+  position:absolute;left:1mm;top:1mm;font-weight:950;color:#174f76
+}
+.gs-scale-label{
+  position:absolute;right:1mm;transform:translateY(-50%);font-size:5.6pt;color:#416779
+}
+.gs-scale-p{color:var(--gs-pulse-red);font-weight:950}
+.gs-scale-t{color:var(--gs-temp-blue);font-style:normal;font-weight:950;margin-left:2px}
+
+.gs-chart-area{
+  position:relative;
+  overflow:hidden;
+  background-color:#fff;
+  background-image:
+    linear-gradient(to right, rgba(47,122,173,.26) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(47,122,173,.22) 1px, transparent 1px);
+  background-size:calc(100% / 42) 100%, 100% calc(100% / 24);
+}
+.gs-chart-area::after{
+  content:"";
+  position:absolute;inset:0;
+  background-image:linear-gradient(to right, rgba(25,94,141,.7) 1.2px, transparent 1.2px);
+  background-size:calc(100% / 7) 100%;
+  pointer-events:none;
+}
+.gs-chart-svg{position:absolute;inset:0;width:100%;height:100%;z-index:2}
+.gs-temp-line{fill:none;stroke:var(--gs-temp-blue);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.gs-pulse-line{fill:none;stroke:var(--gs-pulse-red);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.gs-temp-point{fill:#fff;stroke:var(--gs-temp-blue);stroke-width:1.9}
+.gs-pulse-point{fill:#fff;stroke:var(--gs-pulse-red);stroke-width:1.9}
+.gs-fever-line{stroke:#c64d48;stroke-width:1.3;stroke-dasharray:4 4;opacity:.8}
+
+.gs-slot-row{
+  min-height:6mm;
+  border-bottom:1px solid var(--gs-blue-dark);
+}
+.gs-slot-row .gs-left{
+  padding:1mm 1.2mm;
+  font-weight:900;
+  background:#eef7fb;
+  display:flex;
+  align-items:center;
+}
+.gs-slot-row .gs-slot-cell{
+  min-height:6mm;
+  padding:.4mm .2mm;
+  font-size:5.8pt;
+  text-align:center;
+  white-space:normal;
+}
+
+.gs-bp-row{
+  display:grid;
+  grid-template-columns:31mm 1fr;
+  border-bottom:1px solid var(--gs-blue-dark);
+}
+.gs-bp-labels{
+  border-right:1px solid var(--gs-blue-dark);
+  background:#eef7fb;
+  display:grid;
+  grid-template-rows:1fr 1fr;
+}
+.gs-bp-labels span{padding:1mm;font-weight:900;border-bottom:.4px solid var(--gs-grid)}
+.gs-bp-values{display:grid;grid-template-rows:1fr 1fr}
+.gs-bp-line{display:grid;grid-template-columns:repeat(42,1fr)}
+.gs-bp-line:first-child{border-bottom:.4px solid var(--gs-grid)}
+.gs-bp-line .gs-slot-cell{min-height:5mm;font-size:5.7pt;padding:.3mm 0}
+
+.gs-pain-chart-row{
+  display:grid;
+  grid-template-columns:31mm 1fr;
+  min-height:24mm;
+  border-bottom:1px solid var(--gs-blue-dark);
+}
+.gs-pain-scale{
+  border-right:1px solid var(--gs-blue-dark);
+  background:#f8fcfe;
+  position:relative;
+}
+.gs-pain-scale strong{
+  writing-mode:vertical-rl;
+  transform:rotate(180deg);
+  position:absolute;left:2mm;top:5mm;color:#164e73;font-size:8pt
+}
+.gs-pain-area{
+  position:relative;
+  background-image:
+    linear-gradient(to right, rgba(47,122,173,.25) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(47,122,173,.22) 1px, transparent 1px);
+  background-size:calc(100% / 42) 100%, 100% 10%;
+}
+.gs-pain-svg{position:absolute;inset:0;width:100%;height:100%}
+.gs-pain-line{fill:none;stroke:#3b5e9b;stroke-width:1.7}
+.gs-pain-point{fill:#fff;stroke:#3b5e9b;stroke-width:1.4}
+.gs-pain-threshold{stroke:#cf4b46;stroke-width:1;stroke-dasharray:4 4}
+
+.gs-daily-row{
+  grid-template-columns:31mm repeat(7,1fr);
+  min-height:7mm;
+  border-bottom:1px solid var(--gs-blue-dark);
+}
+.gs-daily-row .gs-left{
+  padding:1mm 1.2mm;
+  font-weight:900;
+  background:#eef7fb;
+  display:flex;align-items:center
+}
+.gs-daily-cell{
+  border-right:1px solid var(--gs-blue-dark);
+  padding:.8mm;
+  min-width:0;
+  overflow:hidden;
+  white-space:pre-wrap;
+  line-height:1.15;
+}
+
+.gs-daily-row--tall{min-height:12mm}
+.gs-daily-row--med{min-height:18mm}
+
+.sheet-footer{
+  display:flex;justify-content:space-between;gap:8px;
+  padding-top:2mm;font-size:5.8pt;color:#6c7f89
+}
+
+.gs-empty-note{
+  margin:8mm auto;text-align:center;color:#718691;font-size:8pt
+}
+
+@media print{
+  @page{size:A4 portrait;margin:7mm}
+  body{background:#fff}
+  .no-print{display:none!important}
+  .gs-wrap{width:auto;margin:0}
+  .gs-screen-frame{margin:0;padding:0;background:#fff;overflow:visible}
+  .graphic-sheet-page{
+    width:196mm;
+    min-height:280mm;
+    border:0;
+    box-shadow:none;
+    padding:0;
+    transform:none;
+  }
+}
+
+@media(max-width:850px){
+  .gs-toolbar{align-items:flex-start;flex-direction:column}
+  .gs-topbar{align-items:flex-start;flex-direction:column}
+}
+
+
+/* =====================================================
+   CP7.1 — Graphic Sheet visual fidelity
+   Requirement locked:
+   T = BLUE, P = RED
+===================================================== */
+
+.gs-plot-legend{
+  display:flex;
+  gap:12px;
+  align-items:center;
+  margin-bottom:4px;
+  font-weight:900;
+}
+.gs-plot-legend span{display:inline-flex;align-items:center;gap:5px}
+.gs-plot-legend i{
+  display:inline-block;
+  width:18px;
+  height:3px;
+  border-radius:3px;
+}
+.gs-plot-legend__temp{color:var(--gs-temp-blue)}
+.gs-plot-legend__temp i{background:var(--gs-temp-blue)}
+.gs-plot-legend__pulse{color:var(--gs-pulse-red)}
+.gs-plot-legend__pulse i{background:var(--gs-pulse-red)}
+
+.sheet-color-key{
+  margin-top:1.4mm;
+  display:flex;
+  justify-content:center;
+  gap:5mm;
+  font-size:6.3pt;
+  font-weight:900;
+}
+.sheet-color-key__temp{color:var(--gs-temp-blue)}
+.sheet-color-key__pulse{color:var(--gs-pulse-red)}
+
+.graphic-sheet-page{
+  width:194mm;
+  min-height:280mm;
+  padding:4mm;
+}
+
+.sheet-header{
+  padding-bottom:2mm;
+}
+.sheet-header h1{
+  letter-spacing:.03em;
+  font-size:17pt;
+}
+
+.sheet-grid{
+  margin-top:2mm;
+  border:1.4px solid var(--gs-blue-dark);
+  font-size:5.9pt;
+  color:#183f58;
+}
+
+.gs-date-header{
+  min-height:6.2mm;
+}
+.gs-date-cell,
+.gs-dayafter-cell{
+  border-right:1.1px solid var(--gs-blue-dark);
+}
+.gs-time-header{
+  min-height:4.8mm;
+}
+.gs-time-header .gs-slot-cell{
+  font-weight:900;
+  color:#174f77;
+}
+
+/* Paper-like blue graph paper: minor + slot + daily lines */
+.gs-chart-row{
+  min-height:70mm;
+}
+.gs-chart-area{
+  background-color:#fff;
+  background-image:
+    linear-gradient(to right, rgba(34,112,167,.18) .55px, transparent .55px),
+    linear-gradient(to bottom, rgba(34,112,167,.18) .55px, transparent .55px),
+    linear-gradient(to right, rgba(30,99,148,.45) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(30,99,148,.36) 1px, transparent 1px);
+  background-size:
+    calc(100% / 84) 100%,
+    100% calc(100% / 48),
+    calc(100% / 42) 100%,
+    100% calc(100% / 12);
+}
+.gs-chart-area::after{
+  background-image:linear-gradient(to right, rgba(16,76,122,.88) 1.4px, transparent 1.4px);
+  background-size:calc(100% / 7) 100%;
+}
+
+.gs-chart-scale{
+  background:#f5fbff;
+}
+.gs-chart-scale__title{
+  left:1.2mm;
+  right:1.2mm;
+  top:1mm;
+  display:flex;
+  justify-content:space-between;
+  gap:2mm;
+  font-size:6pt;
+}
+.gs-chart-scale__pulse{color:var(--gs-pulse-red)}
+.gs-chart-scale__temp{color:var(--gs-temp-blue)}
+.gs-scale-label{
+  right:.8mm;
+  width:21mm;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-size:5.7pt;
+}
+
+.gs-fever-line{
+  stroke:#cf4c46;
+  stroke-width:1.1;
+  stroke-dasharray:5 4;
+  opacity:.8;
+}
+
+.gs-slot-row,
+.gs-bp-row,
+.gs-pain-chart-row,
+.gs-daily-row{
+  border-bottom:1.05px solid var(--gs-blue-dark);
+}
+.gs-slot-row .gs-left,
+.gs-daily-row .gs-left,
+.gs-bp-labels{
+  background:#f1f8fc;
+}
+.gs-slot-row .gs-slot-cell,
+.gs-bp-line .gs-slot-cell{
+  border-right:.45px solid #7caed0;
+}
+.gs-slot-row .gs-slot-cell:nth-child(6n + 7),
+.gs-bp-line .gs-slot-cell:nth-child(6n){
+  border-right:1.2px solid var(--gs-blue-dark);
+}
+
+.gs-pain-chart-row{
+  min-height:22mm;
+}
+.gs-pain-area{
+  background-image:
+    linear-gradient(to right, rgba(47,122,173,.18) .55px, transparent .55px),
+    linear-gradient(to bottom, rgba(47,122,173,.20) .55px, transparent .55px),
+    linear-gradient(to right, rgba(30,99,148,.45) 1px, transparent 1px);
+  background-size:
+    calc(100% / 84) 100%,
+    100% 10%,
+    calc(100% / 42) 100%;
+}
+.gs-pain-area::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background-image:linear-gradient(to right, rgba(16,76,122,.86) 1.3px, transparent 1.3px);
+  background-size:calc(100% / 7) 100%;
+  pointer-events:none;
+}
+
+.gs-section-band{
+  min-height:5.3mm;
+  border-bottom:1px solid var(--gs-blue-dark);
+  display:flex;
+  align-items:center;
+  gap:3mm;
+  padding:.7mm 1.2mm;
+  background:#e7f3fa;
+  color:#14527b;
+  letter-spacing:.03em;
+}
+.gs-section-band strong{
+  font-size:6.4pt;
+}
+.gs-section-band span{
+  font-size:5.5pt;
+  color:#51768c;
+}
+
+.gs-daily-row{
+  min-height:6.2mm;
+}
+.gs-daily-row--med{
+  min-height:17mm;
+}
+.gs-daily-cell{
+  border-right:1px solid var(--gs-blue-dark);
+  padding:.65mm;
+}
+
+.gs-identity-strip{
+  display:grid;
+  grid-template-columns:2fr .7fr 1fr 1.4fr 1.1fr 1.7fr;
+  border-top:1.2px solid var(--gs-blue-dark);
+  min-height:10mm;
+  background:#f7fbfd;
+}
+.gs-identity-strip>div{
+  border-right:1px solid var(--gs-blue-dark);
+  padding:.7mm 1mm;
+  min-width:0;
+}
+.gs-identity-strip span{
+  display:block;
+  font-size:5pt;
+  color:#416b83;
+  text-transform:uppercase;
+}
+.gs-identity-strip b{
+  display:block;
+  margin-top:.6mm;
+  font-size:5.8pt;
+  color:#183e57;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+@media print{
+  @page{size:A4 portrait;margin:5mm}
+  .graphic-sheet-page{
+    width:200mm;
+    min-height:286mm;
+  }
+}
+
+
+/* =====================================================
+   CP7.1.2 — Lighter typography + neutral legend text
+===================================================== */
+
+.sheet-hospital{font-weight:700;}
+.sheet-header h1{font-weight:700;}
+.sheet-subtitle{font-weight:400;color:#6c8290;}
+.sheet-patient-meta{font-weight:400;color:#36596d;}
+.sheet-patient-meta strong,
+.sheet-patient-meta b{font-weight:650;}
+
+.gs-plot-legend{font-weight:650;}
+.gs-plot-legend__temp,
+.gs-plot-legend__pulse{color:#355463;}
+.gs-plot-legend__temp i{background:var(--gs-temp-blue);}
+.gs-plot-legend__pulse i{background:var(--gs-pulse-red);}
+
+.sheet-color-key{font-weight:500;color:#466473;}
+.sheet-color-key__temp,
+.sheet-color-key__pulse{color:#466473;}
+
+.gs-chart-scale__title{font-weight:600;}
+.gs-date-cell,
+.gs-dayafter-row .gs-left,
+.gs-time-header .gs-left{font-weight:700;}
+
+
+/* =====================================================
+   CP7.1.3 — A4 print fit + legend removed + scale overflow fix
+===================================================== */
+
+/* Hide explanatory legend text entirely on screen and print */
+.gs-plot-legend,
+.sheet-color-key{display:none !important;}
+
+/* Reduce density in top paper header */
+.sheet-header{padding-bottom:1.4mm;}
+.sheet-hospital{font-size:10pt;font-weight:650;line-height:1.15;}
+.sheet-header h1{font-size:15pt;font-weight:650;line-height:1.05; margin:.6mm 0 .4mm;}
+.sheet-subtitle{font-size:7pt;font-weight:400;line-height:1.1;}
+.sheet-patient-meta{font-size:6pt;line-height:1.15;}
+.sheet-patient-meta strong, .sheet-patient-meta b{font-weight:600;}
+
+/* Left scale title and labels: smaller and safely inside frame */
+.gs-chart-scale__title{
+  left:1.4mm;
+  right:1.4mm;
+  top:.6mm;
+  font-size:4.9pt;
+  font-weight:600;
+  letter-spacing:.01em;
+}
+.gs-chart-scale__pulse,
+.gs-chart-scale__temp{font-weight:600;}
+.gs-scale-label{
+  right:1.2mm;
+  width:17.5mm;
+  font-size:5.0pt;
+  line-height:1;
+}
+.gs-scale-p,
+.gs-scale-t{font-weight:700;}
+.gs-scale-t{margin-left:1.2mm;}
+.gs-time-header .gs-left{font-size:5.6pt;font-weight:700;}
+.gs-time-header .gs-slot-cell{font-size:5.1pt;font-weight:700;}
+
+/* Keep A4 print safe zone for actual printing/PDF */
+.graphic-sheet-page{
+  width:198mm;
+  min-height:286mm;
+  padding:3.5mm;
+}
+.sheet-grid{font-size:5.65pt;}
+.gs-identity-strip span{font-size:4.8pt;}
+.gs-identity-strip b{font-size:5.5pt;}
+.sheet-footer{font-size:5.4pt;}
+
+@media print{
+  @page{size:A4 portrait;margin:6mm;}
+  .graphic-sheet-page{
+    width:198mm;
+    min-height:285mm;
+    padding:0;
+  }
+}
+
+
+/* =====================================================
+   CP7.2 — I/O calculated totals in RED
+===================================================== */
+.gs-daily-row--io-total .gs-left,
+.gs-daily-row--io-total .gs-daily-cell{
+  color:#c92e2e;
+  font-weight:800;
+}
+
+.gs-daily-row--io-total .gs-left{
+  background:#fff2f2;
+}
+
+.gs-daily-row--io-total .gs-daily-cell{
+  background:#fffafa;
+}
+
+.gs-daily-row--io-balance{
+  border-top:1.2px solid #ba2b2b;
+  border-bottom:1.2px solid #ba2b2b;
+}
+
+
+/* =====================================================
+   CP7.3 — Flexible I/O detail rows (A4-safe)
+===================================================== */
+.gs-daily-row--io-detail{
+  min-height:8mm;
+}
+
+.gs-daily-row--io-detail .gs-daily-cell{
+  font-size:5.05pt;
+  line-height:1.18;
+  overflow-wrap:anywhere;
+  white-space:normal;
+}
+
+.gs-daily-row--io-detail .gs-left{
+  font-size:5.3pt;
+}
+
+
+/* =====================================================
+   CP7.4.1 — Day After Admission Auto Run
+===================================================== */
+.gs-hospital-day-range{
+  display:inline-flex;
+  align-items:center;
+  min-height:34px;
+  padding:0 10px;
+  border:1px solid #c9dfe8;
+  border-radius:9px;
+  background:#f5fafc;
+  color:#244e65;
+  font-size:.72rem;
+  font-weight:800;
+  white-space:nowrap;
+}
+
+.gs-dayafter-cell{
+  font-variant-numeric:tabular-nums;
+  font-weight:750;
+}
+
+
+/* =====================================================
+   CP7.5 — Clinical Event annotations + Auto POD
+   Mirrors the real paper chart practice: admission/transfer/PO
+   text is written inside the upper graph near the closest time.
+===================================================== */
+.gs-chart-area{position:relative}
+
+.gs-clinical-events-layer{
+  position:absolute;inset:0;z-index:3;pointer-events:none;overflow:hidden
+}
+
+.gs-clinical-event{
+  position:absolute;transform:translateX(-10%);width:15.5%;max-width:28mm;min-width:17mm;
+  display:flex;align-items:flex-start;gap:1mm;font-size:4.4pt;line-height:1.12;color:#34484f
+}
+
+.gs-clinical-event__dot{
+  flex:0 0 1.5mm;width:1.5mm;height:1.5mm;margin-top:.35mm;border-radius:50%;
+  background:#455b64;box-shadow:0 0 0 .45mm rgba(255,255,255,.92)
+}
+
+.gs-clinical-event__text{
+  display:block;padding:.45mm .65mm;background:rgba(255,255,255,.89);
+  border:1px solid rgba(71,96,107,.28);border-radius:1mm;white-space:normal;overflow-wrap:anywhere
+}
+
+.gs-clinical-event--admission .gs-clinical-event__dot,
+.gs-clinical-event--transfer_in .gs-clinical-event__dot{background:#15796f}
+
+.gs-clinical-event--operation .gs-clinical-event__dot,
+.gs-clinical-event--return_from_or .gs-clinical-event__dot{background:#8b5d13}
+
+.gs-clinical-event--procedure .gs-clinical-event__dot{background:#665a88}
+
+.gs-clinical-event-more{
+  position:absolute;transform:translateX(-50%);border-radius:999px;background:#eef4f5;
+  border:1px solid #cbdadd;color:#506970;padding:.4mm .9mm;font-size:4.3pt;font-weight:750
+}
+
+@media print{
+  .gs-clinical-event{font-size:4.0pt}
+  .gs-clinical-event__text{background:rgba(255,255,255,.95)}
+}
+
+
+/* =====================================================
+   CP7.5.1 — Vertical clinical event notation
+   Real-paper style: narrow vertical note, no floating card.
+===================================================== */
+
+.gs-clinical-event{
+  width:auto !important;
+  min-width:0 !important;
+  max-width:none !important;
+  transform:none !important;
+  display:block !important;
+  font-size:4.35pt;
+  line-height:1.08;
+  color:#263d46;
+}
+
+.gs-clinical-event__dot{
+  display:none !important;
+}
+
+.gs-clinical-event__text{
+  display:block;
+  width:max-content;
+  max-width:48mm;
+  padding:0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  white-space:nowrap !important;
+
+  /*
+    Rotate the complete Thai phrase rather than using writing-mode.
+    This preserves Thai vowel/tone-mark shaping and looks closer
+    to nurses handwriting vertically on the real graphic sheet.
+  */
+  transform-origin:top left;
+  transform:rotate(90deg);
+  font-weight:500;
+  letter-spacing:0;
+}
+
+.gs-clinical-event--admission .gs-clinical-event__text,
+.gs-clinical-event--transfer_in .gs-clinical-event__text{
+  color:#1f4b50;
+}
+
+.gs-clinical-event--operation .gs-clinical-event__text,
+.gs-clinical-event--return_from_or .gs-clinical-event__text{
+  color:#654c20;
+}
+
+.gs-clinical-event--procedure .gs-clinical-event__text{
+  color:#4f4864;
+}
+
+@media print{
+  .gs-clinical-event{
+    font-size:3.9pt;
+  }
+  .gs-clinical-event__text{
+    background:transparent !important;
+  }
+}
+
+
+/* =====================================================
+   CP7.5.2 — Reverse vertical direction + adaptive font
+===================================================== */
+
+.gs-clinical-event{
+  font-size:var(--event-font, 3.3pt) !important;
+  line-height:1.02;
+}
+
+/*
+  Reverse from CP7.5.1:
+  - anchor from lower part of chart
+  - rotate counter-clockwise
+  - text therefore reads in the opposite vertical direction
+  - Thai glyph shaping is preserved because the phrase is still
+    typeset horizontally before rotation.
+*/
+.gs-clinical-event__text{
+  transform-origin:left bottom !important;
+  transform:rotate(-90deg) !important;
+  font-size:inherit !important;
+  font-weight:450 !important;
+  max-width:55mm !important;
+}
+
+@media print{
+  .gs-clinical-event{
+    font-size:var(--event-font, 3.3pt) !important;
+  }
+}
+
+
+/* =====================================================
+   CP7.6 — Multi-event lanes
+===================================================== */
+.gs-clinical-event{
+  z-index:2;
+}
+
+.gs-clinical-event__text{
+  /*
+    Keep each vertical label narrow. Long labels extend upward,
+    while multiple events sharing a time slot use separate lanes.
+  */
+  max-width:58mm !important;
+  text-shadow:0 0 .6mm rgba(255,255,255,.95);
+}
+
+.gs-clinical-event-more{
+  z-index:4;
+  background:rgba(255,255,255,.94);
+  border:1px solid #aebfc4;
+  color:#405a62;
+  padding:.35mm .7mm;
+  font-size:4pt;
+}
+
+
+/* =====================================================
+   CP7.7 — Match real chart: pain scale / operation row / event color
+===================================================== */
+
+/* DAY AFTER OPERATION:
+   real-form behavior = red cross on operation day, then 1,2,3... in red */
+.gs-dayafter-row--operation .gs-left{
+  color:#b92424;
+}
+
+.gs-dayafter-cell--postop{
+  color:#c52f2f;
+  font-weight:800;
+}
+
+.gs-dayafter-cell--operation-day{
+  color:#c52f2f;
+  font-size:8pt;
+  font-weight:900;
+}
+
+/* Event color is explicitly selected per Clinical Event */
+.gs-clinical-event__text{
+  color:var(--event-color, #263d46) !important;
+}
+
+/* Pain score area closer to the real paper sheet:
+   vertical title + visible 0-10 scale; 4 is the red reference */
+.gs-pain-scale{
+  display:grid;
+  grid-template-columns:13mm 1fr;
+  overflow:hidden;
+}
+
+.gs-pain-scale strong{
+  position:static !important;
+  align-self:center;
+  justify-self:center;
+  writing-mode:vertical-rl;
+  transform:rotate(180deg);
+  font-size:6.2pt !important;
+  font-weight:650;
+  color:#174e70;
+}
+
+.gs-pain-scale__numbers{
+  position:relative;
+  border-left:.45px solid #7caed0;
+  color:#355f76;
+  font-size:5.1pt;
+  font-variant-numeric:tabular-nums;
+}
+
+.gs-pain-scale__numbers span{
+  position:absolute;
+  right:1.5mm;
+  transform:translateY(-50%);
+  font-weight:650;
+}
+
+.gs-pain-scale__numbers .gs-pain-scale__threshold{
+  color:#c52f2f;
+  font-weight:850;
+}
+
+@media print{
+  .gs-dayafter-cell--operation-day{font-size:7pt}
+  .gs-pain-scale strong{font-size:5.7pt !important}
+  .gs-pain-scale__numbers{font-size:4.7pt}
+}
+
+
+/* =====================================================
+   CP7.7.1 — Multiple Operation Day-After-Operation series
+   Real sheet behavior:
+   OP#1 continues counting; each later operation adds a new
+   comma-separated counter instead of resetting the first one.
+===================================================== */
+
+.gs-dayafter-row--operation .gs-dayafter-cell{
+  font-size:var(--pod-font, 5.6pt);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:clip;
+  letter-spacing:-.08mm;
+  line-height:1;
+}
+
+.gs-dayafter-cell--postop{
+  color:#c52f2f !important;
+  font-weight:750 !important;
+}
+
+.gs-dayafter-cell--operation-day{
+  color:#c52f2f !important;
+  font-weight:900 !important;
+}
+
+/* Keep the red cross visually compact when combined, e.g. 2,✕ or 4,2,✕ */
+.gs-dayafter-cell--operation-day{
+  font-family:Arial, "Noto Sans Thai", sans-serif;
+}
+
+@media print{
+  .gs-dayafter-row--operation .gs-dayafter-cell{
+    font-size:var(--pod-font, 5.2pt) !important;
+  }
+}
+
+
+/* =====================================================
+   CP7.7.2 PATCH — PAIN SCORE alignment + small typography
+   Scope: PAIN SCORE only.
+
+   Why:
+   Earlier versions drew the pain vertical grid with percentage-based
+   background gradients. Browser/A4 raster rounding can shift those lines
+   by a fraction of a pixel compared with the 42 DOM columns above.
+
+   Fix:
+   Render the pain grid as 42 real CSS-grid cells, exactly like the time
+   columns in RESP/BP/SpO2/SOS/Sedative/GCS rows.
+===================================================== */
+
+/* Keep the PAIN block on exactly the same 31mm + data-area boundary. */
+.gs-pain-chart-row{
+  grid-template-columns:31mm minmax(0,1fr) !important;
+}
+
+.gs-pain-scale{
+  min-width:0;
+  border-right:1px solid var(--gs-blue-dark) !important;
+}
+
+/* Smaller, lighter typography to reduce crowding on A4. */
+.gs-pain-scale strong{
+  font-size:4.9pt !important;
+  font-weight:600 !important;
+  line-height:1 !important;
+  letter-spacing:.015em !important;
+}
+
+.gs-pain-scale__numbers{
+  font-size:4.25pt !important;
+  font-weight:500 !important;
+  line-height:1 !important;
+}
+
+.gs-pain-scale__numbers span{
+  right:1.15mm !important;
+  font-weight:550 !important;
+}
+
+.gs-pain-scale__numbers .gs-pain-scale__threshold{
+  font-weight:700 !important;
+}
+
+/* Remove vertical/horizontal background gradients. They are replaced by
+   real grid elements below, preventing fractional-line drift. */
+.gs-pain-area{
+  position:relative;
+  overflow:hidden;
+  background:#fff !important;
+  background-image:none !important;
+}
+
+.gs-pain-area::after{
+  content:none !important;
+  display:none !important;
+}
+
+/* 42 time columns = identical column distribution to .gs-slot-row. */
+.gs-pain-grid-columns{
+  position:absolute;
+  inset:0;
+  z-index:0;
+  display:grid;
+  grid-template-columns:repeat(42,minmax(0,1fr));
+  pointer-events:none;
+}
+
+.gs-pain-grid-col{
+  min-width:0;
+  border-right:.45px solid #7caed0;
+}
+
+/* Strong separator every 6 slots = one day, exactly like rows above. */
+.gs-pain-grid-col:nth-child(6n){
+  border-right:1.2px solid var(--gs-blue-dark);
+}
+
+/* 10 equal horizontal bands for pain score 0–10. */
+.gs-pain-grid-rows{
+  position:absolute;
+  inset:0;
+  z-index:0;
+  display:grid;
+  grid-template-rows:repeat(10,minmax(0,1fr));
+  pointer-events:none;
+}
+
+.gs-pain-grid-row{
+  min-height:0;
+  border-bottom:.45px solid rgba(47,122,173,.28);
+}
+
+.gs-pain-grid-row:last-child{
+  border-bottom:0;
+}
+
+/* Data and threshold remain above the grid. */
+.gs-pain-svg{
+  z-index:1 !important;
+}
+
+/* Match line weight used by surrounding rows. */
+.gs-pain-threshold{
+  stroke-width:.8 !important;
+  stroke-dasharray:4 4 !important;
+}
+
+@media print{
+  .gs-pain-scale strong{
+    font-size:4.35pt !important;
+    font-weight:600 !important;
+  }
+
+  .gs-pain-scale__numbers{
+    font-size:3.85pt !important;
+  }
+
+  .gs-pain-grid-col{
+    border-right:.35px solid #7caed0;
+  }
+
+  .gs-pain-grid-col:nth-child(6n){
+    border-right:1px solid var(--gs-blue-dark);
+  }
+}
+
+
+/* =====================================================
+   CP7.7.2.1 — Micro alignment + smaller PAIN SCORE text
+   Goal: keep vertical grid aligned and prevent text clipping/overlap
+===================================================== */
+.gs-pain-chart-row,
+.gs-pain-scale,
+.gs-pain-area,
+.gs-pain-grid-columns,
+.gs-pain-grid-rows{
+  box-sizing:border-box !important;
+}
+
+.gs-pain-scale{
+  grid-template-columns:11.2mm 1fr !important;
+  background:#f8fcfe !important;
+}
+
+.gs-pain-scale strong{
+  font-size:4.15pt !important;
+  font-weight:580 !important;
+  letter-spacing:0 !important;
+}
+
+.gs-pain-scale__numbers{
+  font-size:3.55pt !important;
+  padding:.35mm 0 !important;
+  overflow:hidden !important;
+}
+
+.gs-pain-scale__numbers span{
+  right:.85mm !important;
+  padding:0 .15mm !important;
+  background:#f8fcfe !important;
+  line-height:1 !important;
+}
+
+.gs-pain-scale__numbers .gs-pain-scale__edge{
+  right:.7mm !important;
+}
+
+.gs-pain-scale__numbers .gs-pain-scale__top{
+  transform:none !important;
+  top:1.2mm !important;
+}
+
+.gs-pain-scale__numbers .gs-pain-scale__bottom{
+  transform:translateY(-100%) !important;
+  top:calc(100% - 1.1mm) !important;
+}
+
+.gs-pain-scale__numbers .gs-pain-scale__threshold{
+  font-weight:680 !important;
+}
+
+.gs-pain-grid-columns,
+.gs-pain-grid-rows,
+.gs-pain-svg{
+  top:0 !important;
+  left:0 !important;
+  right:0 !important;
+  bottom:0 !important;
+}
+
+.gs-pain-grid-col,
+.gs-pain-grid-row{
+  box-sizing:border-box !important;
+}
+
+@media print{
+  .gs-pain-scale strong{
+    font-size:3.9pt !important;
+  }
+
+  .gs-pain-scale__numbers{
+    font-size:3.3pt !important;
+  }
+
+  .gs-pain-scale__numbers .gs-pain-scale__top{
+    top:1mm !important;
+  }
+
+  .gs-pain-scale__numbers .gs-pain-scale__bottom{
+    top:calc(100% - 1mm) !important;
+  }
+}
+
+
+/* =====================================================
+   CP7.7.2.2 — Pain true scale + parameter typography fit
+===================================================== */
+:root{
+  --gs-left-col:31mm;
+  --gs-param-font:4.25pt;
+  --gs-param-label-font:4.85pt;
+  --gs-pain-title-font:3.75pt;
+  --gs-pain-number-font:3.20pt;
+}
+
+/* Lock all clinical rows to the same 31 mm + 42 slot geometry. */
+.gs-time-header,
+.gs-slot-row{
+  grid-template-columns:var(--gs-left-col) repeat(42,minmax(0,1fr)) !important;
+}
+
+.gs-bp-row,
+.gs-pain-chart-row{
+  grid-template-columns:var(--gs-left-col) minmax(0,1fr) !important;
+}
+
+.gs-bp-line,
+.gs-pain-grid-columns{
+  grid-template-columns:repeat(42,minmax(0,1fr)) !important;
+}
+
+.gs-slot-row .gs-left,
+.gs-bp-labels span{
+  font-size:var(--gs-param-label-font) !important;
+  line-height:1.02 !important;
+  font-weight:700 !important;
+  padding:.55mm .8mm !important;
+}
+
+/* Smaller values so 3-digit BP values remain inside one time column. */
+.gs-slot-row .gs-slot-cell,
+.gs-bp-line .gs-slot-cell{
+  font-size:var(--gs-param-font) !important;
+  line-height:1 !important;
+  padding:0 !important;
+  overflow:hidden !important;
+  white-space:nowrap !important;
+  text-align:center !important;
+}
+
+.gs-slot-value{
+  display:inline-block;
+  max-width:100%;
+  padding:0 .12mm;
+  line-height:1;
+  font-size:inherit;
+  font-weight:500;
+  letter-spacing:-.06mm;
+  white-space:nowrap;
+  background:#fff;
+}
+
+/* Pain area: one common geometry for label, score rail and 42 time columns. */
+.gs-pain-scale{
+  grid-template-columns:9.2mm minmax(0,1fr) !important;
+}
+
+.gs-pain-scale strong{
+  font-size:var(--gs-pain-title-font) !important;
+  font-weight:560 !important;
+  letter-spacing:0 !important;
+  line-height:1 !important;
+}
+
+.gs-pain-scale__numbers{
+  position:relative !important;
+  overflow:visible !important;
+  font-size:var(--gs-pain-number-font) !important;
+  border-left:.45px solid #7caed0 !important;
+  padding:0 !important;
+}
+
+.gs-pain-scale__numbers .gs-pain-mark{
+  position:absolute !important;
+  top:var(--pain-y) !important;
+  right:.65mm !important;
+  transform:translateY(-50%) !important;
+  min-width:3.2mm;
+  padding:0 .18mm !important;
+  text-align:right;
+  line-height:1 !important;
+  font-size:inherit !important;
+  font-weight:520 !important;
+  color:#355f76;
+  background:#f8fcfe !important;
+  z-index:2;
+}
+
+.gs-pain-scale__numbers .gs-pain-mark--top{
+  transform:translateY(0) !important;
+  top:.45mm !important;
+}
+
+.gs-pain-scale__numbers .gs-pain-mark--bottom{
+  transform:translateY(-100%) !important;
+  top:calc(100% - .45mm) !important;
+}
+
+.gs-pain-scale__numbers .gs-pain-scale__threshold{
+  color:#c52f2f !important;
+  font-weight:700 !important;
+}
+
+/* Exactly 10 bands = the 11 score lines 10,9,...,0. */
+.gs-pain-grid-rows{
+  grid-template-rows:repeat(10,minmax(0,1fr)) !important;
+}
+
+.gs-pain-grid-col,
+.gs-pain-grid-row,
+.gs-slot-cell{
+  box-sizing:border-box !important;
+}
+
+@media print{
+  :root{
+    --gs-param-font:3.95pt;
+    --gs-param-label-font:4.55pt;
+    --gs-pain-title-font:3.45pt;
+    --gs-pain-number-font:2.95pt;
+  }
+  .gs-slot-value{padding:0 .08mm}
+}
+
+
+/* =====================================================
+   CP7.7.2.3 — PAIN 10→0 precision + compact parameter typography
+   Scope:
+   - Do not change clinical logic.
+   - Do not change 31 mm + 42-slot sheet geometry.
+   - Make text fit inside cells and keep PAIN labels on score lines.
+===================================================== */
+:root{
+  --gs-param-font:3.55pt;
+  --gs-param-label-font:4.10pt;
+  --gs-pain-title-font:2.95pt;
+  --gs-pain-number-font:2.55pt;
+}
+
+/* One geometry source for all parameter rows and the PAIN data area. */
+.gs-time-header,
+.gs-slot-row{
+  grid-template-columns:var(--gs-left-col) repeat(42,minmax(0,1fr)) !important;
+}
+
+.gs-bp-row,
+.gs-pain-chart-row{
+  grid-template-columns:var(--gs-left-col) minmax(0,1fr) !important;
+}
+
+.gs-bp-line,
+.gs-pain-grid-columns{
+  grid-template-columns:repeat(42,minmax(0,1fr)) !important;
+}
+
+.gs-slot-row,
+.gs-bp-row,
+.gs-pain-chart-row,
+.gs-slot-row *,
+.gs-bp-row *,
+.gs-pain-chart-row *{
+  box-sizing:border-box;
+}
+
+/* Parameter labels: smaller but still readable on A4. */
+.gs-slot-row .gs-left,
+.gs-bp-labels span{
+  font-size:var(--gs-param-label-font) !important;
+  line-height:1.03 !important;
+  font-weight:650 !important;
+  padding:.48mm .68mm !important;
+  overflow:hidden !important;
+}
+
+/* Parameter values must never run into the vertical grid line. */
+.gs-slot-row .gs-slot-cell,
+.gs-bp-line .gs-slot-cell{
+  display:grid !important;
+  place-items:center !important;
+  min-width:0 !important;
+  padding:0 .05mm !important;
+  overflow:hidden !important;
+  white-space:nowrap !important;
+  font-size:var(--gs-param-font) !important;
+  line-height:1 !important;
+}
+
+.gs-slot-value{
+  display:block !important;
+  max-width:calc(100% - .18mm) !important;
+  padding:0 !important;
+  margin:0 auto !important;
+  overflow:hidden !important;
+  white-space:nowrap !important;
+  text-align:center !important;
+  line-height:1 !important;
+  font-size:1em !important;
+  font-weight:480 !important;
+  letter-spacing:-.045mm !important;
+  background:transparent !important;
+}
+
+/* BP 120 etc. gets a little extra room without changing the column width. */
+.gs-slot-value--compact{
+  font-size:.88em !important;
+  letter-spacing:-.07mm !important;
+}
+
+.gs-slot-value--xs{
+  font-size:.78em !important;
+  letter-spacing:-.09mm !important;
+}
+
+/* PAIN left area remains inside the same 31mm row boundary. */
+.gs-pain-scale{
+  grid-template-columns:8.7mm minmax(0,1fr) !important;
+  overflow:hidden !important;
+  background:#f8fcfe !important;
+}
+
+.gs-pain-scale strong{
+  font-size:var(--gs-pain-title-font) !important;
+  font-weight:520 !important;
+  line-height:1 !important;
+  letter-spacing:0 !important;
+}
+
+/* Score rail:
+   10..0 are anchored to the exact 0%,10%,...,100% score lines.
+   A matching 10-band background makes the line relationship visible. */
+.gs-pain-scale__numbers{
+  position:relative !important;
+  min-width:0 !important;
+  overflow:hidden !important;
+  padding:0 !important;
+  border-left:.45px solid #7caed0 !important;
+  font-size:var(--gs-pain-number-font) !important;
+  font-variant-numeric:tabular-nums;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent calc(10% - .35px),
+      rgba(47,122,173,.26) calc(10% - .35px),
+      rgba(47,122,173,.26) 10%
+    ),
+    #f8fcfe !important;
+}
+
+.gs-pain-scale__numbers .gs-pain-mark{
+  position:absolute !important;
+  top:calc(var(--pain-index) * 10%) !important;
+  right:.55mm !important;
+  transform:translateY(-50%) !important;
+  min-width:2.4mm !important;
+  padding:0 .10mm !important;
+  margin:0 !important;
+  text-align:right !important;
+  line-height:1 !important;
+  font-size:inherit !important;
+  font-weight:470 !important;
+  color:#355f76 !important;
+  background:#f8fcfe !important;
+  z-index:3 !important;
+}
+
+/* Keep 10 and 0 fully inside the PAIN box while remaining visually
+   attached to the first/last score line. */
+.gs-pain-scale__numbers .gs-pain-mark--top{
+  top:.52mm !important;
+  transform:none !important;
+}
+
+.gs-pain-scale__numbers .gs-pain-mark--bottom{
+  top:calc(100% - .52mm) !important;
+  transform:translateY(-100%) !important;
+}
+
+.gs-pain-scale__numbers .gs-pain-scale__threshold{
+  color:#c52f2f !important;
+  font-weight:680 !important;
+}
+
+/* The right PAIN grid is still exactly 42 equal time columns and 10 bands. */
+.gs-pain-grid-columns{
+  inset:0 !important;
+  grid-template-columns:repeat(42,minmax(0,1fr)) !important;
+}
+
+.gs-pain-grid-rows{
+  inset:0 !important;
+  grid-template-rows:repeat(10,minmax(0,1fr)) !important;
+}
+
+.gs-pain-grid-col,
+.gs-pain-grid-row,
+.gs-pain-svg{
+  box-sizing:border-box !important;
+}
+
+/* Strong 6-slot day separator remains identical to surrounding rows. */
+.gs-pain-grid-col:nth-child(6n){
+  border-right:1.2px solid var(--gs-blue-dark) !important;
+}
+
+@media print{
+  :root{
+    --gs-param-font:3.25pt;
+    --gs-param-label-font:3.85pt;
+    --gs-pain-title-font:2.70pt;
+    --gs-pain-number-font:2.35pt;
+  }
+
+  .gs-slot-value--compact{
+    font-size:.86em !important;
+  }
+
+  .gs-slot-value--xs{
+    font-size:.76em !important;
+  }
+
+  .gs-pain-scale__numbers .gs-pain-mark--top{
+    top:.46mm !important;
+  }
+
+  .gs-pain-scale__numbers .gs-pain-mark--bottom{
+    top:calc(100% - .46mm) !important;
+  }
+
+  .gs-pain-grid-col:nth-child(6n){
+    border-right:1px solid var(--gs-blue-dark) !important;
+  }
+}
+
+
+/* =====================================================
+   CP7.7.2.4 — PAIN even scale + tighter parameter fit
+   - PAIN SCORE shows 10,8,6,4,2,0 only
+   - shrink parameter values so they stay inside the slot
+===================================================== */
+:root{
+  --gs-param-font:3.15pt;
+  --gs-param-label-font:3.95pt;
+  --gs-pain-number-font:2.25pt;
+}
+
+.gs-slot-row .gs-left,
+.gs-bp-labels span{
+  font-size:var(--gs-param-label-font) !important;
+  line-height:1.02 !important;
+}
+
+.gs-slot-row .gs-slot-cell,
+.gs-bp-line .gs-slot-cell{
+  padding:0 .02mm !important;
+}
+
+.gs-slot-value{
+  max-width:calc(100% - .10mm) !important;
+  font-size:1em !important;
+  font-weight:470 !important;
+  letter-spacing:-.075mm !important;
+  line-height:.98 !important;
+}
+
+.gs-slot-value--compact{
+  font-size:.78em !important;
+  letter-spacing:-.10mm !important;
+}
+
+.gs-slot-value--xs{
+  font-size:.68em !important;
+  letter-spacing:-.12mm !important;
+}
+
+.gs-pain-scale__numbers{
+  font-size:var(--gs-pain-number-font) !important;
+}
+
+.gs-pain-scale__numbers .gs-pain-mark{
+  right:.45mm !important;
+  min-width:2.05mm !important;
+  padding:0 .04mm !important;
+  font-weight:520 !important;
+  line-height:.95 !important;
+}
+
+/* keep labels precisely on score lines: 10/8/6/4/2/0 */
+.gs-pain-scale__numbers .gs-pain-mark--top{
+  top:.44mm !important;
+}
+
+.gs-pain-scale__numbers .gs-pain-mark--bottom{
+  top:calc(100% - .44mm) !important;
+}
+
+@media print{
+  :root{
+    --gs-param-font:2.95pt;
+    --gs-param-label-font:3.75pt;
+    --gs-pain-number-font:2.05pt;
+  }
+
+  .gs-slot-value--compact{
+    font-size:.76em !important;
+  }
+
+  .gs-slot-value--xs{
+    font-size:.66em !important;
+  }
+
+  .gs-pain-scale__numbers .gs-pain-mark{
+    right:.40mm !important;
+    min-width:1.95mm !important;
+  }
+}
+
+
+/* =====================================================
+   CP7.7.2.5 — parameter typography smaller
+   Goal: make parameter numbers fit inside each slot cleanly
+===================================================== */
+:root{
+  --gs-param-font:2.70pt;
+  --gs-param-label-font:3.85pt;
+}
+
+.gs-slot-row .gs-slot-cell,
+.gs-bp-line .gs-slot-cell{
+  font-size:var(--gs-param-font) !important;
+  line-height:.94 !important;
+  padding:0 !important;
+}
+
+.gs-slot-value{
+  max-width:calc(100% - .16mm) !important;
+  padding:0 .01mm !important;
+  font-size:.90em !important;
+  font-weight:450 !important;
+  letter-spacing:-.10mm !important;
+  line-height:.92 !important;
+  font-variant-numeric:tabular-nums !important;
+}
+
+.gs-slot-value--compact{
+  font-size:.70em !important;
+  letter-spacing:-.12mm !important;
+}
+
+.gs-slot-value--xs{
+  font-size:.58em !important;
+  letter-spacing:-.13mm !important;
+}
+
+@media print{
+  :root{
+    --gs-param-font:2.55pt;
+    --gs-param-label-font:3.65pt;
+  }
+
+  .gs-slot-value{
+    font-size:.86em !important;
+    letter-spacing:-.11mm !important;
+  }
+
+  .gs-slot-value--compact{
+    font-size:.66em !important;
+  }
+
+  .gs-slot-value--xs{
+    font-size:.54em !important;
+  }
+}
+
+
+/* =====================================================
+   CP7.7.2.6 — Auto-Fit Parameter Values
+   Target rows: RR / BP systolic / Diastolic / SpO2 / SOS
+   Geometry is intentionally unchanged: 31mm left + 42 equal slots.
+===================================================== */
+:root{
+  --gs-param-font:2.35pt;
+}
+
+.gs-slot-row .gs-slot-cell,
+.gs-bp-line .gs-slot-cell{
+  display:grid !important;
+  place-items:center !important;
+  min-width:0 !important;
+  overflow:hidden !important;
+  padding:0 !important;
+  font-size:var(--gs-param-font) !important;
+  line-height:1 !important;
+}
+
+.gs-slot-value{
+  display:block !important;
+  width:auto !important;
+  max-width:calc(100% - .22mm) !important;
+  margin:0 auto !important;
+  padding:0 !important;
+  text-align:center !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  font-weight:430 !important;
+  line-height:.90 !important;
+  letter-spacing:-.075mm !important;
+  font-variant-numeric:proportional-nums !important;
+  font-feature-settings:"pnum" 1, "tnum" 0 !important;
+  background:transparent !important;
+}
+
+/* Explicit fit levels. 120 is intentionally much smaller than 20. */
+.gs-slot-value--fit-1{
+  font-size:.78em !important;
+  letter-spacing:-.055mm !important;
+}
+
+.gs-slot-value--fit-2{
+  font-size:.66em !important;
+  letter-spacing:-.085mm !important;
+}
+
+.gs-slot-value--fit-3{
+  font-size:.49em !important;
+  letter-spacing:-.105mm !important;
+}
+
+.gs-slot-value--fit-4{
+  font-size:.42em !important;
+  letter-spacing:-.115mm !important;
+}
+
+.gs-slot-value--fit-5plus{
+  font-size:.35em !important;
+  letter-spacing:-.125mm !important;
+}
+
+/* Legacy classes remain harmless for older cached markup. */
+.gs-slot-value--compact{
+  font-size:.49em !important;
+  letter-spacing:-.105mm !important;
+}
+.gs-slot-value--xs{
+  font-size:.35em !important;
+  letter-spacing:-.125mm !important;
+}
+
+@media print{
+  :root{
+    --gs-param-font:2.20pt;
+  }
+
+  .gs-slot-value--fit-1{font-size:.76em !important}
+  .gs-slot-value--fit-2{font-size:.63em !important}
+  .gs-slot-value--fit-3{font-size:.47em !important}
+  .gs-slot-value--fit-4{font-size:.40em !important}
+  .gs-slot-value--fit-5plus{font-size:.33em !important}
+}
+
+
+/* =====================================================
+   CP7.7.2.7 — Parameter Values Legal Fit
+   Goal: make RR / BP / SpO2 / SOS values visibly smaller so they fit
+   comfortably inside the legal-print grid without touching borders.
+===================================================== */
+:root{
+  --gs-param-font:1.95pt;
+}
+
+.gs-slot-row .gs-slot-cell,
+.gs-bp-line .gs-slot-cell{
+  display:grid !important;
+  place-items:center !important;
+  min-width:0 !important;
+  overflow:hidden !important;
+  padding:0 !important;
+  font-size:var(--gs-param-font) !important;
+  line-height:.88 !important;
+}
+
+.gs-slot-value{
+  display:block !important;
+  width:auto !important;
+  max-width:calc(100% - .32mm) !important;
+  margin:0 auto !important;
+  padding:0 !important;
+  text-align:center !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  font-weight:420 !important;
+  line-height:.86 !important;
+  letter-spacing:-.045mm !important;
+  font-variant-numeric:proportional-nums !important;
+  font-feature-settings:"pnum" 1, "tnum" 0 !important;
+  background:transparent !important;
+}
+
+.gs-slot-value--fit-1{font-size:.66em !important; letter-spacing:-.035mm !important;}
+.gs-slot-value--fit-2{font-size:.54em !important; letter-spacing:-.055mm !important;}
+.gs-slot-value--fit-3{font-size:.39em !important; letter-spacing:-.070mm !important;}
+.gs-slot-value--fit-4{font-size:.33em !important; letter-spacing:-.080mm !important;}
+.gs-slot-value--fit-5plus{font-size:.29em !important; letter-spacing:-.090mm !important;}
+
+.gs-slot-value--compact{font-size:.39em !important; letter-spacing:-.070mm !important;}
+.gs-slot-value--xs{font-size:.29em !important; letter-spacing:-.090mm !important;}
+
+@media print{
+  :root{
+    --gs-param-font:1.82pt;
+  }
+  .gs-slot-value{
+    max-width:calc(100% - .36mm) !important;
+    line-height:.84 !important;
+  }
+  .gs-slot-value--fit-1{font-size:.63em !important}
+  .gs-slot-value--fit-2{font-size:.51em !important}
+  .gs-slot-value--fit-3{font-size:.36em !important}
+  .gs-slot-value--fit-4{font-size:.31em !important}
+  .gs-slot-value--fit-5plus{font-size:.27em !important}
+}
+
+
+/* =====================================================
+   CP7.7.2.8 — Three-Digit Parameter Fit
+   Focus: shrink 3-digit values (e.g. 120, 100) a bit more so they sit
+   comfortably inside one slot and stay legally readable on A4/PDF.
+===================================================== */
+.gs-slot-row .gs-slot-value--fit-3,
+.gs-bp-line .gs-slot-value--fit-3{
+  font-size:.31em !important;
+  letter-spacing:-.105mm !important;
+  line-height:.82 !important;
+}
+
+.gs-slot-row .gs-slot-value--fit-4,
+.gs-bp-line .gs-slot-value--fit-4{
+  font-size:.27em !important;
+  letter-spacing:-.115mm !important;
+  line-height:.80 !important;
+}
+
+@media print{
+  .gs-slot-row .gs-slot-value--fit-3,
+  .gs-bp-line .gs-slot-value--fit-3{
+    font-size:.28em !important;
+    letter-spacing:-.11mm !important;
+    line-height:.80 !important;
+  }
+  .gs-slot-row .gs-slot-value--fit-4,
+  .gs-bp-line .gs-slot-value--fit-4{
+    font-size:.24em !important;
+    letter-spacing:-.12mm !important;
+    line-height:.78 !important;
+  }
+}
+
+
+/* =====================================================
+   CP7.7.2.9 — Three-digit values = 10px exactly
+   User-confirmed target from browser Computed Style.
+   Applies to 3-digit clinical parameter values such as 120 / 100 / 160.
+===================================================== */
+.gs-slot-row .gs-slot-value--fit-3,
+.gs-bp-line .gs-slot-value--fit-3{
+  font-size:10px !important;
+  line-height:1 !important;
+  letter-spacing:-0.35px !important;
+  font-weight:450 !important;
+  max-width:calc(100% - 1px) !important;
+  overflow:hidden !important;
+  white-space:nowrap !important;
+  text-align:center !important;
+}
+
+/* 4+ characters stay slightly smaller to protect the grid. */
+.gs-slot-row .gs-slot-value--fit-4,
+.gs-bp-line .gs-slot-value--fit-4{
+  font-size:9px !important;
+  line-height:1 !important;
+  letter-spacing:-0.45px !important;
+}
+
+.gs-slot-row .gs-slot-value--fit-5plus,
+.gs-bp-line .gs-slot-value--fit-5plus{
+  font-size:8px !important;
+  line-height:1 !important;
+  letter-spacing:-0.5px !important;
+}
+
+@media print{
+  .gs-slot-row .gs-slot-value--fit-3,
+  .gs-bp-line .gs-slot-value--fit-3{
+    font-size:10px !important;
+    letter-spacing:-0.35px !important;
+  }
+
+  .gs-slot-row .gs-slot-value--fit-4,
+  .gs-bp-line .gs-slot-value--fit-4{
+    font-size:9px !important;
+  }
+
+  .gs-slot-row .gs-slot-value--fit-5plus,
+  .gs-bp-line .gs-slot-value--fit-5plus{
+    font-size:8px !important;
+  }
+}
+
+
+/* =====================================================
+   CP7.7.2.10 — Three-digit values = 8px exactly
+   Final override for values such as 120 / 100 / 160.
+===================================================== */
+.gs-slot-row .gs-slot-value--fit-3,
+.gs-bp-line .gs-slot-value--fit-3{
+  font-size:8px !important;
+  line-height:1 !important;
+  letter-spacing:-0.15px !important;
+  font-weight:450 !important;
+  max-width:calc(100% - 2px) !important;
+}
+
+@media print{
+  .gs-slot-row .gs-slot-value--fit-3,
+  .gs-bp-line .gs-slot-value--fit-3{
+    font-size:8px !important;
+    line-height:1 !important;
+    letter-spacing:-0.15px !important;
+    max-width:calc(100% - 2px) !important;
+  }
+}
+
+
+/* =====================================================
+   CP7.7.2.11 — Three-digit 6px + boundary-safe rendering
+   Fix: third digit (e.g. the 0 in 120) was clipped by a narrow time slot,
+   especially next to the thick 6-slot/day separator.
+===================================================== */
+
+/* Numeric-only font is narrower and more predictable for legal print. */
+.gs-slot-row .gs-slot-value,
+.gs-bp-line .gs-slot-value{
+  font-family:Arial, Helvetica, sans-serif !important;
+  font-variant-numeric:proportional-nums !important;
+  font-feature-settings:"pnum" 1, "tnum" 0 !important;
+}
+
+/* Three digits such as 120 / 100 / 160. */
+.gs-slot-row .gs-slot-value--fit-3,
+.gs-bp-line .gs-slot-value--fit-3{
+  font-size:6px !important;
+  line-height:1 !important;
+  letter-spacing:-0.10px !important;
+  font-weight:450 !important;
+  width:auto !important;
+  max-width:calc(100% - 1px) !important;
+  overflow:visible !important;
+  white-space:nowrap !important;
+  text-align:center !important;
+}
+
+/* The cell itself remains the legal boundary; text cannot leak into another slot. */
+.gs-slot-row .gs-slot-cell,
+.gs-bp-line .gs-slot-cell{
+  overflow:hidden !important;
+}
+
+/* Give the last slot before the thick day separator a tiny safety offset
+   so the separator never visually covers the final digit. */
+.gs-slot-row .gs-slot-cell:nth-child(6n + 7) .gs-slot-value,
+.gs-bp-line .gs-slot-cell:nth-child(6n) .gs-slot-value{
+  transform:translateX(-0.35px);
+}
+
+@media print{
+  .gs-slot-row .gs-slot-value--fit-3,
+  .gs-bp-line .gs-slot-value--fit-3{
+    font-size:6px !important;
+    letter-spacing:-0.10px !important;
+    max-width:calc(100% - 1px) !important;
+  }
+
+  .gs-slot-row .gs-slot-cell:nth-child(6n + 7) .gs-slot-value,
+  .gs-bp-line .gs-slot-cell:nth-child(6n) .gs-slot-value{
+    transform:translateX(-0.25px);
+  }
+}
+
+
+/* =====================================================
+   CP7.7.2.12 — TEST: three-digit parameter values = 2px
+   User-requested visual test.
+   Scope: 3-digit values only, e.g. 120 / 100 / 160.
+   Geometry, clinical data, plot logic and legal cell boundaries unchanged.
+===================================================== */
+.gs-slot-row .gs-slot-value--fit-3,
+.gs-bp-line .gs-slot-value--fit-3{
+  font-size:2px !important;
+  line-height:1 !important;
+  letter-spacing:0 !important;
+  font-weight:500 !important;
+  width:auto !important;
+  max-width:calc(100% - 2px) !important;
+  overflow:visible !important;
+  white-space:nowrap !important;
+  text-align:center !important;
+  transform:none !important;
+}
+
+/* Keep only the tiny boundary offset on cells immediately before
+   the thick day separator, without scaling the glyphs. */
+.gs-slot-row .gs-slot-cell:nth-child(6n + 7) .gs-slot-value--fit-3,
+.gs-bp-line .gs-slot-cell:nth-child(6n) .gs-slot-value--fit-3{
+  transform:translateX(-0.20px) !important;
+}
+
+@media print{
+  .gs-slot-row .gs-slot-value--fit-3,
+  .gs-bp-line .gs-slot-value--fit-3{
+    font-size:2px !important;
+    line-height:1 !important;
+    letter-spacing:0 !important;
+    max-width:calc(100% - 2px) !important;
+  }
+
+  .gs-slot-row .gs-slot-cell:nth-child(6n + 7) .gs-slot-value--fit-3,
+  .gs-bp-line .gs-slot-cell:nth-child(6n) .gs-slot-value--fit-3{
+    transform:translateX(-0.15px) !important;
+  }
+}
+
+
+/* =====================================================
+   CP7.7.2.13 — Arial Narrow Numeric Font
+   User-requested font-family patch.
+   Scope: parameter numeric values only.
+   Font-size / grid geometry / plotting logic are unchanged.
+===================================================== */
+.gs-slot-row .gs-slot-value,
+.gs-bp-line .gs-slot-value{
+  font-family:"Arial Narrow","Aptos Narrow","Avenir Next Condensed",Arial,Helvetica,sans-serif !important;
+  font-stretch:condensed !important;
+  font-style:normal !important;
+  font-kerning:normal !important;
+  font-variant-numeric:proportional-nums !important;
+  font-feature-settings:"pnum" 1, "tnum" 0 !important;
+}
+
+/* Explicitly repeat on 3-digit values so later cascade cannot restore Arial. */
+.gs-slot-row .gs-slot-value--fit-3,
+.gs-bp-line .gs-slot-value--fit-3{
+  font-family:"Arial Narrow","Aptos Narrow","Avenir Next Condensed",Arial,Helvetica,sans-serif !important;
+  font-stretch:condensed !important;
+}
+
+@media print{
+  .gs-slot-row .gs-slot-value,
+  .gs-bp-line .gs-slot-value,
+  .gs-slot-row .gs-slot-value--fit-3,
+  .gs-bp-line .gs-slot-value--fit-3{
+    font-family:"Arial Narrow","Aptos Narrow","Avenir Next Condensed",Arial,Helvetica,sans-serif !important;
+    font-stretch:condensed !important;
+  }
+}
+
+
+/* =====================================================
+   CP7.8 — Pain Score Plot Engine
+   Exact point-to-point plot using the same 42 slot geometry as T/P/R/BP.
+===================================================== */
+.gs-pain-svg{
+  pointer-events:none;
+}
+
+.gs-pain-line{
+  fill:none !important;
+  stroke:#284f72 !important;
+  stroke-width:1.15 !important;
+  stroke-linecap:round !important;
+  stroke-linejoin:round !important;
+  vector-effect:non-scaling-stroke;
+}
+
+.gs-pain-point{
+  fill:#fff !important;
+  stroke:#284f72 !important;
+  stroke-width:1.15 !important;
+  vector-effect:non-scaling-stroke;
+}
+
+/* Pain 4 reference line stays separate from the actual pain plot. */
+.gs-pain-threshold{
+  stroke:#c94a46 !important;
+  opacity:.60;
+  vector-effect:non-scaling-stroke;
+}
+
+@media print{
+  .gs-pain-line{
+    stroke-width:.85 !important;
+  }
+
+  .gs-pain-point{
+    stroke-width:.85 !important;
+  }
+}
+
+
+/* =====================================================
+   CP7.8.1 — Legal Print Grid Repair + GCS row removal
+   PRINT-ONLY hardening:
+   - preserve A4 portrait geometry
+   - force exact print colors
+   - prevent thin 0.45px grid lines from disappearing in PDF/print
+   - keep all 42 time columns aligned
+   Screen layout/plot logic is intentionally unchanged.
+===================================================== */
+
+@media print{
+  @page{
+    size:A4 portrait;
+    margin:6mm;
+  }
+
+  html,
+  body.gs-page{
+    width:auto !important;
+    height:auto !important;
+    min-width:0 !important;
+    min-height:0 !important;
+    margin:0 !important;
+    padding:0 !important;
+    overflow:visible !important;
+    background:#fff !important;
+    -webkit-print-color-adjust:exact !important;
+    print-color-adjust:exact !important;
+  }
+
+  body.gs-page *,
+  body.gs-page *::before,
+  body.gs-page *::after{
+    -webkit-print-color-adjust:exact !important;
+    print-color-adjust:exact !important;
+    box-sizing:border-box !important;
+  }
+
+  .no-print{
+    display:none !important;
+  }
+
+  .gs-wrap{
+    width:auto !important;
+    max-width:none !important;
+    margin:0 !important;
+    padding:0 !important;
+    overflow:visible !important;
+  }
+
+  .gs-screen-frame{
+    width:auto !important;
+    margin:0 !important;
+    padding:0 !important;
+    border:0 !important;
+    border-radius:0 !important;
+    background:#fff !important;
+    overflow:visible !important;
+  }
+
+  .graphic-sheet-page{
+    width:198mm !important;
+    max-width:198mm !important;
+    min-height:0 !important;
+    height:auto !important;
+    margin:0 auto !important;
+    padding:0 !important;
+    border:0 !important;
+    box-shadow:none !important;
+    transform:none !important;
+    transform-origin:initial !important;
+    scale:1 !important;
+    overflow:visible !important;
+  }
+
+  .sheet-header,
+  .sheet-grid,
+  .sheet-footer{
+    max-width:198mm !important;
+  }
+
+  .sheet-grid{
+    width:100% !important;
+    border:.9px solid var(--gs-blue-dark) !important;
+    overflow:visible !important;
+  }
+
+  /* Never split one clinical row across a page boundary. */
+  .gs-date-header,
+  .gs-dayafter-row,
+  .gs-time-header,
+  .gs-chart-row,
+  .gs-slot-row,
+  .gs-bp-row,
+  .gs-pain-chart-row,
+  .gs-section-band,
+  .gs-daily-row,
+  .gs-identity-strip{
+    break-inside:avoid !important;
+    page-break-inside:avoid !important;
+  }
+
+  /* Major horizontal borders. */
+  .gs-date-header,
+  .gs-dayafter-row,
+  .gs-time-header,
+  .gs-chart-row,
+  .gs-slot-row,
+  .gs-bp-row,
+  .gs-pain-chart-row,
+  .gs-section-band,
+  .gs-daily-row{
+    border-bottom:.75px solid var(--gs-blue-dark) !important;
+  }
+
+  /* Left label boundary. */
+  .gs-date-header .gs-left,
+  .gs-time-header .gs-left,
+  .gs-slot-row .gs-left,
+  .gs-daily-row .gs-left,
+  .gs-dayafter-row .gs-left,
+  .gs-bp-labels,
+  .gs-chart-scale,
+  .gs-pain-scale{
+    border-right:.75px solid var(--gs-blue-dark) !important;
+  }
+
+  /* 42-slot minor vertical grid:
+     0.45px was visually disappearing in browser PDF output. */
+  .gs-time-header .gs-slot-cell,
+  .gs-slot-row .gs-slot-cell,
+  .gs-bp-line .gs-slot-cell{
+    border-right:.60px solid #6fadd2 !important;
+  }
+
+  /* One strong line every 6 slots = one calendar day. */
+  .gs-time-header .gs-slot-cell:nth-child(6n + 1),
+  .gs-slot-row .gs-slot-cell:nth-child(6n + 7),
+  .gs-bp-line .gs-slot-cell:nth-child(6n){
+    border-right:1px solid var(--gs-blue-dark) !important;
+  }
+
+  .gs-date-cell,
+  .gs-dayafter-cell,
+  .gs-daily-cell{
+    border-right:.75px solid var(--gs-blue-dark) !important;
+  }
+
+  .gs-bp-labels span,
+  .gs-bp-line:first-child{
+    border-bottom:.60px solid #6fadd2 !important;
+  }
+
+  /* PAIN uses real DOM columns; harden them separately for print. */
+  .gs-pain-grid-col{
+    border-right:.60px solid #6fadd2 !important;
+  }
+
+  .gs-pain-grid-col:nth-child(6n){
+    border-right:1px solid var(--gs-blue-dark) !important;
+  }
+
+  .gs-pain-grid-row{
+    border-bottom:.55px solid rgba(58,129,177,.48) !important;
+  }
+
+  .gs-pain-grid-row:last-child{
+    border-bottom:0 !important;
+  }
+
+  /* T/P graph paper: slightly stronger print-only grid so PDF keeps it. */
+  .gs-chart-area{
+    background-color:#fff !important;
+    background-image:
+      linear-gradient(to right, rgba(34,112,167,.25) .65px, transparent .65px),
+      linear-gradient(to bottom, rgba(34,112,167,.23) .65px, transparent .65px),
+      linear-gradient(to right, rgba(30,99,148,.52) .85px, transparent .85px),
+      linear-gradient(to bottom, rgba(30,99,148,.44) .85px, transparent .85px) !important;
+    background-size:
+      calc(100% / 84) 100%,
+      100% calc(100% / 48),
+      calc(100% / 42) 100%,
+      100% calc(100% / 12) !important;
+  }
+
+  .gs-chart-area::after{
+    background-image:
+      linear-gradient(to right, rgba(16,76,122,.92) 1px, transparent 1px) !important;
+    background-size:calc(100% / 7) 100% !important;
+  }
+
+  .gs-chart-svg,
+  .gs-pain-svg{
+    overflow:visible !important;
+  }
+
+  svg{
+    shape-rendering:geometricPrecision;
+  }
+
+  /* Preserve the already-approved narrow numeric typography. */
+  .gs-slot-row .gs-slot-value,
+  .gs-bp-line .gs-slot-value,
+  .gs-slot-row .gs-slot-value--fit-3,
+  .gs-bp-line .gs-slot-value--fit-3{
+    font-family:"Arial Narrow","Aptos Narrow","Avenir Next Condensed",Arial,Helvetica,sans-serif !important;
+    font-stretch:condensed !important;
+  }
+}
+
+
+/* =====================================================
+   CP7.9 — Multi-Sheet Pagination Engine
+   One Graphic Sheet = 7 Hospital Days, anchored to admission date.
+===================================================== */
+
+.gs-sheet-toolbar{
+  align-items:stretch !important;
+  flex-direction:column;
+  gap:10px !important;
+}
+
+.gs-sheet-nav{
+  display:grid;
+  grid-template-columns:auto minmax(210px,1fr) auto;
+  gap:8px;
+  align-items:stretch;
+}
+
+.gs-sheet-nav__btn{
+  justify-content:center;
+}
+
+.gs-sheet-current{
+  min-height:54px;
+  padding:7px 14px;
+  border:1px solid #bcd9d5;
+  border-radius:12px;
+  background:linear-gradient(180deg,#f7fcfb,#edf8f6);
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  color:#315b59;
+}
+
+.gs-sheet-current span{
+  font-size:.62rem;
+  letter-spacing:.12em;
+  font-weight:900;
+  color:#0a887e;
+}
+
+.gs-sheet-current strong{
+  margin-top:1px;
+  font-size:1.02rem;
+  line-height:1.05;
+  color:#163f46;
+}
+
+.gs-sheet-current small{
+  margin-top:3px;
+  font-size:.68rem;
+  color:#647a7e;
+}
+
+.gs-sheet-tools{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:flex-end;
+  gap:8px;
+}
+
+.gs-sheet-tools label span{
+  display:block;
+  margin-bottom:4px;
+  font-size:.68rem;
+  font-weight:850;
+  color:#50666c;
+}
+
+.gs-sheet-tools select,
+.gs-sheet-tools input{
+  min-height:40px;
+  border:1px solid #ccdadd;
+  border-radius:9px;
+  padding:7px 9px;
+  font:inherit;
+  background:#fff;
+  color:#2e4850;
+}
+
+.gs-sheet-jump select{
+  min-width:275px;
+  max-width:420px;
+}
+
+.gs-sheet-date-jump input{
+  min-width:145px;
+}
+
+.gs-print-actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.gs-btn:disabled{
+  opacity:.42;
+  cursor:not-allowed;
+  filter:grayscale(.15);
+}
+
+.sheet-document-meta{
+  margin-top:1.4mm;
+  padding-top:1.1mm;
+  border-top:.45px solid #b6cbd6;
+  display:grid;
+  grid-template-columns:1fr 1fr 1.45fr;
+  gap:1.5mm;
+  align-items:center;
+  font-size:5.7pt;
+  color:#4a6675;
+  text-align:center;
+}
+
+.sheet-document-meta span:first-child{
+  text-align:left;
+  font-weight:800;
+  color:#204d67;
+}
+
+.sheet-document-meta span:last-child{
+  text-align:right;
+}
+
+.sheet-footer{
+  align-items:center;
+}
+
+.sheet-footer > span:nth-child(2){
+  text-align:center;
+  font-weight:750;
+  color:#4c6979;
+  white-space:nowrap;
+}
+
+.gs-print-all-host{
+  display:none;
+}
+
+@media(max-width:900px){
+  .gs-sheet-nav{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .gs-sheet-current{
+    grid-column:1 / -1;
+    grid-row:1;
+  }
+
+  .gs-sheet-nav__btn{
+    grid-row:2;
+  }
+
+  .gs-sheet-jump,
+  .gs-sheet-jump select{
+    width:100%;
+    max-width:none;
+  }
+}
+
+/* Print current sheet stays exactly as CP7.8.1.
+   Print-all swaps the current preview for a sequence of full A4 sheets. */
+@media print{
+  .gs-print-all-host{
+    display:none !important;
+  }
+
+  body.gs-print-all-mode .gs-screen-frame{
+    display:none !important;
+  }
+
+  body.gs-print-all-mode .gs-print-all-host{
+    display:block !important;
+    width:100% !important;
+    margin:0 !important;
+    padding:0 !important;
+  }
+
+  body.gs-print-all-mode .gs-print-sheet{
+    display:block !important;
+    width:198mm !important;
+    max-width:198mm !important;
+    min-height:0 !important;
+    height:auto !important;
+    margin:0 auto !important;
+    padding:0 !important;
+    border:0 !important;
+    box-shadow:none !important;
+    transform:none !important;
+    overflow:visible !important;
+    break-after:page !important;
+    page-break-after:always !important;
+  }
+
+  body.gs-print-all-mode .gs-print-sheet:last-child{
+    break-after:auto !important;
+    page-break-after:auto !important;
+  }
+
+  body.gs-print-all-mode .gs-print-sheet .sheet-header,
+  body.gs-print-all-mode .gs-print-sheet .sheet-grid,
+  body.gs-print-all-mode .gs-print-sheet .sheet-footer{
+    max-width:198mm !important;
+  }
+}
+
+
+/* =====================================================
+   CP7.10 — Clinical Rule Hardening
+   Auto rollover / canonical replacement / discharge-safe last sheet
+===================================================== */
+
+.gs-rollover-notice{
+  max-width:1400px;
+  margin:10px auto 0;
+  padding:10px 14px;
+  border:1px solid #a9d8d1;
+  border-radius:11px;
+  background:#f1fbf9;
+  color:#315a5b;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  box-shadow:0 3px 12px rgba(34,95,89,.06);
+}
+
+.gs-rollover-notice[hidden]{
+  display:none !important;
+}
+
+.gs-rollover-notice > div{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+
+.gs-rollover-notice strong{
+  font-size:.78rem;
+  color:#087e74;
+}
+
+.gs-rollover-notice span{
+  font-size:.72rem;
+  color:#657d80;
+}
+
+.gs-dayafter-cell--operation-day{
+  font-weight:800;
+}
+
+/* Multiple POD counters are comma-separated and kept inside one day cell. */
+.gs-dayafter-row--operation .gs-dayafter-cell{
+  font-variant-numeric:tabular-nums;
+  letter-spacing:-.02em;
+  overflow:hidden;
+  text-overflow:clip;
+  white-space:nowrap;
+}
+
+@media print{
+  .gs-rollover-notice{
+    display:none !important;
+  }
+}
+
+
+/* =====================================================
+   CP7.10.1 — Clinical Event Slot Alignment
+   Fixes the first-slot (02:00) vertical event hugging the chart border.
+===================================================== */
+
+.gs-clinical-event{
+  /*
+    JS now supplies a legal in-slot anchor.
+    Keep the container on that exact x position; do not translate it.
+  */
+  transform:none !important;
+  overflow:visible !important;
+}
+
+.gs-clinical-event__text{
+  /*
+    Preserve approved vertical direction.
+    A tiny opaque text halo keeps the event readable on graph paper
+    without creating a floating card.
+  */
+  text-shadow:
+    0 0 .42mm rgba(255,255,255,.98),
+    0 0 .42mm rgba(255,255,255,.98) !important;
+}
+
+@media print{
+  .gs-clinical-event{
+    transform:none !important;
+    overflow:visible !important;
+  }
+
+  .gs-clinical-event__text{
+    text-shadow:
+      0 0 .32mm rgba(255,255,255,.98),
+      0 0 .32mm rgba(255,255,255,.98) !important;
+  }
+}
+
+
+/* =====================================================
+   CP7.10.2 — Adaptive Clinical Event Layout @ T38 Center
+   Clinical Event annotations are centered vertically at 50% of the
+   T/P chart = T 38°C. Long text uses 2–3 vertical columns instead
+   of shrinking to unreadable micro-text.
+===================================================== */
+
+.gs-clinical-event{
+  /*
+    JS supplies left:x% and top:50%.
+    The element itself is a zero-size anchor at T38.
+  */
+  bottom:auto !important;
+  width:0 !important;
+  height:0 !important;
+  min-width:0 !important;
+  max-width:none !important;
+  overflow:visible !important;
+  transform:none !important;
+  z-index:4;
+}
+
+.gs-clinical-event__text{
+  display:none !important;
+}
+
+.gs-clinical-event__columns{
+  position:absolute;
+  left:0;
+  top:0;
+  width:0;
+  height:0;
+  overflow:visible;
+}
+
+.gs-clinical-event__column{
+  position:absolute;
+  left:var(--event-col-x, 0mm);
+  top:0;
+  display:block;
+  width:max-content;
+  max-width:57mm;
+  padding:0;
+  margin:0;
+  border:0;
+  background:transparent;
+  color:var(--event-color, #263d46);
+  white-space:nowrap;
+  font-size:var(--event-font, 3.25pt);
+  font-weight:450;
+  line-height:1;
+  letter-spacing:0;
+
+  /*
+    Center the unrotated phrase on the T38 anchor, then rotate the
+    already-shaped Thai text. This keeps Thai vowel/tone shaping
+    correct and makes the phrase extend equally above/below T38.
+  */
+  transform-origin:center center;
+  transform:translate(-50%, -50%) rotate(-90deg);
+
+  text-shadow:
+    0 0 .42mm rgba(255,255,255,.98),
+    0 0 .42mm rgba(255,255,255,.98);
+}
+
+.gs-clinical-event[data-event-layout="two-column"] .gs-clinical-event__column,
+.gs-clinical-event[data-event-layout="three-column"] .gs-clinical-event__column{
+  max-width:31mm;
+}
+
+.gs-clinical-event[data-event-layout="reference"] .gs-clinical-event__column{
+  max-width:30mm;
+  font-weight:520;
+}
+
+@media print{
+  .gs-clinical-event{
+    bottom:auto !important;
+    top:50% !important;
+    width:0 !important;
+    height:0 !important;
+    overflow:visible !important;
+    transform:none !important;
+  }
+
+  .gs-clinical-event__column{
+    font-size:var(--event-font, 3.1pt);
+    text-shadow:
+      0 0 .30mm rgba(255,255,255,.98),
+      0 0 .30mm rgba(255,255,255,.98);
+  }
+}
+
+
+/* =====================================================
+   CP7.10.4 — Safe Long Clinical Event Rendering
+   Long clinical text is no longer split into overlapping vertical columns.
+===================================================== */
+
+.gs-clinical-event[data-event-layout="reference"] .gs-clinical-event__column,
+.gs-clinical-event[data-event-layout="manual-short"] .gs-clinical-event__column,
+.gs-clinical-event[data-event-layout="full"] .gs-clinical-event__column{
+  max-width:48mm !important;
+}
+
+.gs-clinical-event[data-event-layout="reference"] .gs-clinical-event__column{
+  font-weight:520 !important;
+  letter-spacing:-.01em !important;
+}
+
